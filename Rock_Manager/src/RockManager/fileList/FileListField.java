@@ -1294,6 +1294,26 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	}
 
 
+	/**
+	 * 重写此方法，让适当的短菜单出现。(这似乎是一个隐藏的系统方法)。
+	 * 
+	 * @param instance
+	 * @return
+	 */
+	public ContextMenu getContextMenu(int instance) {
+
+		if (instance == 0) {
+			return getContextMenu();
+		} else {
+			ContextMenu contextMenu = ContextMenu.getInstance();
+			contextMenu.setTarget(this);
+			makeContextMenu(contextMenu);
+			return contextMenu;
+		}
+
+	}
+
+
 	protected void makeContextMenu(ContextMenu contextMenu) {
 
 		FileListContextMenuHandler.makeContextMenu(contextMenu, this);

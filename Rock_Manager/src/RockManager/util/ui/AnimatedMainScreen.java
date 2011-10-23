@@ -96,7 +96,8 @@ public class AnimatedMainScreen extends MainScreen {
 
 	protected void onMenuDismissed(Menu menu) {
 
-		boolean hasSelected = menu.getSelectedItem() != null;
+		// 在os5上若有从短菜单的"Full Menu"进入完整菜单，完整菜单再关闭时调用此方法时menu为null.
+		boolean hasSelected = menu != null && menu.getSelectedItem() != null;
 
 		if (hasSelected) {
 			// 如果是选择了某项，取消收起动画效果，立即执行。

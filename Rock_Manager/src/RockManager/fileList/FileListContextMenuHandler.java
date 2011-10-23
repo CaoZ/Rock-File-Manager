@@ -92,7 +92,7 @@ public class FileListContextMenuHandler {
 			added = true;
 		}
 
-		if (Config.DEBUG_MODE) { // 只在测试时添加此项。
+		if (Config.DEBUG_MODE && !fileList.isArchiveList()) { // 只在测试时添加此项。
 			addRefreashMenuItem(contextMenu, fileList, 240, 240); // 刷新 240
 			added = true;
 		}
@@ -211,7 +211,8 @@ public class FileListContextMenuHandler {
 	private static void addPasteFileMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		String labelPaste = LangRes.getString(LangRes.MENU_PASTE) + " (" + FileClipboard.get().getDisplayName() + ")";
+		String fileName = FileClipboard.get().getDisplayName();
+		String labelPaste = UtilCommon.replaceString(LangRes.getString(LangRes.MENU_PASTE), "{1}", fileName);
 
 		MenuItem pasteFile = new MenuItem(labelPaste, ordinal, priority) {
 
