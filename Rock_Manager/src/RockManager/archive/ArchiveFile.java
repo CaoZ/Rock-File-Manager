@@ -291,6 +291,7 @@ public class ArchiveFile {
 		byte[] buffer = new byte[10240];
 		int readCount = -1;
 		ZipEntry thisEntry = null;
+		long positionNow = 0;
 
 		while ((thisEntry = zipInput.getNextEntry()) != null) {
 			// 切换到了下一个文件。
@@ -320,12 +321,15 @@ public class ArchiveFile {
 				indicator.setProgressName(UtilCommon.getFullFileName(name));
 
 				while ((readCount = zipInput.read(buffer)) > 0) {
-					os.write(buffer, 0, readCount);
+
 					if (seekableStream != null) {
-						long position = seekableStream.getPosition();
+						positionNow = seekableStream.getPosition();
 						// 显示目前的进度
-						indicator.setProgressRate((int) (position * 100 / fileSize));
+						indicator.setProgressRate((int) (positionNow * 100 / fileSize));
 					}
+
+					os.write(buffer, 0, readCount);
+
 				}
 
 			} catch (Exception e) {
@@ -333,6 +337,13 @@ public class ArchiveFile {
 				Util.closeConnection(os, thisFileConnection);
 			}
 
+		}
+
+		int finalRate = (int) (positionNow * 100 / fileSize);
+		if (finalRate < 100) {
+			// 由于获取进度是由在文件中的位置除以文件总长度获得的，所以即使全部解压完成，显示的进度可能也不是100%(大多是98,99)。
+			// 设置显示的进度为100%。
+			indicator.setProgressRate(100);
 		}
 
 		// 全部读取完毕，关闭流。
@@ -646,19 +657,21 @@ public class ArchiveFile {
 
 			case ArchiveEntry.TYPE_ZIP:
 
-				try {
-					archiveInput.close();
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (archiveInput != null) {
+					try {
+						archiveInput.close();
+					} catch (Exception e) {
+					}
 				}
 				break;
 
 			case ArchiveEntry.TYPE_RAR:
 
-				try {
-					archiveRAR.close();
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (archiveRAR != null) {
+					try {
+						archiveRAR.close();
+					} catch (Exception e) {
+					}
 				}
 				break;
 		}
@@ -667,7 +680,6 @@ public class ArchiveFile {
 			// 若在初始化完成前遇到错误要关闭，则即使是rar型文件也要手动关闭文件连接，因为archiveRAR可能还未创建。
 			archiveFile.close();
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 	}

@@ -9,6 +9,7 @@ import javax.microedition.io.file.FileSystemRegistry;
 import net.rim.device.api.io.FileInfo;
 import net.rim.device.api.io.file.ExtendedFileConnection;
 import net.rim.device.api.system.ControlledAccessException;
+import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.ui.ContextMenu;
 import net.rim.device.api.ui.DrawStyle;
 import net.rim.device.api.ui.Field;
@@ -17,8 +18,11 @@ import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.Keypad;
 import net.rim.device.api.ui.Manager;
+import net.rim.device.api.ui.TouchEvent;
+import net.rim.device.api.ui.Touchscreen;
 import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.component.ListField;
+import net.rim.device.api.ui.menu.DefaultContextMenuProvider;
 import net.rim.device.api.util.MathUtilities;
 import net.rim.device.api.util.SimpleSortingVector;
 import RockManager.archive.ArchiveListField;
@@ -724,32 +728,81 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 			return super.navigationClick(status, time);
 		}
 
+		boolean consumed = false;
+
 		FileItem thisItem = getThisItem();
 
 		switch (thisItem.getType()) {
 
 			case FileItem.TYPE_RETURN:
 				doReturnToParent();
-				return true;
+				consumed = true;
+				break;
 
 			case FileItem.TYPE_DIR:
 				doEnterThisDir();
-				return true;
+				consumed = true;
+				break;
 
 			case FileItem.TYPE_DISK:
 				doOpenThisDisk();
-				return true;
+				consumed = true;
+				break;
 
 			case FileItem.TYPE_FILE:
 				if (!filePickerMode) {
 					FileHandler.openFile(getThisItem());
-					return true;
+					consumed = true;
+					break;
+				} else {
+					return false;
 				}
-				return false;
 
 		}
 
+		if (consumed) {
+			popupMenuFix();
+			return true;
+		}
+
 		return super.navigationClick(status, time);
+
+	}
+
+
+	protected boolean touchEvent(TouchEvent message) {
+
+		// 6.0.0.534以下(只确定534无此问题而438有此问题)需修正unclick, unclick应返回true,
+		// 否则navigationClick会调用两次。
+		if (message.getEvent() == TouchEvent.UNCLICK) {
+			String[] romVersion = UtilCommon.splitString(DeviceInfo.getSoftwareVersion(), ".");
+			if (romVersion[0].equals("6") && Integer.parseInt(romVersion[3]) < 534) {
+				return true;
+			}
+		}
+		return super.touchEvent(message);
+
+	}
+
+
+	/**
+	 * 修复某些os 6系统上popup screen的bug.
+	 */
+	protected void popupMenuFix() {
+
+		if (Touchscreen.isSupported() && DeviceInfo.getSoftwareVersion().startsWith("6")) {
+			// 有此问题的版本: os 6且有触摸屏, 如：6.0.0.534, 6.0.0.570。
+			// 在某些特定版本的9800上阻止错误的popup menu的出现。
+			getScreen().setContextMenuProvider(new DefaultContextMenuProvider());
+			// 还原, 使按住屏幕或按住触控板时可以出现popup menu.
+			UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+				public void run() {
+
+					getScreen().setContextMenuProvider(null);
+				}
+			});
+		}
 
 	}
 

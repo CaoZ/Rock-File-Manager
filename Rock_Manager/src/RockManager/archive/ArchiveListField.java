@@ -163,21 +163,29 @@ public class ArchiveListField extends FileListField {
 			return super.navigationClick(status, time);
 		}
 
+		boolean consumed = false;
 		FileItem thisItem = getThisItem();
 
 		switch (thisItem.getType()) {
 
 			case FileItem.TYPE_RETURN:
 				doReturnToParent();
-				return true;
+				consumed = true;
+				break;
 
 			case FileItem.TYPE_DIR_IN_ARCHIVE:
 				doEnterThisDir();
-				return true;
+				consumed = true;
+				break;
 
 			case FileItem.TYPE_FILE_IN_ARCHIVE:
 				return false;
 
+		}
+
+		if (consumed) {
+			popupMenuFix();
+			return true;
 		}
 
 		return super.navigationClick(status, time);

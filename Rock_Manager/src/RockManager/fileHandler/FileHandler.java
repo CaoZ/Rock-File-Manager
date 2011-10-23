@@ -509,10 +509,10 @@ public class FileHandler {
 				} catch (Exception e) {
 					String message = "Failed to extract: " + UtilCommon.getErrorMessage(e);
 					UtilCommon.alert(message, true);
-				}
-
-				if (archive != null) {
-					archive.close();
+				} finally {
+					if (archive != null) {
+						archive.close();
+					}
 				}
 
 				UiApplication.getUiApplication().invokeLater(new Runnable() {

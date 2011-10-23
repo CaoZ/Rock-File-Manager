@@ -7,6 +7,7 @@ import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.XYDimension;
+import RockManager.languages.LangRes;
 import RockManager.util.UtilCommon;
 
 
@@ -95,7 +96,8 @@ public class AddressBar extends Field {
 	public void setAddress(String address) {
 
 		if (address == null) {
-			address = "";
+			// 当是listRoots的DiskList时。
+			address = LangRes.getString(LangRes.MY_DEVICE);
 		}
 
 		if (address.equals(rawAddress)) {

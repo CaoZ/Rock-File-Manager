@@ -4,8 +4,10 @@ package RockManager.fileList.filePicker;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.UiApplication;
+import net.rim.device.api.ui.component.LabelField;
 import RockManager.fileList.AddressBar;
 import RockManager.fileList.FileListField;
+import RockManager.languages.LangRes;
 import RockManager.ui.ScreenHeightChangeEvent;
 import RockManager.util.ui.BasePopupScreen;
 import RockManager.util.ui.VFMwithScrollbar;
@@ -30,6 +32,10 @@ public class FilePicker extends BasePopupScreen implements FilePickerListener {
 
 		super(NO_VERTICAL_SCROLL, DEFAULT_CLOSE | DEFAULT_MENU | NO_SYSTEM_MENU_ITEMS);
 		useSystemTheme();
+
+		setTitle(LangRes.getString(LangRes.TITLE_SELECT_DESTINATION));
+		LabelField titleField = getTitleField();
+		titleField.setMargin(0, 0, 0, 6); // AddressBar 在不绘制图标时与左侧的距离是6.
 
 		vfm = new VFMwithScrollbar(USE_ALL_HEIGHT);
 		vfm.useWhiteVersionSlider();

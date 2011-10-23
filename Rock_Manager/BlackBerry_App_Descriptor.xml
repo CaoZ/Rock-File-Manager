@@ -8,10 +8,11 @@
       <Icon CanonicalFileName="res/img/icon.png" IsFocus="false"/>
     </Icons>
   </Resources>
+  <KeywordResources KeywordResourceBundleName="" KeywordResourceBundleRelativePath="" KeywordResourceBundleClassName="" KeywordResourceBundleKey=""/>
   <Compile OutputCompilerMessages="false" ConvertImages="false" CreateWarningForNoExportedRoutine="true" CompressResources="false" AliasList="">
     <PreprocessorDefines/>
   </Compile>
-  <Packaging PreBuildStep="" PostBuildStep="" CleanStep="" OutputFileName="Rock_File_Manager" OutputFolder="deliverables" GenerateALXFile="true">
+  <Packaging PreBuildStep="" PostBuildStep="" CleanStep="" OutputFileName="Rock_File_Manager" OutputFolder="deliverables" GenerateALXFile="false">
     <AlxFiles/>
   </Packaging>
   <HiddenProperties>

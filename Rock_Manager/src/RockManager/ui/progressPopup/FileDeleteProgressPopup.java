@@ -4,6 +4,7 @@ package RockManager.ui.progressPopup;
 import net.rim.device.api.ui.UiApplication;
 import RockManager.fileHandler.FileHandler;
 import RockManager.fileHandler.fileCounter.FileCounter;
+import RockManager.languages.LangRes;
 import RockManager.util.UtilCommon;
 
 
@@ -18,7 +19,7 @@ public class FileDeleteProgressPopup extends ProgressPopup {
 
 	public FileDeleteProgressPopup(final String folderURL) {
 
-		setTitle("正在删除...");
+		setTitle(LangRes.getString(LangRes.TITLE_DELETING));
 
 		this.folderURL = folderURL;
 
