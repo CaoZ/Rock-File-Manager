@@ -376,8 +376,9 @@ public class ArchiveFile {
 	 * 
 	 * @param entry
 	 * @param targetURL
+	 * @throws Exception
 	 */
-	public void extractEntry(ArchiveEntry entry, String targetURL, ExtractIndicator indicator) {
+	public void extractEntry(ArchiveEntry entry, String targetURL, ExtractIndicator indicator) throws Exception {
 
 		String entryName = UtilCommon.getFullFileName(entry.getName());
 
@@ -394,9 +395,12 @@ public class ArchiveFile {
 			try {
 				FileHandler.createTargetFolder(folderURL);
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw e; // failed to create file...
+				// end extract progress
 			}
+
 			ArchiveEntry[] entries = entry.getFiles();
+
 			for (int i = 0; i < entries.length; i++) {
 				// 解压所有子文件。
 				extractEntry(entries[i], folderURL, indicator);
@@ -415,7 +419,8 @@ public class ArchiveFile {
 		try {
 			FileHandler.createTargetFile(fileURL);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e; // failed to create file...
+			// end extract progress
 		}
 
 		if (entry.isZipEntry()) {

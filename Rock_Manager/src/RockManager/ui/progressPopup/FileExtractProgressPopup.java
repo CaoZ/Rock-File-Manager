@@ -7,6 +7,7 @@ import RockManager.archive.ArchiveFile;
 import RockManager.archive.indicator.ExtractIndicator;
 import RockManager.fileList.FileItem;
 import RockManager.languages.LangRes;
+import RockManager.util.UtilCommon;
 
 
 /**
@@ -67,7 +68,14 @@ public class FileExtractProgressPopup extends ProgressPopup {
 
 					FileItem thisItem = itemsToExtract[i];
 					ArchiveEntry thisEntry = thisItem.getOriginArchiveEntry();
-					archiveFile.extractEntry(thisEntry, targetURL, indicator);
+
+					try {
+						archiveFile.extractEntry(thisEntry, targetURL, indicator);
+					} catch (Exception e) {
+						String message = "Failed to extract: " + UtilCommon.getErrorMessage(e);
+						UtilCommon.alert(message, true);
+						break;
+					}
 
 					long thisEntrySize = computeOnePackedSize(thisItem);
 					totalRead += thisEntrySize;
