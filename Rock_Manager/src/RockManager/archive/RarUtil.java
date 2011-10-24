@@ -15,7 +15,7 @@ import de.innosystec.unrar.rarfile.FileHeader;
 
 public class RarUtil {
 
-	public static void extractAll(Archive archiveRAR, String targetURL, ProgressPopup indicator) {
+	public static void extractAll(Archive archiveRAR, String targetURL, ProgressPopup indicator) throws Exception {
 
 		Vector headerVector = archiveRAR.getFileHeaders();
 		FileHeader[] headers = new FileHeader[headerVector.size()];
@@ -48,7 +48,8 @@ public class RarUtil {
 			try {
 				FileHandler.createTargetFile(thisFileURL);
 			} catch (Exception e) {
-				// CZTODO: 不能创建目标文件
+				throw e; // failed to create file...
+				// end extract progress
 			}
 
 			if (thisHeader.isDirectory()) {

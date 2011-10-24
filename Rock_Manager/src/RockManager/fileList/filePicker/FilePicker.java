@@ -13,7 +13,7 @@ import RockManager.util.ui.BasePopupScreen;
 import RockManager.util.ui.VFMwithScrollbar;
 
 
-public class FilePicker extends BasePopupScreen implements FilePickerListener {
+public class FilePicker extends BasePopupScreen {
 
 	private VFMwithScrollbar vfm;
 
@@ -46,7 +46,7 @@ public class FilePicker extends BasePopupScreen implements FilePickerListener {
 		fileList.registerJournalListener();
 		fileList.setClipboardAllowed(false);
 		fileList.setChangeListener(createFileListListener());
-		fileList.setFilePickerListener(this);
+		fileList.setFilePicker(this);
 
 		vfm.add(fileList);
 
@@ -109,7 +109,7 @@ public class FilePicker extends BasePopupScreen implements FilePickerListener {
 	}
 
 
-	public void selectionDone(String filePath) {
+	public void select(String filePath) {
 
 		selectedPath = filePath;
 		close();

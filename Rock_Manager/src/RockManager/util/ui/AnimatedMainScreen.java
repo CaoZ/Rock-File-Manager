@@ -1,8 +1,9 @@
 
 package RockManager.util.ui;
 
+import RockManager.util.FixUtil;
+import RockManager.util.OSVersionUtil;
 import RockManager.util.UtilCommon;
-import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.system.Display;
 import net.rim.device.api.ui.Screen;
 import net.rim.device.api.ui.TransitionContext;
@@ -42,7 +43,7 @@ public class AnimatedMainScreen extends MainScreen {
 		uiEngine.setTransition(null, this, UiEngineInstance.TRIGGER_PUSH, transitionPush);
 
 		// screen pop时动画效果。
-		if (DeviceInfo.getSoftwareVersion().startsWith("5")) {
+		if (OSVersionUtil.isOS5()) {
 			// os 5 上zoom效果不好，改为fade
 
 			TransitionContext transitionPop = new TransitionContext(TransitionContext.TRANSITION_FADE);
@@ -70,10 +71,10 @@ public class AnimatedMainScreen extends MainScreen {
 
 	public boolean onMenu(int instance) {
 
-		UiEngineInstance uiEngine = Ui.getUiEngineInstance();
+		final UiEngineInstance uiEngine = Ui.getUiEngineInstance();
 
 		// 原来的Push时效果。
-		TransitionContext originPush = uiEngine.getTransition(this, null, UiEngineInstance.TRIGGER_PUSH);
+		final TransitionContext originPush = uiEngine.getTransition(this, null, UiEngineInstance.TRIGGER_PUSH);
 
 		// menu弹出动画效果
 		TransitionContext transitionPush = new TransitionContext(TransitionContext.TRANSITION_SLIDE);
@@ -82,14 +83,20 @@ public class AnimatedMainScreen extends MainScreen {
 		transitionPush.setIntAttribute(TransitionContext.ATTR_KIND, TransitionContext.KIND_IN);
 		transitionPush.setIntAttribute(TransitionContext.ATTR_DURATION, menuAnimateTime);
 
+		final Screen thisScreen = this;
+
+		UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+			public void run() {
+
+				// 还原原来Screen Push时效果.
+				uiEngine.setTransition(thisScreen, null, UiEngineInstance.TRIGGER_PUSH, originPush);
+			}
+		});
+
 		uiEngine.setTransition(this, null, UiEngineInstance.TRIGGER_PUSH, transitionPush);
 
-		boolean created = super.onMenu(instance);
-
-		// 还原原来Screen Push时效果.
-		uiEngine.setTransition(this, null, UiEngineInstance.TRIGGER_PUSH, originPush);
-
-		return created;
+		return super.onMenu(instance);
 
 	}
 
@@ -126,7 +133,6 @@ public class AnimatedMainScreen extends MainScreen {
 			public void run() {
 
 				uiEngine.setTransition(null, thisScreen, UiEngineInstance.TRIGGER_POP, originPop);
-
 			}
 		});
 
@@ -137,7 +143,9 @@ public class AnimatedMainScreen extends MainScreen {
 
 	protected void makeMenu(Menu menu, int instance) {
 
+		FixUtil.fixVirtualKeyboardMenuItem(menu, this);
 		super.makeMenu(menu, instance);
+
 		UtilCommon.setMenuMinWidth(menu, Display.getWidth() / 3);
 	}
 
@@ -171,7 +179,7 @@ public class AnimatedMainScreen extends MainScreen {
 	public static int getMenuAnimateTime() {
 
 		if (menuAnimateTime < 0) {
-			if (DeviceInfo.getSoftwareVersion().startsWith("5")) {
+			if (OSVersionUtil.isOS5()) {
 				menuAnimateTime = 140;
 			} else {
 				menuAnimateTime = 180;

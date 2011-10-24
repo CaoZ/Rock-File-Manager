@@ -9,7 +9,6 @@ import javax.microedition.io.file.FileSystemRegistry;
 import net.rim.device.api.io.FileInfo;
 import net.rim.device.api.io.file.ExtendedFileConnection;
 import net.rim.device.api.system.ControlledAccessException;
-import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.ui.ContextMenu;
 import net.rim.device.api.ui.DrawStyle;
 import net.rim.device.api.ui.Field;
@@ -30,7 +29,7 @@ import RockManager.config.Config;
 import RockManager.fileClipboard.FileClipboard;
 import RockManager.fileHandler.FileHandler;
 import RockManager.fileHandler.FileProperty;
-import RockManager.fileList.filePicker.FilePickerListener;
+import RockManager.fileList.filePicker.FilePicker;
 import RockManager.fileList.position.FocusFinder;
 import RockManager.fileList.position.PositionData;
 import RockManager.fileList.position.PositionLogger;
@@ -40,6 +39,7 @@ import RockManager.ui.ScreenHeightChangeEvent;
 import RockManager.ui.oneLineInputField.InputField;
 import RockManager.ui.screen.fileScreen.FileScreen;
 import RockManager.util.KeyUtil;
+import RockManager.util.OSVersionUtil;
 import RockManager.util.UtilCommon;
 import RockManager.util.ui.BaseObjectListField;
 import RockManager.util.ui.VFMwithScrollbar;
@@ -127,7 +127,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	private boolean filePickerMode = false;
 
-	private FilePickerListener filePickerListener;
+	private FilePicker filePicker;
 
 
 	protected FileListField() {
@@ -775,8 +775,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		// 6.0.0.534以下(只确定534无此问题而438有此问题)需修正unclick, unclick应返回true,
 		// 否则navigationClick会调用两次。
 		if (message.getEvent() == TouchEvent.UNCLICK) {
-			String[] romVersion = UtilCommon.splitString(DeviceInfo.getSoftwareVersion(), ".");
-			if (romVersion[0].equals("6") && Integer.parseInt(romVersion[3]) < 534) {
+			if (OSVersionUtil.isOS6() && OSVersionUtil.getRevisionVersion() < 534) {
 				return true;
 			}
 		}
@@ -790,7 +789,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	protected void popupMenuFix() {
 
-		if (Touchscreen.isSupported() && DeviceInfo.getSoftwareVersion().startsWith("6")) {
+		if (Touchscreen.isSupported() && OSVersionUtil.isOS6()) {
 			// 有此问题的版本: os 6且有触摸屏, 如：6.0.0.534, 6.0.0.570。
 			// 在某些特定版本的9800上阻止错误的popup menu的出现。
 			getScreen().setContextMenuProvider(new DefaultContextMenuProvider());
@@ -1050,7 +1049,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		FileScreen fileScreen = new FileScreen(path);
 		// 设置地址栏图标为disk图标。
 		fileScreen.setIcon(thisItem.getIcon());
-		UiApplication.getUiApplication().pushModalScreen(fileScreen);
+		UiApplication.getUiApplication().pushScreen(fileScreen);
 	}
 
 
@@ -1409,6 +1408,11 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	boolean shouldShowProperty() {
 
+		if (filePickerMode && OSVersionUtil.isOS5()) {
+			// 在os
+			// 5中在filePickerMode若是显示"属性窗口"后，若关闭"属性窗口"，FilePicker会不可见，需移动才可见，系统bug。
+			return false;
+		}
 		FileItem thisFileItem = getThisItem();
 		return thisFileItem != null && thisFileItem.isReturn() == false;
 	}
@@ -1492,11 +1496,11 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 
 	/**
-	 * 设置filePickerListener.
+	 * 设置filePicker.
 	 */
-	public void setFilePickerListener(FilePickerListener filePickerListener) {
+	public void setFilePicker(FilePicker filePicker) {
 
-		this.filePickerListener = filePickerListener;
+		this.filePicker = filePicker;
 	}
 
 
@@ -1505,8 +1509,8 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	public void pickFolder() {
 
-		if (filePickerListener != null) {
-			filePickerListener.selectionDone(getFolderPath());
+		if (filePicker != null) {
+			filePicker.select(getFolderPath());
 		}
 	}
 
@@ -1516,9 +1520,9 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	public void pickFile() {
 
-		if (filePickerListener != null) {
+		if (filePicker != null) {
 			String filePath = getThisItem().getPath();
-			filePickerListener.selectionDone(filePath);
+			filePicker.select(filePath);
 		}
 	}
 

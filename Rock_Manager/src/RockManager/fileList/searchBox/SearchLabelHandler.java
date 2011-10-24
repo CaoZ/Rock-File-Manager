@@ -3,6 +3,7 @@ package RockManager.fileList.searchBox;
 
 import RockManager.config.Config;
 import RockManager.languages.LangRes;
+import RockManager.util.CapabilityUtil;
 import RockManager.util.KeyUtil;
 import RockManager.util.UtilCommon;
 import net.rim.device.api.system.capability.DeviceCapability;
@@ -36,7 +37,7 @@ public class SearchLabelHandler implements DeviceCapabilityListener {
 
 	private String getLabel() {
 
-		boolean hasRealKeypad = KeyUtil.isPhysicalKeyboardAvailable();
+		boolean hasRealKeypad = CapabilityUtil.isPhysicalKeyboardAvailable();
 
 		String label;
 

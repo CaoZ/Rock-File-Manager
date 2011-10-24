@@ -19,7 +19,7 @@ import RockManager.archive.ArchiveFile;
 import RockManager.fileHandler.FileHandler;
 import RockManager.languages.LangRes;
 import RockManager.ui.progressPopup.ProgressPopup;
-import RockManager.util.KeyUtil;
+import RockManager.util.CapabilityUtil;
 import RockManager.util.UtilCommon;
 import RockManager.util.ui.BaseDialog;
 
@@ -312,8 +312,10 @@ public class CodInstaller {
 
 		String message = null;
 
-		int lang_OK = KeyUtil.isPhysicalKeyboardAvailable() ? LangRes.BUTTON_LABEL_OK_S : LangRes.BUTTON_LABEL_OK;
-		int lang_Run = KeyUtil.isPhysicalKeyboardAvailable() ? LangRes.BUTTON_LABEL_RUN_S : LangRes.BUTTON_LABEL_RUN;
+		int lang_OK = CapabilityUtil.isPhysicalKeyboardAvailable() ? LangRes.BUTTON_LABEL_OK_S
+				: LangRes.BUTTON_LABEL_OK;
+		int lang_Run = CapabilityUtil.isPhysicalKeyboardAvailable() ? LangRes.BUTTON_LABEL_RUN_S
+				: LangRes.BUTTON_LABEL_RUN;
 
 		String choice_OK = LangRes.getString(lang_OK);
 		String choice_Run = LangRes.getString(lang_Run);

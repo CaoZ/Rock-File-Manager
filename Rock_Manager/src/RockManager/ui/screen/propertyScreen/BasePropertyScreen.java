@@ -30,7 +30,7 @@ public class BasePropertyScreen extends AnimatedMainScreen {
 		mainVFM = new VFMwithScrollbar();
 		getMainManager().add(mainVFM);
 
-		getMainManager().setBackground(BackgroundFactory.createSolidBackground(0xf7f7f7)); //
+		getMainManager().setBackground(BackgroundFactory.createSolidBackground(0xf7f7f7));
 		mainVFM.setBackground(BackgroundFactory.createSolidBackground(0xf7f7f7));
 
 		add(new NullField());

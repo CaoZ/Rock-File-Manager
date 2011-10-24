@@ -18,6 +18,7 @@ import net.rim.device.api.ui.container.PopupScreen;
 import net.rim.device.api.ui.container.VerticalFieldManager;
 import net.rim.device.api.ui.decor.Border;
 import net.rim.device.api.ui.decor.BorderFactory;
+import RockManager.util.FixUtil;
 import RockManager.util.KeyUtil;
 import RockManager.util.UtilCommon;
 
@@ -226,7 +227,9 @@ public class BasePopupScreen extends PopupScreen {
 
 	protected void makeMenu(Menu menu, int instance) {
 
+		FixUtil.fixVirtualKeyboardMenuItem(menu, this);
 		super.makeMenu(menu, instance);
+
 		UtilCommon.setMenuMinWidth(menu, Display.getWidth() / 3);
 	}
 

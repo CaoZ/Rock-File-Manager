@@ -302,7 +302,8 @@ public class ArchiveFile {
 			try {
 				FileHandler.createTargetFile(thisFileURL);
 			} catch (Exception e) {
-				// CZTODO failed to create file
+				throw e; // failed to create file...
+				// end extract progress
 			}
 
 			if (thisEntry.isDirectory()) {
@@ -346,7 +347,7 @@ public class ArchiveFile {
 			indicator.setProgressRate(100);
 		}
 
-		// 全部读取完毕，关闭流。
+		// 全部读取完毕，关闭流。(如果调用ArchiveFile.close(), 此处不关闭也可)
 		zipInput.close();
 
 	}
@@ -510,8 +511,8 @@ public class ArchiveFile {
 				tooBig = true;
 			}
 		} else if (isZipArchive()) {
-			// 打开Zip文件获取目录结构不需遍历整个文件，仅与里面的文件个数有关（需遍历目录段），认为大于10M的Zip文件打开较耗时。
-			if (fileSize > 1024 * 1024 * 10) {
+			// 打开Zip文件获取目录结构不需遍历整个文件，仅与里面的文件个数有关（需遍历目录段），认为大于3M的Zip文件打开较耗时。
+			if (fileSize > 1024 * 1024 * 3) {
 				tooBig = true;
 			}
 		}

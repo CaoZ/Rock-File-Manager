@@ -65,6 +65,7 @@ public class FileHandler {
 			// 是html文件，调用浏览器打开它。
 			boolean succeed = openHTMLFile(filePath);
 			if (succeed) {
+				// 尝试使用调用浏览器的方式打开html, 若打开失败再尝试使用Invocation打开。
 				return;
 			}
 		}
@@ -455,7 +456,6 @@ public class FileHandler {
 					createTargetFolder(parentDir);
 					fconn.create();
 				} else {
-					// TODO 若是同名文件夹存在的情况
 					// 若目标文件已存在，则设置长度为0（相当于先删除然后创建）。
 					fconn.truncate(0);
 				}

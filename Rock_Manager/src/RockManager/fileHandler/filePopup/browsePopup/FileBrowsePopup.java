@@ -134,9 +134,20 @@ public class FileBrowsePopup extends BaseFilePopup {
 				}
 
 				FilePicker filePicker = new FilePicker(initialURL);
-				String selectedPath = filePicker.show();
+				final String selectedPath = filePicker.show();
+
 				if (selectedPath != null) {
-					setDestinationPath(selectedPath);
+
+					// invokeLater:
+					// 若不是用invokeLater在除storm和torch以外的机型上可能导致FilePicker关闭动画的消失。
+					UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+						public void run() {
+
+							setDestinationPath(selectedPath);
+						}
+					});
+
 				}
 
 			}

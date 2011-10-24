@@ -109,8 +109,11 @@ public class BaseObjectListField extends ObjectListField {
 				}
 				return true;
 			case Keypad.KEY_ENTER:
-				navigationClick(status, time);
-				return true;
+				boolean consumed = navigationClick(status, time);
+				if (consumed) {
+					return true;
+				}
+				break;
 		}
 
 		return super.keyChar(key, status, time);
@@ -180,8 +183,7 @@ public class BaseObjectListField extends ObjectListField {
 		if (listFocusBack == null) {
 			createListFocusBack(width - 2 * paddingX, rowHeight - 2 * paddingY);
 		}
-		g.drawBitmap(paddingX, y + paddingY, listFocusBack.getWidth(), listFocusBack.getHeight(),
-				listFocusBack, 0, 0);
+		g.drawBitmap(paddingX, y + paddingY, listFocusBack.getWidth(), listFocusBack.getHeight(), listFocusBack, 0, 0);
 	}
 
 
@@ -208,18 +210,15 @@ public class BaseObjectListField extends ObjectListField {
 
 		for (int index = 0; index < backXs.length; index++) {
 
-			listFocusBack.getARGB(backData, 0, arcSize, backXs[index], backYs[index], arcSize,
-					arcSize);
-			alphaMask
-					.getARGB(alphaData, 0, arcSize, maskXs[index], maskYs[index], arcSize, arcSize);
+			listFocusBack.getARGB(backData, 0, arcSize, backXs[index], backYs[index], arcSize, arcSize);
+			alphaMask.getARGB(alphaData, 0, arcSize, maskXs[index], maskYs[index], arcSize, arcSize);
 
 			for (int i = arcSize * arcSize - 1; i >= 0; i--) {
 				// 取得alpha的前8位（alpha数据），与icon相混合
 				backData[i] = (alphaData[i] & 0xff000000) | (backData[i] & 0x00ffffff);
 			}
 
-			listFocusBack.setARGB(backData, 0, arcSize, backXs[index], backYs[index], arcSize,
-					arcSize);
+			listFocusBack.setARGB(backData, 0, arcSize, backXs[index], backYs[index], arcSize, arcSize);
 		}
 
 	}

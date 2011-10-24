@@ -3,7 +3,7 @@ package RockManager.util.ui;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import RockManager.util.KeyUtil;
+import RockManager.util.CapabilityUtil;
 import net.rim.device.api.system.capability.DeviceCapability;
 import net.rim.device.api.system.capability.DeviceCapabilityListener;
 import net.rim.device.api.ui.Field;
@@ -125,7 +125,7 @@ public class BaseButtonField extends ButtonField implements DeviceCapabilityList
 
 	private void resetLabel() {
 
-		if (KeyUtil.isPhysicalKeyboardAvailable()) {
+		if (CapabilityUtil.isPhysicalKeyboardAvailable()) {
 			setLabel(labelWithShortcut);
 		} else {
 			setLabel(label);

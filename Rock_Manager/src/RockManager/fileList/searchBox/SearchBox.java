@@ -2,7 +2,6 @@
 package RockManager.fileList.searchBox;
 
 import net.rim.device.api.system.Bitmap;
-import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.Font;
@@ -17,6 +16,7 @@ import net.rim.device.api.ui.decor.Border;
 import net.rim.device.api.ui.decor.BorderFactory;
 import RockManager.ui.oneLineInputField.InputField;
 import RockManager.ui.oneLineInputField.OneLineInputArea;
+import RockManager.util.OSVersionUtil;
 import RockManager.util.UtilCommon;
 
 
@@ -60,8 +60,7 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 				Bitmap.getBitmapResource("img/other/inputBack_Focus.png"));
 		setBorder(borderNormal);
 
-		BitmapField searchIcon = new BitmapField(
-				Bitmap.getBitmapResource("img/other/searchIcon.png"), FIELD_VCENTER);
+		BitmapField searchIcon = new BitmapField(Bitmap.getBitmapResource("img/other/searchIcon.png"), FIELD_VCENTER);
 		// 不直接安置在容器SearchBox上而在每个Field都设置padding，是希望扩大关闭按钮的范围，使触摸操作容易完成。
 		searchIcon.setPadding(paddingY, paddingText, paddingY, 0);
 		add(searchIcon);
@@ -129,10 +128,8 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 
 		XYRect clearRect = new XYRect();
 
-		clearRect.width = clearIcon.getPreferredWidth() + clearIcon.getPaddingLeft()
-				+ clearIcon.getPaddingRight();
-		clearRect.height = clearIcon.getPreferredHeight() + clearIcon.getPaddingTop()
-				+ clearIcon.getPaddingBottom();
+		clearRect.width = clearIcon.getPreferredWidth() + clearIcon.getPaddingLeft() + clearIcon.getPaddingRight();
+		clearRect.height = clearIcon.getPreferredHeight() + clearIcon.getPaddingTop() + clearIcon.getPaddingBottom();
 
 		clearRect.x = getContentWidth() - clearRect.width;
 		clearRect.y = UtilCommon.getOffset(getContentHeight(), clearRect.height);
@@ -206,9 +203,7 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 			// 经测试，此bug在5.0.0.900上没有了，在5.0.0.681上还有，具体哪个版本修复的不知道。
 			// 一个解决办法是将这个操作放到invokeLater中完成。
 
-			String[] romVersion = UtilCommon.splitString(DeviceInfo.getSoftwareVersion(), ".");
-
-			if (romVersion[0].equals("5") && Integer.parseInt(romVersion[3]) < 900) {
+			if (OSVersionUtil.isOS5() && OSVersionUtil.getRevisionVersion() < 900) {
 				// 有此bug的解决方法。
 				UiApplication.getUiApplication().invokeLater(new Runnable() {
 
@@ -232,8 +227,7 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 	public void showClearIcon() {
 
 		if (clearIcon == null) {
-			clearIcon = new ClearIcon(Bitmap.getBitmapResource("img/other/clearIcon.png"),
-					FIELD_VCENTER | FIELD_RIGHT);
+			clearIcon = new ClearIcon(Bitmap.getBitmapResource("img/other/clearIcon.png"), FIELD_VCENTER | FIELD_RIGHT);
 			clearIcon.setPadding(paddingY, paddingX, paddingY, paddingText);
 			clearIcon.setChangeListener(this);
 		}
