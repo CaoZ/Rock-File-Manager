@@ -45,8 +45,7 @@ public class FileNameFix {
 	 */
 	public static boolean isUseUTF8(int flags) {
 
-		// 按照标准，正常应是在11位（从0开始的第12位）上判断，但整个lib的高位与低位都是反过来的，所以和0x08相与。
-		return (flags & 0x08) > 0;
+		return (flags & 0x800) != 0;
 	}
 
 
@@ -88,7 +87,6 @@ public class FileNameFix {
 	}
 
 
-	// CZTODO 若以gbk的bytes当做文件名，需更改zipentry的flags。
 	public static byte[] getGBKBytes(String name) {
 
 		byte[] bytes = null;
