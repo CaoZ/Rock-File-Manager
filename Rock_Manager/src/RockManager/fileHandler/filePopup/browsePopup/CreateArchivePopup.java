@@ -35,7 +35,7 @@ public class CreateArchivePopup extends FileBrowsePopup {
 
 		setDestinationPath(parentPath + getPreferedArchiveName());
 		setDefaultDestinationPath(parentPath);
-		
+
 		focusOKButton();
 
 	}
@@ -86,7 +86,7 @@ public class CreateArchivePopup extends FileBrowsePopup {
 
 		CompressMethod[] methods = { method_store, method_fastest, method_fast, method_normal, method_good, method_best };
 
-		compressMethodChoiceField = new ObjectChoiceField("", methods, method_fastest, FIELD_LEFT) {
+		compressMethodChoiceField = new ObjectChoiceField("", methods, 1, FIELD_LEFT) {
 
 			protected void layout(int width, int height) {
 
