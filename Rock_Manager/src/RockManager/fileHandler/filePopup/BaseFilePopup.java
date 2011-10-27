@@ -148,6 +148,7 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 		if (field == buttonOK || field == inputField && context == InputField.ENTER_PRESSED) {
 
 			if (isEmptyInput()) {
+				// 输入框为空，显示此错误并使输入框重新获得焦点。
 				showTextEmptyError();
 				focusInputField();
 				return;
@@ -181,8 +182,9 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 	/**
 	 * 使inputField获得焦点。
 	 */
-	protected void focusInputField() {
+	public void focusInputField() {
 
+		// invokeLater: 在错误提示框出现后再移动焦点到输入框，否则错误提示框还未出现输入框又变蓝了。
 		UiApplication.getUiApplication().invokeLater(new Runnable() {
 
 			public void run() {
@@ -190,6 +192,15 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 				inputField.setFocus();
 			}
 		});
+	}
+
+
+	/**
+	 * 使确定按钮获得焦点。
+	 */
+	public void focusOKButton() {
+
+		buttonOK.setFocus();
 	}
 
 

@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Vector;
 import javax.microedition.io.file.FileConnection;
-import RockManager.archive.indicator.ExtractIndicator;
+import RockManager.archive.indicator.ArchiveIndicator;
 import de.innosystec.unrar.exception.RarException;
 import de.innosystec.unrar.exception.RarExceptionType;
 import de.innosystec.unrar.io.IReadOnlyAccess;
@@ -527,7 +527,7 @@ public class Archive {
 	}
 
 
-	public void setExtractIndicator(ExtractIndicator indicator) {
+	public void setExtractIndicator(ArchiveIndicator indicator) {
 
 		dataIO.setExtractIndicator(indicator);
 

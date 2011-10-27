@@ -64,7 +64,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	/**
 	 * 搜索框。
 	 */
-	protected SearchBox searchBox = new SearchBox();
+	private SearchBox searchBox = new SearchBox(this);
 
 	private static String FILE_PROTOCOL = "file://";
 
@@ -1150,7 +1150,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 
 	/**
-	 * 获取输入的关键字。
+	 * 获取搜索框输入的关键字。
 	 * 
 	 * @return
 	 */

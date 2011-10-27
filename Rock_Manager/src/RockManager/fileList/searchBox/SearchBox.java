@@ -5,6 +5,7 @@ import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.Font;
+import net.rim.device.api.ui.TouchEvent;
 import net.rim.device.api.ui.Touchscreen;
 import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.VirtualKeyboard;
@@ -14,6 +15,7 @@ import net.rim.device.api.ui.component.BitmapField;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
 import net.rim.device.api.ui.decor.Border;
 import net.rim.device.api.ui.decor.BorderFactory;
+import RockManager.fileList.FileListField;
 import RockManager.ui.oneLineInputField.InputField;
 import RockManager.ui.oneLineInputField.OneLineInputArea;
 import RockManager.util.OSVersionUtil;
@@ -45,8 +47,10 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 
 	private int paddingY = 2;
 
+	private FileListField parentListField;
 
-	public SearchBox() {
+
+	public SearchBox(FileListField parentListField) {
 
 		super(NO_HORIZONTAL_SCROLL | NON_FOCUSABLE | USE_ALL_WIDTH);
 		setFont(getFont().derive(Font.PLAIN, 24));
@@ -69,6 +73,7 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 		inputArea.setPadding(paddingY, 0, paddingY, 0);
 		add(inputArea);
 
+		this.parentListField = parentListField;
 		new SearchLabelHandler(this);
 
 	}
@@ -153,7 +158,7 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 
 
 	/**
-	 * 使之inputBox的label, 提示性文字。
+	 * 设置inputBox的label, 提示性文字。如“Press 'S' to search.”。
 	 * 
 	 * @param label
 	 */
@@ -256,7 +261,17 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 
 	public void fieldChanged(Field field, int context) {
 
-		UtilCommon.trace("Hello!");
+		if (field == clearIcon && context == TouchEvent.CLICK) {
+
+			if (parentListField.getKeyword().length() > 0) {
+				// 已经输入了关键字，使关键字重置。
+				parentListField.setKeyword("");
+			} else {
+				// 还未输入关键字，使输入框失去焦点。
+				parentListField.setFocus();
+			}
+
+		}
 
 	}
 

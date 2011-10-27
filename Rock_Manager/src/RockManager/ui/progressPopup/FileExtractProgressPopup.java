@@ -4,7 +4,7 @@ package RockManager.ui.progressPopup;
 import net.rim.device.api.ui.UiApplication;
 import RockManager.archive.ArchiveEntry;
 import RockManager.archive.ArchiveFile;
-import RockManager.archive.indicator.ExtractIndicator;
+import RockManager.archive.indicator.ArchiveIndicator;
 import RockManager.fileList.FileItem;
 import RockManager.languages.LangRes;
 import RockManager.util.UtilCommon;
@@ -21,16 +21,16 @@ public class FileExtractProgressPopup extends ProgressPopup {
 
 	private String targetURL;
 
-	private ExtractIndicator indicator;
-
 
 	public FileExtractProgressPopup(FileItem[] itemsToExtract, ArchiveFile archiveFile, String targetURL) {
 
-		setTitle(LangRes.getString(LangRes.TITLE_EXTRACTING));
 		this.itemsToExtract = itemsToExtract;
 		this.archiveFile = archiveFile;
 		this.targetURL = targetURL;
 
+		setTitle(LangRes.getString(LangRes.TITLE_EXTRACTING));
+
+		// invokeLater: 等窗口出现再开始解压。
 		UiApplication.getUiApplication().invokeLater(new Runnable() {
 
 			public void run() {
@@ -52,7 +52,7 @@ public class FileExtractProgressPopup extends ProgressPopup {
 	 */
 	private Thread createExtractThread() {
 
-		indicator = new ExtractIndicator();
+		final ArchiveIndicator indicator = new ArchiveIndicator();
 		indicator.setDisplay(this);
 
 		long totalPackedSize = computePackedSize(itemsToExtract);
@@ -88,7 +88,6 @@ public class FileExtractProgressPopup extends ProgressPopup {
 					public void run() {
 
 						close();
-
 					}
 				});
 

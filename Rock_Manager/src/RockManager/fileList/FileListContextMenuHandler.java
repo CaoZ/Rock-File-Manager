@@ -9,6 +9,7 @@ import RockManager.archive.ArchiveListField;
 import RockManager.config.Config;
 import RockManager.fileClipboard.FileClipboard;
 import RockManager.fileHandler.FileHandler;
+import RockManager.fileHandler.filePopup.browsePopup.CreateArchivePopup;
 import RockManager.fileHandler.filePopup.browsePopup.FileBrowsePopup;
 import RockManager.languages.LangRes;
 import RockManager.util.UtilCommon;
@@ -447,11 +448,14 @@ public class FileListContextMenuHandler {
 				browsePopup.setDestinationPath(destinationPath);
 				browsePopup.setDefaultDestinationPath(defaultDestinationPath);
 
+				browsePopup.focusOKButton();
+
 				UiApplication.getUiApplication().invokeLater(new Runnable() {
 
 					public void run() {
 
 						String targetPath = browsePopup.show();
+
 						if (targetPath == null) {
 							// 选择了"取消"
 							return;
@@ -476,11 +480,23 @@ public class FileListContextMenuHandler {
 	}
 
 
-	private static void addCompressMenuItem(ContextMenu contextMenu, FileListField fileList, int ordinal, int priority) {
+	private static void addCompressMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
+			int priority) {
 
 		MenuItem compress = new MenuItem(LangRes.getString(LangRes.MENU_ADD_TO_ARCHIVE), ordinal, priority) {
 
 			public void run() {
+
+				FileItem itemToCompress = fileList.getThisItem();
+				final CreateArchivePopup createArchivePopup = new CreateArchivePopup(itemToCompress, fileList);
+
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+					public void run() {
+
+						createArchivePopup.show();
+					}
+				});
 
 			}
 		};

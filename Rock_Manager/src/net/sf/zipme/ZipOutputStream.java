@@ -209,8 +209,9 @@ public class ZipOutputStream extends DeflaterOutputStream implements ZipConstant
 			if (entry.getCrc() < 0)
 				throw new ZipException("Method STORED, but crc not set");
 		} else if (method == DEFLATED) {
-			if (entry.getCompressedSize() < 0 || entry.getSize() < 0 || entry.getCrc() < 0)
-				flags |= 8;
+//			将flags的第12位(11位)保持为0，以表示使用本地编码(GBK)。若使用UTF-8作文件名编码，要将那位置为1
+//			if (entry.getCompressedSize() < 0 || entry.getSize() < 0 || entry.getCrc() < 0)
+//				flags |= 8;
 		}
 
 		if (curEntry != null)

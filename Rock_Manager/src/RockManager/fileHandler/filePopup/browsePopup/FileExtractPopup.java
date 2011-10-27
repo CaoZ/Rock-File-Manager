@@ -11,6 +11,9 @@ import RockManager.ui.progressPopup.FileExtractProgressPopup;
 import RockManager.util.UtilCommon;
 
 
+/**
+ * 解压文件弹出窗口。
+ */
 public class FileExtractPopup extends FileBrowsePopup {
 
 	private FileItem[] itemsToExtract;
@@ -26,6 +29,8 @@ public class FileExtractPopup extends FileBrowsePopup {
 		archiveList = fileList;
 		setDestinationPath(getPreferedDestinationPath());
 		setDefaultDestinationPath(fileList.getParentPath());
+
+		focusOKButton();
 
 	}
 
@@ -56,15 +61,16 @@ public class FileExtractPopup extends FileBrowsePopup {
 
 		close();
 
+		ArchiveFile archiveFile = archiveList.getArchiveFile();
+		String targetURL = UtilCommon.toURLForm(getInputedText());
+
+		final FileExtractProgressPopup progressPopup = new FileExtractProgressPopup(itemsToExtract, archiveFile,
+				targetURL);
+
 		UiApplication.getUiApplication().invokeLater(new Runnable() {
 
 			public void run() {
 
-				ArchiveFile archiveFile = archiveList.getArchiveFile();
-				String targetURL = UtilCommon.toURLForm(getInputedText());
-
-				FileExtractProgressPopup progressPopup = new FileExtractProgressPopup(itemsToExtract, archiveFile,
-						targetURL);
 				UiApplication.getUiApplication().pushScreen(progressPopup);
 
 			}

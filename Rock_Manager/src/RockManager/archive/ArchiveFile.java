@@ -12,9 +12,10 @@ import net.sf.zipme.UnzipCallback;
 import net.sf.zipme.ZipArchive;
 import net.sf.zipme.ZipEntry;
 import net.sf.zipme.ZipInputStream;
-import RockManager.archive.indicator.ExtractIndicator;
+import RockManager.archive.indicator.ArchiveIndicator;
 import RockManager.fileHandler.FileHandler;
 import RockManager.ui.progressPopup.ProgressPopup;
+import RockManager.util.IOUtil;
 import RockManager.util.UtilCommon;
 import de.innosystec.unrar.Archive;
 import de.innosystec.unrar.UnrarCallback;
@@ -335,7 +336,8 @@ public class ArchiveFile {
 
 			} catch (Exception e) {
 			} finally {
-				Util.closeConnection(os, thisFileConnection);
+				IOUtil.closeStream(os);
+				IOUtil.closeConnection(thisFileConnection);
 			}
 
 		}
@@ -378,7 +380,7 @@ public class ArchiveFile {
 	 * @param targetURL
 	 * @throws Exception
 	 */
-	public void extractEntry(ArchiveEntry entry, String targetURL, ExtractIndicator indicator) throws Exception {
+	public void extractEntry(ArchiveEntry entry, String targetURL, ArchiveIndicator indicator) throws Exception {
 
 		String entryName = UtilCommon.getFullFileName(entry.getName());
 
@@ -439,7 +441,7 @@ public class ArchiveFile {
 	 * @param targetURL
 	 * @param indicator
 	 */
-	private void extractZipEntry(ZipEntry entry, String targetURL, ExtractIndicator indicator) {
+	private void extractZipEntry(ZipEntry entry, String targetURL, ArchiveIndicator indicator) {
 
 		FileConnection targetConn = null;
 		OutputStream os = null;
@@ -461,7 +463,8 @@ public class ArchiveFile {
 
 		} catch (Exception e) {
 		} finally {
-			Util.closeConnection(os, targetConn);
+			IOUtil.closeStream(os);
+			IOUtil.closeConnection(targetConn);
 		}
 
 	}
@@ -474,7 +477,7 @@ public class ArchiveFile {
 	 * @param targetURL
 	 * @param indicator
 	 */
-	private void extractRarEntry(FileHeader entry, String targetURL, ExtractIndicator indicator) {
+	private void extractRarEntry(FileHeader entry, String targetURL, ArchiveIndicator indicator) {
 
 		FileConnection targetConn = null;
 		OutputStream os = null;
@@ -489,7 +492,8 @@ public class ArchiveFile {
 
 		} catch (Exception e) {
 		} finally {
-			Util.closeConnection(os, targetConn);
+			IOUtil.closeStream(os);
+			IOUtil.closeConnection(targetConn);
 		}
 
 	}

@@ -30,8 +30,10 @@ public class FolderCreatePopup extends FileOperationPopup {
 
 		boolean createSucceed = create(folderName);
 		if (createSucceed) {
+			// 创建成功，关闭对话框。
 			close();
 		} else {
+			// 创建失败，使输入框重新获得焦点。
 			focusInputField();
 		}
 

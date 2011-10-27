@@ -17,6 +17,9 @@ import RockManager.util.MarginPaddingUtil;
 import RockManager.util.UtilCommon;
 
 
+/**
+ * 文件路径输入选择弹出窗口。 包含一个地址输入框及一个Browse按钮，按按钮可调出FilePicker。
+ */
 public class FileBrowsePopup extends BaseFilePopup {
 
 	private String defaultDestinationPath;
@@ -99,6 +102,11 @@ public class FileBrowsePopup extends BaseFilePopup {
 	}
 
 
+	/**
+	 * 设置默认路径，呼出FilePicker时的默认地址(若输入框中地址不可用时地址)。
+	 * 
+	 * @param destinationPath
+	 */
 	public void setDefaultDestinationPath(String destinationPath) {
 
 		defaultDestinationPath = destinationPath;
@@ -108,6 +116,11 @@ public class FileBrowsePopup extends BaseFilePopup {
 	}
 
 
+	/**
+	 * 设置输入框地址。
+	 * 
+	 * @param destinationPath
+	 */
 	public void setDestinationPath(String destinationPath) {
 
 		setInputText(destinationPath);
@@ -129,6 +142,10 @@ public class FileBrowsePopup extends BaseFilePopup {
 			public void fieldChanged(Field field, int context) {
 
 				String initialURL = UtilCommon.toURLForm(getInputedText());
+				if (UtilCommon.isFolder(initialURL) == false) {
+					// 可能是个文件，转到上级。
+					initialURL = UtilCommon.getParentDir(initialURL);
+				}
 				if (FileHandler.isFolderExists(initialURL) == false) {
 					initialURL = defaultDestinationPath;
 				}
@@ -164,6 +181,11 @@ public class FileBrowsePopup extends BaseFilePopup {
 	}
 
 
+	/**
+	 * 显示此popup。
+	 * 
+	 * @return 输入框中地址，若取消了选择则返回null.
+	 */
 	public String show() {
 
 		UiApplication.getUiApplication().pushModalScreen(this);

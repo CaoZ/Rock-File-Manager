@@ -4,7 +4,7 @@ package RockManager.archive.indicator;
 import RockManager.ui.progressPopup.ProgressPopup;
 
 
-public class ExtractIndicator {
+public class ArchiveIndicator {
 
 	/**
 	 * 所有压缩文件压缩后的总大小。
@@ -22,7 +22,6 @@ public class ExtractIndicator {
 	public void setTotalSize(long size) {
 
 		totalSize = size;
-
 	}
 
 
@@ -51,9 +50,13 @@ public class ExtractIndicator {
 	}
 
 
+	/**
+	 * 根据totalRead和totalSize计算出进度并显示。
+	 */
 	private void setRate() {
 
 		if (totalSize == 0) {
+			// 总大小是0，设置进度为100%。
 			display.setProgressRate(100);
 		} else {
 			display.setProgressRate((int) (totalRead * 100 / totalSize));
@@ -70,7 +73,18 @@ public class ExtractIndicator {
 	public void setProgressName(String name) {
 
 		display.setProgressName(name);
+	}
 
+
+	/**
+	 * 设置要显示的进度。
+	 * 
+	 * @param rate
+	 *            0-100.
+	 */
+	public void setProgressRate(int rate) {
+
+		display.setProgressRate(rate);
 	}
 
 

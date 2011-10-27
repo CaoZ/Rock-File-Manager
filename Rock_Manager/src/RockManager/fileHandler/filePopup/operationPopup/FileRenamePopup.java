@@ -47,8 +47,10 @@ public class FileRenamePopup extends FileOperationPopup {
 
 		boolean renameSucceed = rename(originURL, newFileName);
 		if (renameSucceed) {
+			// 重命名成功，关闭对话框。
 			close();
 		} else {
+			// 重命名失败，使输入框重新获得焦点。
 			focusInputField();
 		}
 	}

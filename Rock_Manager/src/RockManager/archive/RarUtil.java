@@ -5,9 +5,10 @@ import java.io.OutputStream;
 import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
-import RockManager.archive.indicator.ExtractIndicator;
+import RockManager.archive.indicator.ArchiveIndicator;
 import RockManager.fileHandler.FileHandler;
 import RockManager.ui.progressPopup.ProgressPopup;
+import RockManager.util.IOUtil;
 import RockManager.util.UtilCommon;
 import de.innosystec.unrar.Archive;
 import de.innosystec.unrar.rarfile.FileHeader;
@@ -24,7 +25,7 @@ public class RarUtil {
 		long totalPackedSize = getPackedSize(headers);
 		long totalRead = 0;
 
-		ExtractIndicator extractIndicator = new ExtractIndicator();
+		ArchiveIndicator extractIndicator = new ArchiveIndicator();
 		extractIndicator.setDisplay(indicator);
 		extractIndicator.setTotalSize(totalPackedSize);
 
@@ -74,7 +75,8 @@ public class RarUtil {
 				totalRead += thisHeader.getPackSize();
 				extractIndicator.setTotalRead(totalRead);
 
-				Util.closeConnection(os, fconn);
+				IOUtil.closeStream(os);
+				IOUtil.closeConnection(fconn);
 
 			}
 
