@@ -1,9 +1,22 @@
 
 package RockManager.fileClipboard;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.Vector;
+import javax.microedition.io.Connector;
+import javax.microedition.io.file.FileConnection;
 import net.rim.device.api.ui.UiApplication;
+import RockManager.fileHandler.FileHandler;
 import RockManager.fileList.FileItem;
+import RockManager.fileList.FileListField;
+import RockManager.languages.LangRes;
+import RockManager.ui.progressPopup.ProgressIndicator;
+import RockManager.ui.progressPopup.ProgressPopup;
+import RockManager.util.IOUtil;
+import RockManager.util.UtilCommon;
 
 
 public class FileClipboard {
@@ -15,6 +28,10 @@ public class FileClipboard {
 	private static int METHOD_NOW;
 
 	private static FileItem ORIGIN_FILE;
+
+	private static final int COPY_BUFFERSIZE_MIN = 10240;
+
+	private static final int COPY_BUFFERSIZE_MAX = 102400;
 
 	/**
 	 * 所有indicator的一个列表。
@@ -142,6 +159,340 @@ public class FileClipboard {
 
 		FileClipboardPopup popup = new FileClipboardPopup();
 		UiApplication.getUiApplication().pushScreen(popup);
+
+	}
+
+
+	/**
+	 * 弹出进度指示窗口，并复制/移动文件。
+	 * 
+	 * @param fileListField
+	 */
+	public static void pasteWithUI(final FileListField fileListField) {
+
+		final ProgressPopup popup = new ProgressPopup();
+
+		if (METHOD_NOW == METHOD_CUT) {
+			// 移动文件...
+			popup.setTitle(LangRes.getString(LangRes.TITLE_MOVING_FILES));
+		} else {
+			// 复制文件...
+			popup.setTitle(LangRes.getString(LangRes.TITLE_COPYING_FILES));
+		}
+
+		final ProgressIndicator progressIndicator = new ProgressIndicator();
+		progressIndicator.setDisplay(popup);
+
+		UiApplication.getUiApplication().pushScreen(popup);
+
+		final Thread pasteThread = new Thread() {
+
+			public void run() {
+
+				try {
+					FileClipboard.paste(fileListField, progressIndicator);
+					progressIndicator.setProgressRate(100); // 100%
+					FileClipboard.pasted();
+				} catch (Exception e) {
+					String message = "Failed to copy/move: " + UtilCommon.getErrorMessage(e);
+					UtilCommon.alert(message, true);
+				}
+
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+					public void run() {
+
+						popup.close();
+					}
+				});
+
+			}
+		};
+
+		UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+			public void run() {
+
+				pasteThread.start();
+			};
+		});
+
+	}
+
+
+	/**
+	 * 将剪贴板上的文件复制/移动到目标文件夹。
+	 * 
+	 * @param targetListField
+	 * @param progressIndicator
+	 * @throws Exception
+	 */
+	public static void paste(FileListField targetListField, ProgressIndicator progressIndicator) throws Exception {
+
+		if (ORIGIN_FILE == null) {
+			clear();
+			return;
+		}
+
+		String targetFolderURL = targetListField.getFolderPathURL(); // 要粘贴的目标位置，父文件夹。
+		String originURL = ORIGIN_FILE.getURL(); // 要粘贴的文件的地址。
+
+		if (targetFolderURL.startsWith(originURL)) {
+			// 不能复制文件夹到子文件夹。
+			throw new Exception("The destination folder is a subfolder of the source folder.");
+		}
+
+		String originFolderURL = UtilCommon.getParentDir(originURL); // 要粘贴的文件的父文件夹。
+
+		String targetFileName = null;
+
+		if (originFolderURL.equals(targetFolderURL)) {
+			// 在同一文件夹内复制、剪贴。
+
+			if (METHOD_NOW == METHOD_CUT) {
+
+				// 使这项获得焦点。
+				targetFileName = ORIGIN_FILE.getDisplayName();
+				targetListField.setItemToFocus(targetFileName, ORIGIN_FILE.getType());
+
+				synchronized (UiApplication.getEventLock()) {
+					targetListField.refresh();
+				}
+
+				return;
+
+			} else if (METHOD_NOW == METHOD_COPY) {
+
+				// 在同一文件夹内复制，获取适当的文件名。
+				targetFileName = getCopyName(ORIGIN_FILE, originFolderURL);
+				String nameToFocus = targetFileName;
+				if (ORIGIN_FILE.isDir()) {
+					// 需去除最后的文件夹分割符'/'.
+					nameToFocus = UtilCommon.getName(nameToFocus, false);
+				}
+				targetListField.setItemToFocus(nameToFocus, ORIGIN_FILE.getType());
+
+			}
+
+		}
+
+		FileConnection originFileConn = null;
+
+		try {
+
+			originFileConn = (FileConnection) Connector.open(ORIGIN_FILE.getURL());
+
+			if (originFileConn.exists() == false) {
+				clear();
+				throw new Exception("Item on the clipboard doesn't exist anymore.");
+			}
+
+			if (targetFileName == null) {
+				targetFileName = originFileConn.getName();
+			}
+
+			// 复制出的新文件/文件夹路径。
+			String targetURL = targetFolderURL + UtilCommon.toURLForm(targetFileName);
+
+			if (originFileConn.isDirectory()) {
+
+				// 是文件夹。
+				long totalSize = originFileConn.directorySize(true);
+				// 计算适当的buffer大小。
+				int bufferSize = IOUtil.getBufferSize(totalSize, COPY_BUFFERSIZE_MIN, COPY_BUFFERSIZE_MAX);
+
+				progressIndicator.setTotalSize(totalSize);
+
+				copyFolder(originFileConn, targetURL, bufferSize, progressIndicator);
+
+			} else {
+
+				// 是文件。
+				long totalSize = originFileConn.fileSize();
+				int bufferSize = IOUtil.getBufferSize(totalSize, COPY_BUFFERSIZE_MIN, COPY_BUFFERSIZE_MAX);
+
+				progressIndicator.setTotalSize(totalSize);
+
+				copyFile(originFileConn, targetURL, bufferSize, progressIndicator);
+
+			}
+
+			if (METHOD_NOW == METHOD_CUT) {
+				// 若是剪切，删除原文件。
+				try {
+					originFileConn.delete();
+				} catch (Exception e) {
+					throw new Exception("Failed to delete origin file \"" + originFileConn.getName() + "\".");
+				}
+			}
+
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			IOUtil.closeConnection(originFileConn);
+		}
+
+	}
+
+
+	/**
+	 * 复制文件。
+	 * 
+	 * @param originFileConn
+	 *            源文件。
+	 * @param targetURL
+	 *            目标地址。
+	 * @param bufferSize
+	 *            BufferSize.
+	 * @param progressIndicator
+	 *            进度指示。
+	 * @throws Exception
+	 */
+	private static void copyFile(FileConnection originFileConn, String targetURL, int bufferSize,
+			ProgressIndicator progressIndicator) throws Exception {
+
+		progressIndicator.setProgressName(originFileConn.getName());
+
+		try {
+			FileHandler.createTargetFile(targetURL);
+		} catch (Exception e) {
+			throw e;
+		}
+
+		InputStream is = null;
+		FileConnection targetConn = null;
+		OutputStream os = null;
+
+		try {
+
+			is = originFileConn.openInputStream();
+
+			targetConn = (FileConnection) Connector.open(targetURL);
+			os = targetConn.openOutputStream();
+
+			byte[] buffer = new byte[bufferSize];
+			int readCount = -1;
+
+			while ((readCount = is.read(buffer)) > 0) {
+				os.write(buffer, 0, readCount);
+				progressIndicator.increaseRead(readCount);
+			}
+
+		} catch (Exception e) {
+			throw new Exception("Can't copy/move file " + originFileConn.getName());
+		} finally {
+			IOUtil.closeStream(is);
+			IOUtil.closeStream(os);
+			IOUtil.closeConnection(targetConn);
+		}
+
+	}
+
+
+	/**
+	 * 复制目录。
+	 * 
+	 * @param originFolderConn
+	 *            源文件。
+	 * @param targetURL
+	 *            目标地址。
+	 * @param bufferSize
+	 *            BufferSize.
+	 * @param progressIndicator
+	 *            进度指示。
+	 * @throws Exception
+	 */
+	private static void copyFolder(FileConnection originFolderConn, String targetURL, int bufferSize,
+			ProgressIndicator progressIndicator) throws Exception {
+
+		progressIndicator.setProgressName(originFolderConn.getName());
+
+		try {
+			FileHandler.createTargetFolder(targetURL);
+		} catch (Exception e) {
+			throw e;
+		}
+
+		String originFolderURL = "file://"
+				+ UtilCommon.toURLForm(originFolderConn.getPath() + originFolderConn.getName());
+
+		try {
+
+			Enumeration allFiles = originFolderConn.list("*", true);
+
+			while (allFiles.hasMoreElements()) {
+
+				String thisFileName = (String) allFiles.nextElement();
+				String thisFileNameURL = UtilCommon.toURLForm(thisFileName);
+				String thisOriginFileURL = originFolderURL + thisFileNameURL;
+				String thisTargetFileURL = targetURL + thisFileNameURL;
+
+				FileConnection thisOriginFileConn = (FileConnection) Connector.open(thisOriginFileURL);
+
+				if (thisOriginFileConn.isDirectory()) {
+					copyFolder(thisOriginFileConn, thisTargetFileURL, bufferSize, progressIndicator);
+				} else {
+					copyFile(thisOriginFileConn, thisTargetFileURL, bufferSize, progressIndicator);
+				}
+
+				if (METHOD_NOW == METHOD_CUT) {
+					try {
+						thisOriginFileConn.delete();
+					} catch (Exception e) {
+						throw new Exception("Failed to delete origin file \"" + thisOriginFileConn.getName() + "\".");
+					}
+				}
+
+				IOUtil.closeConnection(thisOriginFileConn);
+
+			}
+
+		} catch (IOException e) {
+			throw e;
+		}
+
+	}
+
+
+	/**
+	 * 获得正确副本名称。
+	 * 
+	 * @param originFile
+	 * @param originFolderURL
+	 * @return
+	 */
+	private static String getCopyName(FileItem originFile, String originFolderURL) {
+
+		// hello.mp3
+		String copySuffix = LangRes.getString(LangRes.FILE_COPY_SUFFIX); // " - 副本"
+		String originFileName = originFile.getName(false); // hello
+		String originFileSuffix = originFile.getOriginSuffix(); // mp3
+		boolean haveSuffix = originFile.isFile() && originFileSuffix.length() > 0; // true
+		String newFileSuffix = "";
+
+		if (originFile.isDir()) {
+			newFileSuffix = "/";
+		} else {
+			newFileSuffix = haveSuffix ? ('.' + originFileSuffix) : "";
+		}
+
+		String parentURL = UtilCommon.getParentDir(originFile.getRawURL());
+		String newFileName;
+		String targetURL;
+
+		for (int i = 1;; i++) {
+
+			if (i == 1) {
+				newFileName = originFileName + copySuffix + newFileSuffix;
+			} else {
+				newFileName = originFileName + copySuffix + " (" + i + ")" + newFileSuffix;
+			}
+			targetURL = parentURL + UtilCommon.toURLForm(newFileName);
+			if (IOUtil.isExists(targetURL) == false) {
+				return newFileName;
+			}
+
+		}
 
 	}
 

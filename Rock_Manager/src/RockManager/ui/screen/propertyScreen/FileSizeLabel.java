@@ -1,10 +1,9 @@
 
 package RockManager.ui.screen.propertyScreen;
 
-import javax.microedition.io.Connector;
-import javax.microedition.io.file.FileConnection;
 import RockManager.fileHandler.FileSizeString;
 import RockManager.fileList.FileItem;
+import RockManager.util.IOUtil;
 import net.rim.device.api.ui.UiApplication;
 
 
@@ -66,22 +65,8 @@ public class FileSizeLabel extends ValueLabel {
 
 			public void run() {
 
-				FileConnection fconn = null;
-				try {
-					fconn = (FileConnection) Connector.open(folderURL);
-					long folderSize = fconn.directorySize(true);
-					setFileSize(folderSize);
-				} catch (Exception e) {
-					setFileSize(-1);
-				} finally {
-					if (fconn != null) {
-						try {
-							fconn.close();
-						} catch (Exception e) {
-						}
-					}
-				}
-
+				long folderSize = IOUtil.getFileSize(folderURL);
+				setFileSize(folderSize);
 			}
 
 		};

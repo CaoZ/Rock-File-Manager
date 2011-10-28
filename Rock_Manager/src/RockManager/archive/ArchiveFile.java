@@ -12,8 +12,8 @@ import net.sf.zipme.UnzipCallback;
 import net.sf.zipme.ZipArchive;
 import net.sf.zipme.ZipEntry;
 import net.sf.zipme.ZipInputStream;
-import RockManager.archive.indicator.ArchiveIndicator;
 import RockManager.fileHandler.FileHandler;
+import RockManager.ui.progressPopup.ProgressIndicator;
 import RockManager.ui.progressPopup.ProgressPopup;
 import RockManager.util.IOUtil;
 import RockManager.util.UtilCommon;
@@ -380,7 +380,7 @@ public class ArchiveFile {
 	 * @param targetURL
 	 * @throws Exception
 	 */
-	public void extractEntry(ArchiveEntry entry, String targetURL, ArchiveIndicator indicator) throws Exception {
+	public void extractEntry(ArchiveEntry entry, String targetURL, ProgressIndicator indicator) throws Exception {
 
 		String entryName = UtilCommon.getFullFileName(entry.getName());
 
@@ -441,7 +441,7 @@ public class ArchiveFile {
 	 * @param targetURL
 	 * @param indicator
 	 */
-	private void extractZipEntry(ZipEntry entry, String targetURL, ArchiveIndicator indicator) {
+	private void extractZipEntry(ZipEntry entry, String targetURL, ProgressIndicator indicator) {
 
 		FileConnection targetConn = null;
 		OutputStream os = null;
@@ -477,7 +477,7 @@ public class ArchiveFile {
 	 * @param targetURL
 	 * @param indicator
 	 */
-	private void extractRarEntry(FileHeader entry, String targetURL, ArchiveIndicator indicator) {
+	private void extractRarEntry(FileHeader entry, String targetURL, ProgressIndicator indicator) {
 
 		FileConnection targetConn = null;
 		OutputStream os = null;

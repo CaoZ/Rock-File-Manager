@@ -27,7 +27,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import RockManager.archive.indicator.ArchiveIndicator;
+import RockManager.ui.progressPopup.ProgressIndicator;
 
 /**
  * DOCUMENT ME
@@ -76,7 +76,7 @@ public class ComprDataIO {
 
 	private int decryption;
 	
-	private ArchiveIndicator extractIndicator;
+	private ProgressIndicator extractIndicator;
 	
 
 	public ComprDataIO(Archive arc) {
@@ -338,7 +338,7 @@ public class ComprDataIO {
 		return subHead;
 	}
 
-	public void setExtractIndicator(ArchiveIndicator indicator) {
+	public void setExtractIndicator(ProgressIndicator indicator) {
 		extractIndicator = indicator;
 	}
 

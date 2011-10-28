@@ -964,7 +964,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 	void pasteFromClipboard() {
 
-		FileClipboard.pasted();
+		FileClipboard.pasteWithUI(this);
 
 	}
 

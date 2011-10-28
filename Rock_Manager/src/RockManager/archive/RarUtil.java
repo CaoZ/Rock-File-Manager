@@ -5,8 +5,8 @@ import java.io.OutputStream;
 import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
-import RockManager.archive.indicator.ArchiveIndicator;
 import RockManager.fileHandler.FileHandler;
+import RockManager.ui.progressPopup.ProgressIndicator;
 import RockManager.ui.progressPopup.ProgressPopup;
 import RockManager.util.IOUtil;
 import RockManager.util.UtilCommon;
@@ -25,7 +25,7 @@ public class RarUtil {
 		long totalPackedSize = getPackedSize(headers);
 		long totalRead = 0;
 
-		ArchiveIndicator extractIndicator = new ArchiveIndicator();
+		ProgressIndicator extractIndicator = new ProgressIndicator();
 		extractIndicator.setDisplay(indicator);
 		extractIndicator.setTotalSize(totalPackedSize);
 

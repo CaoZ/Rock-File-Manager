@@ -1,10 +1,9 @@
 
-package RockManager.archive.indicator;
-
-import RockManager.ui.progressPopup.ProgressPopup;
+package RockManager.ui.progressPopup;
 
 
-public class ArchiveIndicator {
+
+public class ProgressIndicator {
 
 	/**
 	 * 所有压缩文件压缩后的总大小。

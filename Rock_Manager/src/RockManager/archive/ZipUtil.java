@@ -9,8 +9,8 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 import net.sf.zipme.ZipEntry;
 import net.sf.zipme.ZipOutputStream;
-import RockManager.archive.indicator.ArchiveIndicator;
 import RockManager.fileHandler.FileHandler;
+import RockManager.ui.progressPopup.ProgressIndicator;
 import RockManager.util.IOUtil;
 import RockManager.util.UtilCommon;
 
@@ -30,7 +30,7 @@ public class ZipUtil {
 	 * @throws Exception
 	 */
 	public static void compress(String originFileURL, String saveURL, int compressMethod,
-			ArchiveIndicator compressIndicator) throws Exception {
+			ProgressIndicator compressIndicator) throws Exception {
 
 		try {
 			FileHandler.createTargetFile(saveURL);
@@ -95,7 +95,7 @@ public class ZipUtil {
 	 * @throws IOException
 	 */
 	private static void compress(FileConnection fconn, ZipOutputStream zos, String baseDir,
-			ArchiveIndicator compressIndicator) throws  Exception {
+			ProgressIndicator compressIndicator) throws  Exception {
 
 		String fileName = fconn.getName();
 
@@ -145,7 +145,7 @@ public class ZipUtil {
 	 * @throws IOException
 	 */
 	private static void compress(String originFileURL, ZipOutputStream zos, String baseDir,
-			ArchiveIndicator compressIndicator) throws Exception {
+			ProgressIndicator compressIndicator) throws Exception {
 
 		FileConnection fconn = null;
 
@@ -176,7 +176,7 @@ public class ZipUtil {
 	 * @throws IOException
 	 */
 	private static void compressFile(FileConnection fconn, ZipOutputStream zos, String name,
-			ArchiveIndicator compressIndicator) throws IOException {
+			ProgressIndicator compressIndicator) throws IOException {
 
 		ZipEntry fileEntry = new ZipEntry(name);
 		zos.putNextEntry(fileEntry);

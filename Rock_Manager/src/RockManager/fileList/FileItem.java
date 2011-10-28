@@ -9,6 +9,7 @@ import net.rim.device.api.ui.component.ListField;
 import RockManager.archive.ArchiveEntry;
 import RockManager.fileHandler.FileSizeString;
 import RockManager.languages.LangRes;
+import RockManager.util.IOUtil;
 import RockManager.util.UtilCommon;
 
 
@@ -478,6 +479,19 @@ public class FileItem {
 
 
 	/**
+	 * 获得文件名。
+	 * 
+	 * @param withSuffix
+	 *            是否要后缀。
+	 * @return
+	 */
+	public String getName(boolean withSuffix) {
+
+		return UtilCommon.getName(getPath(), false);
+	}
+
+
+	/**
 	 * 返回此项的扩展名(若是文件的话)，若是加密的，则返回原始的扩展名。例如：A.jpg.rem将返回jpg。
 	 * 
 	 * @return
@@ -485,6 +499,17 @@ public class FileItem {
 	public String getSuffix() {
 
 		return UtilCommon.getSuffix(getPath());
+	}
+
+
+	/**
+	 * 返回此项的扩展名的原始形式(若是文件的话)，若是加密的，则返回原始的扩展名。例如：A.JPG.rem将返回JPG。
+	 * 
+	 * @return
+	 */
+	public String getOriginSuffix() {
+
+		return UtilCommon.getOriginSuffix(getPath());
 	}
 
 
@@ -565,7 +590,6 @@ public class FileItem {
 	public void setOriginArchiveEntry(ArchiveEntry archiveEntry) {
 
 		originArchiveEntry = archiveEntry;
-
 	}
 
 
@@ -577,7 +601,17 @@ public class FileItem {
 	public ArchiveEntry getOriginArchiveEntry() {
 
 		return originArchiveEntry;
+	}
 
+
+	/**
+	 * 此项是否还存在。
+	 * 
+	 * @return
+	 */
+	public boolean exists() {
+
+		return IOUtil.isExists(getURL());
 	}
 
 }

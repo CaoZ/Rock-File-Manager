@@ -194,7 +194,7 @@ public class FileHandler {
 
 
 	/**
-	 * 文件夹是否存在。
+	 * 文件是否存在且是文件夹。
 	 * 
 	 * @param folderURL
 	 * @return

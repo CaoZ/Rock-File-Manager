@@ -219,7 +219,14 @@ public class FileListContextMenuHandler {
 
 			public void run() {
 
-				fileList.pasteFromClipboard();
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+					public void run() {
+
+						fileList.pasteFromClipboard();
+					}
+				});
+
 			}
 		};
 

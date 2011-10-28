@@ -3,7 +3,6 @@ package RockManager.ui.progressPopup;
 
 import net.rim.device.api.ui.UiApplication;
 import RockManager.archive.ZipUtil;
-import RockManager.archive.indicator.ArchiveIndicator;
 import RockManager.fileList.FileItem;
 import RockManager.fileList.FileListField;
 import RockManager.languages.LangRes;
@@ -48,7 +47,7 @@ public class FileCompressProgressPopup extends ProgressPopup {
 
 	private Thread createCompressThread() {
 
-		final ArchiveIndicator compressIndicator = new ArchiveIndicator();
+		final ProgressIndicator compressIndicator = new ProgressIndicator();
 		compressIndicator.setDisplay(this);
 
 		Thread compressThread = new Thread() {

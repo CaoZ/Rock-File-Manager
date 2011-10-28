@@ -95,15 +95,27 @@ public class UtilCommon {
 	 * 返回扩展名的(小写)，如Tom.mp3返回mp3，Tom(无后缀)返回""
 	 * 
 	 * @param path
-	 * @return 文件名
+	 * @return 扩展名的小写形式。
 	 */
 	public static String getSuffix(String path) {
+
+		return getOriginSuffix(path).toLowerCase();
+	}
+
+
+	/**
+	 * 返回扩展名的 原始形式，如Tom.mP3返回mP3，Tom(无后缀)返回""
+	 * 
+	 * @param path
+	 * @return 扩展名的原始形式，大小写不变。
+	 */
+	public static String getOriginSuffix(String path) {
 
 		int lastPosition = path.lastIndexOf('.');
 		if (lastPosition < 0) {
 			return "";
 		} else {
-			return path.substring(lastPosition + 1).toLowerCase();
+			return path.substring(lastPosition + 1);
 		}
 	}
 
@@ -122,8 +134,10 @@ public class UtilCommon {
 
 
 	/**
-	 * 返回文件名，适用于没使用URI(URL)编码的情况。如Tom.mp3返回Tom，Tom(无后缀)返回Tom.
-	 * 若是文件夹时返回文件夹名（最后两个'/'之间的内容）。
+	 * 返回文件名，适用于没使用URI(URL)编码的情况。<br>
+	 * 如Tom.mp3返回Tom，Tom(无后缀)返回Tom， Video/Tom.avi returns Tom.avi。
+	 * 若是文件夹时返回文件夹名（最后两个'/'之间的内容）。<br>
+	 * 如Video/将返回Video。Video/Funny/返回Funny。
 	 * 
 	 * @param path
 	 * @param withExtension

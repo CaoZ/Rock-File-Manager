@@ -4,7 +4,6 @@ package RockManager.ui.progressPopup;
 import net.rim.device.api.ui.UiApplication;
 import RockManager.archive.ArchiveEntry;
 import RockManager.archive.ArchiveFile;
-import RockManager.archive.indicator.ArchiveIndicator;
 import RockManager.fileList.FileItem;
 import RockManager.languages.LangRes;
 import RockManager.util.UtilCommon;
@@ -52,7 +51,7 @@ public class FileExtractProgressPopup extends ProgressPopup {
 	 */
 	private Thread createExtractThread() {
 
-		final ArchiveIndicator indicator = new ArchiveIndicator();
+		final ProgressIndicator indicator = new ProgressIndicator();
 		indicator.setDisplay(this);
 
 		long totalPackedSize = computePackedSize(itemsToExtract);
