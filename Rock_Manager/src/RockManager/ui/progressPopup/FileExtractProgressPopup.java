@@ -6,6 +6,7 @@ import RockManager.archive.ArchiveEntry;
 import RockManager.archive.ArchiveFile;
 import RockManager.fileList.FileItem;
 import RockManager.languages.LangRes;
+import RockManager.util.IOUtil;
 import RockManager.util.UtilCommon;
 
 
@@ -54,7 +55,7 @@ public class FileExtractProgressPopup extends ProgressPopup {
 		final ProgressIndicator indicator = new ProgressIndicator();
 		indicator.setDisplay(this);
 
-		long totalPackedSize = computePackedSize(itemsToExtract);
+		final long totalPackedSize = computePackedSize(itemsToExtract);
 		indicator.setTotalSize(totalPackedSize);
 
 		Thread extractThread = new Thread() {
@@ -62,6 +63,13 @@ public class FileExtractProgressPopup extends ProgressPopup {
 			public void run() {
 
 				long totalRead = 0;
+				byte[] buffer = null;
+
+				if (archiveFile.isZipArchive()) {
+					// 只有Zip解压需要手动设置buffer.
+					int bufferSize = IOUtil.getBufferSize(totalPackedSize);
+					buffer = new byte[bufferSize];
+				}
 
 				for (int i = 0; i < itemsToExtract.length; i++) {
 
@@ -69,7 +77,7 @@ public class FileExtractProgressPopup extends ProgressPopup {
 					ArchiveEntry thisEntry = thisItem.getOriginArchiveEntry();
 
 					try {
-						archiveFile.extractEntry(thisEntry, targetURL, indicator);
+						archiveFile.extractEntry(thisEntry, targetURL, buffer, indicator);
 					} catch (Exception e) {
 						String message = "Failed to extract: " + UtilCommon.getErrorMessage(e);
 						UtilCommon.alert(message, true);

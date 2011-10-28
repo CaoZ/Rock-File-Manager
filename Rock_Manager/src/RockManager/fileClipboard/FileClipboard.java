@@ -29,10 +29,6 @@ public class FileClipboard {
 
 	private static FileItem ORIGIN_FILE;
 
-	private static final int COPY_BUFFERSIZE_MIN = 10240;
-
-	private static final int COPY_BUFFERSIZE_MAX = 102400;
-
 	/**
 	 * 所有indicator的一个列表。
 	 */
@@ -294,26 +290,19 @@ public class FileClipboard {
 			// 复制出的新文件/文件夹路径。
 			String targetURL = targetFolderURL + UtilCommon.toURLForm(targetFileName);
 
+			long totalSize = IOUtil.getFileSize(originFileConn);
+			progressIndicator.setTotalSize(totalSize);
+
+			int bufferSize = IOUtil.getBufferSize(totalSize);
+			byte[] buffer = new byte[bufferSize];
+
 			if (originFileConn.isDirectory()) {
-
 				// 是文件夹。
-				long totalSize = originFileConn.directorySize(true);
-				// 计算适当的buffer大小。
-				int bufferSize = IOUtil.getBufferSize(totalSize, COPY_BUFFERSIZE_MIN, COPY_BUFFERSIZE_MAX);
-
-				progressIndicator.setTotalSize(totalSize);
-
-				copyFolder(originFileConn, targetURL, bufferSize, progressIndicator);
+				copyFolder(originFileConn, targetURL, buffer, progressIndicator);
 
 			} else {
-
 				// 是文件。
-				long totalSize = originFileConn.fileSize();
-				int bufferSize = IOUtil.getBufferSize(totalSize, COPY_BUFFERSIZE_MIN, COPY_BUFFERSIZE_MAX);
-
-				progressIndicator.setTotalSize(totalSize);
-
-				copyFile(originFileConn, targetURL, bufferSize, progressIndicator);
+				copyFile(originFileConn, targetURL, buffer, progressIndicator);
 
 			}
 
@@ -348,7 +337,7 @@ public class FileClipboard {
 	 *            进度指示。
 	 * @throws Exception
 	 */
-	private static void copyFile(FileConnection originFileConn, String targetURL, int bufferSize,
+	private static void copyFile(FileConnection originFileConn, String targetURL, byte[] buffer,
 			ProgressIndicator progressIndicator) throws Exception {
 
 		progressIndicator.setProgressName(originFileConn.getName());
@@ -370,7 +359,6 @@ public class FileClipboard {
 			targetConn = (FileConnection) Connector.open(targetURL);
 			os = targetConn.openOutputStream();
 
-			byte[] buffer = new byte[bufferSize];
 			int readCount = -1;
 
 			while ((readCount = is.read(buffer)) > 0) {
@@ -402,7 +390,7 @@ public class FileClipboard {
 	 *            进度指示。
 	 * @throws Exception
 	 */
-	private static void copyFolder(FileConnection originFolderConn, String targetURL, int bufferSize,
+	private static void copyFolder(FileConnection originFolderConn, String targetURL, byte[] buffer,
 			ProgressIndicator progressIndicator) throws Exception {
 
 		progressIndicator.setProgressName(originFolderConn.getName());
@@ -430,9 +418,9 @@ public class FileClipboard {
 				FileConnection thisOriginFileConn = (FileConnection) Connector.open(thisOriginFileURL);
 
 				if (thisOriginFileConn.isDirectory()) {
-					copyFolder(thisOriginFileConn, thisTargetFileURL, bufferSize, progressIndicator);
+					copyFolder(thisOriginFileConn, thisTargetFileURL, buffer, progressIndicator);
 				} else {
-					copyFile(thisOriginFileConn, thisTargetFileURL, bufferSize, progressIndicator);
+					copyFile(thisOriginFileConn, thisTargetFileURL, buffer, progressIndicator);
 				}
 
 				if (METHOD_NOW == METHOD_CUT) {

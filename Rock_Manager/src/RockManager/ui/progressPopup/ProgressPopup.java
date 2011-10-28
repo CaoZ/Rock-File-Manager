@@ -1,14 +1,17 @@
 
 package RockManager.ui.progressPopup;
 
+import net.rim.device.api.ui.Field;
+import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.component.ButtonField;
 import RockManager.languages.LangRes;
 import RockManager.ui.statusBar.StatusBar;
+import RockManager.util.UtilCommon;
 import RockManager.util.ui.BasePopupScreen;
 
 
-public class ProgressPopup extends BasePopupScreen {
+public class ProgressPopup extends BasePopupScreen implements FieldChangeListener {
 
 	/**
 	 * 正在处理的文件，如"happy.cod".
@@ -41,9 +44,11 @@ public class ProgressPopup extends BasePopupScreen {
 		add(progressBar);
 
 		// add cancel button
-		cancelButton = new ButtonField(LangRes.getString(LangRes.BUTTON_LABEL_CANCEL), FIELD_HCENTER);
+		cancelButton = new ButtonField(LangRes.getString(LangRes.BUTTON_LABEL_CANCEL), FIELD_HCENTER
+				| ButtonField.CONSUME_CLICK);
 		cancelButton.setFont(getFont().derive(Font.PLAIN, 20));
 		cancelButton.setMargin(20, 0, 0, 0);
+		cancelButton.setChangeListener(this);
 		add(cancelButton);
 
 	}
@@ -70,6 +75,23 @@ public class ProgressPopup extends BasePopupScreen {
 
 		progressLabel.setRate(rate);
 		progressBar.setProgress(rate);
+	}
+
+
+	public void fieldChanged(Field field, int context) {
+
+		if (field == cancelButton) {
+			cancelOperation();
+		}
+	}
+
+
+	/**
+	 * 单击了取消按钮。
+	 */
+	public void cancelOperation() {
+
+		UtilCommon.trace("Cancel Request!");
 	}
 
 }

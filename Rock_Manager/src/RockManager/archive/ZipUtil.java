@@ -52,19 +52,13 @@ public class ZipUtil {
 
 			originFileConn = (FileConnection) Connector.open(originFileURL);
 
-			if (compressIndicator != null) {
+			long totalSize = IOUtil.getFileSize(originFileConn);
+			compressIndicator.setTotalSize(totalSize);
 
-				long totalSize = 0;
-				if (originFileConn.isDirectory()) {
-					totalSize = originFileConn.directorySize(true);
-				} else {
-					totalSize = originFileConn.fileSize();
-				}
-				compressIndicator.setTotalSize(totalSize);
+			int bufferSize = IOUtil.getBufferSize(totalSize);
+			byte[] buffer = new byte[bufferSize];
 
-			}
-
-			compress(originFileConn, zos, "", compressIndicator);
+			compress(originFileConn, zos, "", buffer, compressIndicator);
 
 			// 压缩成功完成。
 			if (compressIndicator != null) {
@@ -91,11 +85,12 @@ public class ZipUtil {
 	 *            ZipOutputStream.
 	 * @param baseDir
 	 *            相对的父级路径。
+	 * @param buffer
 	 * @param compressIndicator
 	 * @throws IOException
 	 */
-	private static void compress(FileConnection fconn, ZipOutputStream zos, String baseDir,
-			ProgressIndicator compressIndicator) throws  Exception {
+	private static void compress(FileConnection fconn, ZipOutputStream zos, String baseDir, byte[] buffer,
+			ProgressIndicator compressIndicator) throws Exception {
 
 		String fileName = fconn.getName();
 
@@ -119,14 +114,14 @@ public class ZipUtil {
 
 				String thisFileName = (String) allFiles.nextElement();
 				String thisFileURL = folderPathURL + UtilCommon.toURLForm(thisFileName);
-				compress(thisFileURL, zos, newBaseDir, compressIndicator);
+				compress(thisFileURL, zos, newBaseDir, buffer, compressIndicator);
 
 			}
 
 		} else {
 
 			// 是文件，压缩此文件。
-			compressFile(fconn, zos, baseDir + fileName, compressIndicator);
+			compressFile(fconn, zos, baseDir + fileName, buffer, compressIndicator);
 
 		}
 
@@ -144,7 +139,7 @@ public class ZipUtil {
 	 *            相对的父级路径。
 	 * @throws IOException
 	 */
-	private static void compress(String originFileURL, ZipOutputStream zos, String baseDir,
+	private static void compress(String originFileURL, ZipOutputStream zos, String baseDir, byte[] buffer,
 			ProgressIndicator compressIndicator) throws Exception {
 
 		FileConnection fconn = null;
@@ -152,7 +147,7 @@ public class ZipUtil {
 		try {
 
 			fconn = (FileConnection) Connector.open(originFileURL);
-			compress(fconn, zos, baseDir, compressIndicator);
+			compress(fconn, zos, baseDir, buffer, compressIndicator);
 
 		} catch (Exception e) {
 			throw e;
@@ -172,10 +167,11 @@ public class ZipUtil {
 	 *            ZipOutputStream.
 	 * @param name
 	 *            此ZipEntry的完整名称。
+	 * @param buffer
 	 * @param compressIndicator
 	 * @throws IOException
 	 */
-	private static void compressFile(FileConnection fconn, ZipOutputStream zos, String name,
+	private static void compressFile(FileConnection fconn, ZipOutputStream zos, String name, byte[] buffer,
 			ProgressIndicator compressIndicator) throws IOException {
 
 		ZipEntry fileEntry = new ZipEntry(name);
@@ -183,7 +179,6 @@ public class ZipUtil {
 
 		InputStream is = fconn.openInputStream();
 		int readCount = -1;
-		byte[] buffer = new byte[10240];
 
 		try {
 

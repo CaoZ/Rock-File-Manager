@@ -10,6 +10,11 @@ import net.rim.device.api.util.MathUtilities;
 
 public class IOUtil {
 
+	private static final int BUFFERSIZE_MIN = 1024 * 10;
+
+	private static final int BUFFERSIZE_MAX = 1024 * 400;
+
+
 	/**
 	 * 安全的关闭FileConnection.
 	 */
@@ -73,10 +78,32 @@ public class IOUtil {
 	}
 
 
-	public static int getBufferSize(long totalSize, int min, int max) {
+	public static int getBufferSize(long totalSize) {
 
 		int bufferSize = (int) (totalSize / 20);
-		return MathUtilities.clamp(min, bufferSize, max);
+		return MathUtilities.clamp(BUFFERSIZE_MIN, bufferSize, BUFFERSIZE_MAX);
+	}
+
+
+	/**
+	 * 获取文件或文件夹大小。
+	 * 
+	 * @param fconn
+	 * @return
+	 */
+	public static long getFileSize(FileConnection fconn) {
+
+		long fileSize = -1;
+		try {
+			if (fconn.isDirectory()) {
+				fileSize = fconn.directorySize(true);
+			} else {
+				fileSize = fconn.fileSize();
+			}
+		} catch (Exception e) {
+			// can't get fileSize
+		}
+		return fileSize;
 	}
 
 
@@ -92,11 +119,7 @@ public class IOUtil {
 		FileConnection fconn = null;
 		try {
 			fconn = (FileConnection) Connector.open(fileURL);
-			if (fconn.isDirectory()) {
-				fileSize = fconn.directorySize(true);
-			} else {
-				fileSize = fconn.fileSize();
-			}
+			fileSize = getFileSize(fconn);
 		} catch (Exception e) {
 		} finally {
 			closeConnection(fconn);

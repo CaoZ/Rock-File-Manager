@@ -275,6 +275,7 @@ public class ArchiveFile {
 	private void extractZipAll(String targetURL, ProgressPopup indicator) throws Exception {
 
 		long fileSize = archiveFile.fileSize();
+		int bufferSize = IOUtil.getBufferSize(fileSize);
 
 		// 注意：此处打开了一个文件流。
 		if (archiveInput != null) {
@@ -289,7 +290,7 @@ public class ArchiveFile {
 		}
 
 		ZipInputStream zipInput = new ZipInputStream(archiveInput);
-		byte[] buffer = new byte[10240];
+		byte[] buffer = new byte[bufferSize];
 		int readCount = -1;
 		ZipEntry thisEntry = null;
 		long positionNow = 0;
@@ -378,9 +379,11 @@ public class ArchiveFile {
 	 * 
 	 * @param entry
 	 * @param targetURL
+	 * @param buffer
 	 * @throws Exception
 	 */
-	public void extractEntry(ArchiveEntry entry, String targetURL, ProgressIndicator indicator) throws Exception {
+	public void extractEntry(ArchiveEntry entry, String targetURL, byte[] buffer, ProgressIndicator indicator)
+			throws Exception {
 
 		String entryName = UtilCommon.getFullFileName(entry.getName());
 
@@ -405,7 +408,7 @@ public class ArchiveFile {
 
 			for (int i = 0; i < entries.length; i++) {
 				// 解压所有子文件。
-				extractEntry(entries[i], folderURL, indicator);
+				extractEntry(entries[i], folderURL, buffer, indicator);
 			}
 
 			return;
@@ -426,7 +429,7 @@ public class ArchiveFile {
 		}
 
 		if (entry.isZipEntry()) {
-			extractZipEntry((ZipEntry) entry.getOriginDataEntry(), fileURL, indicator);
+			extractZipEntry((ZipEntry) entry.getOriginDataEntry(), fileURL, buffer, indicator);
 		} else {
 			extractRarEntry((FileHeader) entry.getOriginDataEntry(), fileURL, indicator);
 		}
@@ -439,9 +442,10 @@ public class ArchiveFile {
 	 * 
 	 * @param entry
 	 * @param targetURL
+	 * @param buffer2
 	 * @param indicator
 	 */
-	private void extractZipEntry(ZipEntry entry, String targetURL, ProgressIndicator indicator) {
+	private void extractZipEntry(ZipEntry entry, String targetURL, byte[] buffer, ProgressIndicator indicator) {
 
 		FileConnection targetConn = null;
 		OutputStream os = null;
@@ -453,7 +457,6 @@ public class ArchiveFile {
 
 			InputStream zipIn = archiveZip.getInputStream(entry);
 
-			byte[] buffer = new byte[10240];
 			int readCount = -1;
 
 			while ((readCount = zipIn.read(buffer)) > 0) {
@@ -475,6 +478,7 @@ public class ArchiveFile {
 	 * 
 	 * @param entry
 	 * @param targetURL
+	 * @param buffer
 	 * @param indicator
 	 */
 	private void extractRarEntry(FileHeader entry, String targetURL, ProgressIndicator indicator) {
