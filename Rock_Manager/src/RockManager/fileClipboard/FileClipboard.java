@@ -225,7 +225,7 @@ public class FileClipboard {
 	 */
 	public static void paste(FileListField targetListField, ProgressIndicator progressIndicator) throws Exception {
 
-		if (ORIGIN_FILE == null) {
+		if (ORIGIN_FILE == null) { // 剪贴板上没有文件。
 			clear();
 			return;
 		}
@@ -284,6 +284,7 @@ public class FileClipboard {
 			}
 
 			if (targetFileName == null) {
+				// 不是在同一文件夹内复制，还未设置文件名。
 				targetFileName = originFileConn.getName();
 			}
 
@@ -341,9 +342,10 @@ public class FileClipboard {
 			ProgressIndicator progressIndicator) throws Exception {
 
 		progressIndicator.setProgressName(originFileConn.getName());
+		boolean isHidden = originFileConn.isHidden();
 
 		try {
-			FileHandler.createTargetFile(targetURL);
+			FileHandler.createTargetFile(targetURL, isHidden);
 		} catch (Exception e) {
 			throw e;
 		}
@@ -394,9 +396,10 @@ public class FileClipboard {
 			ProgressIndicator progressIndicator) throws Exception {
 
 		progressIndicator.setProgressName(originFolderConn.getName());
+		boolean isHidden = originFolderConn.isHidden();
 
 		try {
-			FileHandler.createTargetFolder(targetURL);
+			FileHandler.createTargetFolder(targetURL, isHidden);
 		} catch (Exception e) {
 			throw e;
 		}

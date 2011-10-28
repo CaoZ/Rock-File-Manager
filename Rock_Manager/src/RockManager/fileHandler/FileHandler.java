@@ -380,15 +380,23 @@ public class FileHandler {
 
 
 	/**
-	 * 检查目标目录，若不存在则创建，可以多级创建。
-	 * <p>
-	 * 注意:除非明确知道目标路径是目录才可调用此方法，否则请使用checkTargetFile(String), 那会自动判断是文件还是目录。
-	 * 
-	 * @param targetPath
-	 * @throws IOException
-	 * @see #checkTargetFile(String)
+	 * 检查目标目录，若不存在则创建，可以多级创建。 <br>
+	 * 注意:除非明确知道目标路径是目录才可调用此方法，否则请使用createTargetFile(String), 那会自动判断是文件还是目录。<br>
+	 * same as createTargetFolder(targetURL, false)。
 	 */
 	public static void createTargetFolder(String targetURL) throws Exception {
+
+		createTargetFolder(targetURL, false);
+	}
+
+
+	/**
+	 * 检查目标目录，若不存在则创建，可以多级创建。 <br>
+	 * 注意:除非明确知道目标路径是目录才可调用此方法，否则请使用createTargetFile(String), 那会自动判断是文件还是目录。
+	 * 
+	 * @see #createTargetFile(String)
+	 */
+	public static void createTargetFolder(String targetURL, boolean isHidden) throws Exception {
 
 		FileConnection fconn = null;
 		String failedURL = null;
@@ -398,9 +406,12 @@ public class FileHandler {
 			fconn = (FileConnection) Connector.open(targetURL);
 
 			if (fconn.isDirectory() == false) {
+				// 不存在此目录，需创建。
+
 				String parentDirURL = UtilCommon.getParentDir(targetURL);
 				try {
-					createTargetFolder(parentDirURL);
+					// 要创建的父级目录对属性无要求，默认不隐藏。
+					createTargetFolder(parentDirURL, false);
 				} catch (Exception e) {
 					// 创建父目录失败。
 					failedURL = parentDirURL;
@@ -409,6 +420,7 @@ public class FileHandler {
 
 				// 创建此目录
 				fconn.mkdir();
+				fconn.setHidden(isHidden);
 			}
 
 		} catch (Exception e) {
@@ -435,15 +447,22 @@ public class FileHandler {
 
 
 	/**
-	 * 检查目标文件是否存在（文件或目录），若不存在则创建，可以多级创建。
-	 * 
-	 * @param targetPath
-	 * @throws IOException
+	 * 检查目标文件是否存在（文件或目录），若不存在则创建，可以多级创建。<br>
+	 * same as createTargetFile(targetURL, false)。
 	 */
 	public static void createTargetFile(String targetURL) throws Exception {
 
+		createTargetFile(targetURL, false);
+	}
+
+
+	/**
+	 * 检查目标文件是否存在（文件或目录），若不存在则创建，可以多级创建。
+	 */
+	public static void createTargetFile(String targetURL, boolean isHidden) throws Exception {
+
 		if (UtilCommon.isFolder(targetURL)) {
-			createTargetFolder(targetURL);
+			createTargetFolder(targetURL, isHidden);
 		} else {
 
 			FileConnection fconn = null;
@@ -451,13 +470,20 @@ public class FileHandler {
 			try {
 
 				fconn = (FileConnection) Connector.open(targetURL);
+
 				if (fconn.exists() == false) {
+
 					String parentDir = UtilCommon.getParentDir(targetURL);
-					createTargetFolder(parentDir);
+					createTargetFolder(parentDir, false);
 					fconn.create();
+					fconn.setHidden(isHidden);
+
 				} else {
+
 					// 若目标文件已存在，则设置长度为0（相当于先删除然后创建）。
+					fconn.setHidden(isHidden);
 					fconn.truncate(0);
+
 				}
 
 			} catch (Exception e) {
