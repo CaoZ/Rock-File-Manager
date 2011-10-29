@@ -396,7 +396,7 @@ public class FileHandler {
 	 * 
 	 * @see #createTargetFile(String)
 	 */
-	public static void createTargetFolder(String targetURL, boolean isHidden) throws Exception {
+	public static void createTargetFolder(String targetURL, boolean isHidden) throws IOException {
 
 		FileConnection fconn = null;
 		String failedURL = null;
@@ -415,7 +415,7 @@ public class FileHandler {
 				} catch (Exception e) {
 					// 创建父目录失败。
 					failedURL = parentDirURL;
-					throw e;
+					throw new IOException(e.getMessage());
 				}
 
 				// 创建此目录
@@ -429,7 +429,7 @@ public class FileHandler {
 				// 创建本目录失败。
 				failedURL = targetURL;
 			}
-			throw new Exception("Failed to create folder \"" + UtilCommon.URLtoPath(failedURL) + "\".");
+			throw new IOException("Failed to create folder \"" + UtilCommon.URLtoPath(failedURL) + "\".");
 
 		} finally {
 
@@ -459,7 +459,7 @@ public class FileHandler {
 	/**
 	 * 检查目标文件是否存在（文件或目录），若不存在则创建，可以多级创建。
 	 */
-	public static void createTargetFile(String targetURL, boolean isHidden) throws Exception {
+	public static void createTargetFile(String targetURL, boolean isHidden) throws IOException {
 
 		if (UtilCommon.isFolder(targetURL)) {
 			createTargetFolder(targetURL, isHidden);
@@ -488,7 +488,7 @@ public class FileHandler {
 
 			} catch (Exception e) {
 
-				throw new Exception("Failed to create file \"" + UtilCommon.URLtoPath(targetURL) + "\".");
+				throw new IOException("Failed to create file \"" + UtilCommon.URLtoPath(targetURL) + "\".");
 
 			} finally {
 

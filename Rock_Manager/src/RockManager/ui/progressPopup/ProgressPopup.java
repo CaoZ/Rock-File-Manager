@@ -25,10 +25,12 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 
 	private ButtonField cancelButton;
 
+	private Runnable cancelRunnable;
+
 
 	public ProgressPopup() {
 
-		super(VERTICAL_SCROLL | VERTICAL_SCROLLBAR, DEFAULT_CLOSE);
+		super(VERTICAL_SCROLL | VERTICAL_SCROLLBAR, 0);
 
 		// add progress Label
 		progressLabel = new ProgressLabelField();
@@ -43,6 +45,14 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 		progressBar.setProgress(0);
 		add(progressBar);
 
+	}
+
+
+	/**
+	 * 添加取消按钮。
+	 */
+	private void addCancelButton() {
+
 		// add cancel button
 		cancelButton = new ButtonField(LangRes.getString(LangRes.BUTTON_LABEL_CANCEL), FIELD_HCENTER
 				| ButtonField.CONSUME_CLICK);
@@ -50,7 +60,17 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 		cancelButton.setMargin(20, 0, 0, 0);
 		cancelButton.setChangeListener(this);
 		add(cancelButton);
+	}
 
+
+	/**
+	 * 设置是否可以中途取消操作。
+	 */
+	public void setCancelable(boolean value) {
+
+		if (value == true && cancelButton == null) {
+			addCancelButton();
+		}
 	}
 
 
@@ -86,12 +106,22 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 	}
 
 
+	public void setCancelRunnable(Runnable cancelRunnable) {
+
+		this.cancelRunnable = cancelRunnable;
+	}
+
+
 	/**
 	 * 单击了取消按钮。
 	 */
 	public void cancelOperation() {
 
-		UtilCommon.trace("Cancel Request!");
+		if (cancelRunnable != null) {
+			cancelRunnable.run();
+		} else {
+			UtilCommon.trace("Cancel Request!");
+		}
 	}
 
 }

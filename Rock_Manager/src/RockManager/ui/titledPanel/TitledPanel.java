@@ -1,3 +1,4 @@
+
 package RockManager.ui.titledPanel;
 
 import RockManager.ui.ScreenHeightChangeEvent;
@@ -9,13 +10,17 @@ import net.rim.device.api.ui.container.VerticalFieldManager;
 import net.rim.device.api.ui.decor.Border;
 import net.rim.device.api.ui.decor.BorderFactory;
 
-public class TitledPanel extends VerticalFieldManager implements FieldChangeListener,
-		ScreenHeightChangeEvent {
+
+public class TitledPanel extends VerticalFieldManager implements FieldChangeListener, ScreenHeightChangeEvent {
 
 	private int width;
+
 	private static Border border;
+
 	private VerticalFieldManager vfm;
+
 	private TitleBar titleBar;
+
 	private XYEdges paddings;
 
 	static {
@@ -24,11 +29,15 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 		border = BorderFactory.createBitmapBorder(edges, borderImage);
 	}
 
+
 	public TitledPanel(String title) {
+
 		this(0, title, 0);
 	}
 
+
 	public TitledPanel(long style, String title, int width) {
+
 		super(style);
 		setWidth(width);
 		titleBar = new TitleBar(title);
@@ -40,15 +49,21 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 		setMargin(3, 4, 2, 4);
 	}
 
+
 	public void setIcon(Bitmap icon) {
+
 		titleBar.setIcon(icon);
 	}
 
+
 	public void setWidth(int width) {
+
 		this.width = width;
 	}
 
+
 	public void add(Field field) {
+
 		titleBar.setStatusExpanded();
 		if (vfm == null) {
 			// 之所以在此处添加vfm，是让没内容时下部没setPadding造成的白边。
@@ -57,7 +72,9 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 		vfm.add(field);
 	}
 
+
 	private void addVFM() {
+
 		vfm = new VerticalFieldManager(Field.USE_ALL_WIDTH);
 		// 只有上边框
 		XYEdges edges = new XYEdges(1, 0, 0, 0);
@@ -71,10 +88,12 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 		super.add(vfm);
 	}
 
+
 	/**
 	 * 为vfm设置padding,如果此时vfm不存在则会将padding的值存储，等vfm创建时在给vfm赋值。
 	 */
 	public void setPadding(int top, int right, int bottom, int left) {
+
 		if (vfm == null) {
 			paddings = new XYEdges(top, right, bottom, left);
 		} else {
@@ -83,10 +102,12 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 
 	}
 
+
 	/**
 	 * 为vfm设置padding,如果此时vfm不存在则会将padding的值存储，等vfm创建时在给vfm赋值。
 	 */
 	public void setPadding(XYEdges paddings) {
+
 		if (vfm == null) {
 			this.paddings = paddings;
 		} else {
@@ -94,10 +115,12 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 		}
 	}
 
+
 	/**
 	 * 收缩。
 	 */
 	public void setStatusShrinked() {
+
 		titleBar.setStatusShrinked();
 		delete(vfm);
 		// updateLayout, not work
@@ -105,13 +128,17 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 		screenHeightChangeNotify(SCREEN_HEIGHT_CHANGED);
 	}
 
+
 	public void delete(Field field) {
+
 		if (field != null && field.getManager() == this) {
 			super.delete(field);
 		}
 	}
 
+
 	public int getPreferredWidth() {
+
 		if (width > 0) {
 			int margin = getMarginLeft() + getMarginRight();
 			return width + margin;
@@ -120,7 +147,9 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 		}
 	}
 
-	private void toggleStatus() {
+
+	public void toggleStatus() {
+
 		boolean expanded = titleBar.toggleStatus();
 		if (expanded) {
 			// 状态已改为expanded，添加vfm。
@@ -140,13 +169,17 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 		screenHeightChangeNotify(SCREEN_HEIGHT_CHANGED);
 	}
 
+
 	public void fieldChanged(Field field, int context) {
+
 		if (field == titleBar) {
 			toggleStatus();
 		}
 	}
 
+
 	public void screenHeightChangeNotify(int context) {
+
 		fieldChangeNotify(context);
 	}
 

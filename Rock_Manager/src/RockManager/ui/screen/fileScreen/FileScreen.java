@@ -42,11 +42,11 @@ public class FileScreen extends AnimatedMainScreen implements VFMwithScrollbarCo
 	}
 
 
-	public FileScreen(String path) {
+	public FileScreen(String initialURL) {
 
 		this();
 
-		fileList = new FileListField(path);
+		fileList = new FileListField(initialURL);
 
 		fileList.setClipboardAllowed(true);
 		fileList.registerJournalListener();

@@ -44,10 +44,8 @@ public class FileDeleteProgressPopup extends ProgressPopup {
 
 			public void run() {
 
-				try {
-					Thread.sleep(50); // 使UI流畅。
-				} catch (Exception e) {
-				}
+				// 删除开始，准备工作，计算总文件数量。
+				indicator.setProgressName("Calculating file number...");
 
 				totalItemCount = FileCounter.countFolder(folderURL).getTotalNumber();
 
@@ -63,7 +61,6 @@ public class FileDeleteProgressPopup extends ProgressPopup {
 					public void run() {
 
 						close();
-
 					}
 				});
 

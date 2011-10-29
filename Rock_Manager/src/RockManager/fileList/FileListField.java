@@ -15,7 +15,6 @@ import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.Graphics;
-import net.rim.device.api.ui.Keypad;
 import net.rim.device.api.ui.Manager;
 import net.rim.device.api.ui.TouchEvent;
 import net.rim.device.api.ui.Touchscreen;
@@ -25,7 +24,7 @@ import net.rim.device.api.ui.menu.DefaultContextMenuProvider;
 import net.rim.device.api.util.MathUtilities;
 import net.rim.device.api.util.SimpleSortingVector;
 import RockManager.archive.ArchiveListField;
-import RockManager.config.Config;
+import RockManager.favouritesList.FavouritesListField;
 import RockManager.fileClipboard.FileClipboard;
 import RockManager.fileHandler.FileHandler;
 import RockManager.fileHandler.FileProperty;
@@ -38,7 +37,6 @@ import RockManager.languages.LangRes;
 import RockManager.ui.ScreenHeightChangeEvent;
 import RockManager.ui.oneLineInputField.InputField;
 import RockManager.ui.screen.fileScreen.FileScreen;
-import RockManager.util.KeyUtil;
 import RockManager.util.OSVersionUtil;
 import RockManager.util.UtilCommon;
 import RockManager.util.ui.BaseObjectListField;
@@ -601,7 +599,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 				if (isHidden) {
 					// 是隐藏文件。
 					// 不消除fromNormal，下次继续使用。
-					thisItem.setDisplayAttribute_Hide();
+					thisItem.setDisplayAttribute_Hide(true);
 				} else {
 					// 不是隐藏文件。
 					// 使fromNormal为null，以便使它可以前进，取得下个元素。
@@ -655,7 +653,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 * 
 	 * @return
 	 */
-	private boolean shouldHaveReturn() {
+	boolean shouldHaveReturn() {
 
 		// test case
 		//
@@ -751,7 +749,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 			case FileItem.TYPE_FILE:
 				if (!filePickerMode) {
-					FileHandler.openFile(getThisItem());
+					doOpenThisFile();
 					consumed = true;
 					break;
 				} else {
@@ -837,83 +835,13 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 	public boolean keyChar(char key, int status, int time) {
 
-		if (key == Keypad.KEY_ESCAPE) {
+		boolean consumed = FileListKeyCharHandler.keyChar(key, status, time, this);
 
-			if (getKeyword().length() > 0) {
-				// 清除搜索条件。
-				setKeyword("");
-				return true;
-			}
-
-			// 判断按escape是返回上级目录还是关闭screen(交给上级处理)
-			// 同样可根据刚才是否添加了返回项判断。
-			if (shouldHaveReturn()) {
-				doReturnToParent();
-				if (isFocused() == false) {
-					// 若刚才焦点在搜索框，使列表重新获得焦点。
-					setFocus();
-				}
-				return true;
-			}
-
-		} else if (KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_SEARCH)) {
-
-			if (isSearchable) {
-				keywordField.setFocus();
-				return true;
-			}
-
-		}
-
-		// 这个快捷键默认是‘r’,在某些机型上可能与搜索快捷键‘s’在一个按键上（如9105），因此不用else if而用if.
-		if (KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_RENAME) && isRealFileItem()) {
-
-			renameFile();
+		if (consumed) {
 			return true;
-
+		} else {
+			return super.keyChar(key, status, time);
 		}
-
-		// 显示属性。
-		if (KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_SHOW_PROPERTY) && shouldShowProperty()) {
-
-			showProperty();
-			return true;
-
-		}
-
-		// 删除文件。
-		if ((key == Keypad.KEY_BACKSPACE || key == Keypad.KEY_DELETE) && isRealFileItem()) {
-
-			deleteFile();
-			return true;
-
-		}
-
-		// 复制
-		if (isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_COPY) && isRealFileItem()) {
-
-			copyToClipboard();
-			return true;
-
-		}
-
-		// 剪切
-		if (isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_CUT) && isRealFileItem()) {
-
-			cutToClipboard();
-			return true;
-
-		}
-
-		// 粘贴
-		if (isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_PASTE)) {
-
-			pasteFromClipboard();
-			return true;
-
-		}
-
-		return super.keyChar(key, status, time);
 
 	}
 
@@ -948,6 +876,9 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	}
 
 
+	/**
+	 * 将当前高亮项复制到剪贴板。
+	 */
 	void copyToClipboard() {
 
 		FileClipboard.put(FileClipboard.METHOD_COPY, getThisItem());
@@ -955,6 +886,9 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	}
 
 
+	/**
+	 * 将当前高亮项剪切到剪贴板。
+	 */
 	void cutToClipboard() {
 
 		FileClipboard.put(FileClipboard.METHOD_CUT, getThisItem());
@@ -962,6 +896,9 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	}
 
 
+	/**
+	 * 从剪贴板粘贴文件到当前文件夹。
+	 */
 	void pasteFromClipboard() {
 
 		FileClipboard.pasteWithUI(this);
@@ -1019,6 +956,15 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 
 	/**
+	 * 是否允许进行搜索。
+	 */
+	public boolean isSearchable() {
+
+		return isSearchable;
+	}
+
+
+	/**
 	 * 获取当前正处于selected状态的行的内容, 若此FileListField为空的，则返回null。
 	 * 
 	 * @return
@@ -1045,6 +991,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		}
 
 		FileItem thisItem = getThisItem();
+
 		String path = thisItem.getRawPath();
 		FileScreen fileScreen = new FileScreen(path);
 		// 设置地址栏图标为disk图标。
@@ -1058,12 +1005,22 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	protected void doEnterThisDir() {
 
-		logPosition(false);
 		FileItem thisItem = getThisItem();
+
+		logPosition(false);
 		// 更新地址栏显示的图标。这要在设置新地址之前完成，因为要取得的图标是要列出的文件的父目录的图标。
 		addressBar.setIcon(thisItem.getIcon());
 		String newPath = thisItem.getURL();
 		setDirPath(newPath);
+	}
+
+
+	/**
+	 * 打开这个文件。
+	 */
+	protected void doOpenThisFile() {
+
+		FileHandler.openFile(getThisItem());
 	}
 
 
@@ -1173,7 +1130,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 	protected void paint(Graphics g) {
 
-		if (getSize() == 0) {
+		if (isEmpty()) {
 			FileListDrawer.paintEmptyString(this, g);
 		} else {
 			super.paint(g);
@@ -1368,7 +1325,12 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 	protected void makeContextMenu(ContextMenu contextMenu) {
 
-		FileListContextMenuHandler.makeContextMenu(contextMenu, this);
+		if (isEmpty()) {
+			super.makeContextMenu(contextMenu);
+		} else {
+			FileListContextMenuHandler.makeContextMenu(contextMenu, this);
+		}
+
 	}
 
 
@@ -1423,7 +1385,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	public boolean isNormalFolder() {
 
-		return !isArchiveList() && folderPath != null;
+		return !isArchiveList() && !isFavouriteList() && folderPath != null;
 	}
 
 
@@ -1432,7 +1394,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	public boolean isDiskList() {
 
-		return !isArchiveList() && folderPath == null;
+		return !isArchiveList() && !isFavouriteList() && folderPath == null;
 	}
 
 
@@ -1442,6 +1404,15 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	public boolean isArchiveList() {
 
 		return this instanceof ArchiveListField;
+	}
+
+
+	/**
+	 * 是否是收藏夹列表。
+	 */
+	public boolean isFavouriteList() {
+
+		return this instanceof FavouritesListField;
 	}
 
 

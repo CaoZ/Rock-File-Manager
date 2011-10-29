@@ -5,6 +5,7 @@ import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.component.StandardTitleBar;
 import net.rim.device.api.ui.decor.BackgroundFactory;
+import RockManager.favouritesList.FavouritesListField;
 import RockManager.fileList.FileListField;
 import RockManager.languages.LangRes;
 import RockManager.ui.ScreenHeightChangeEvent;
@@ -40,7 +41,6 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 
 		addDeviceItem();
 		addFavouriteItem();
-		addHistoryItem();
 
 	}
 
@@ -53,7 +53,7 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 		device.setChangeListener(this);
 
 		diskList = new FileListField(null);
-		diskList.setChangeListener(this);
+		diskList.setChangeListener(this); // 高度改变时(如SD卡插入拔出)通知Screen重新布局。
 		diskList.setSearchable(false);
 		diskList.setClipboardAllowed(false);
 
@@ -66,21 +66,25 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 	}
 
 
-	private void addHistoryItem() {
-
-		TitledPanel history = new TitledPanel(LangRes.getString(LangRes.RECENTLY));
-		history.setChangeListener(this);
-		history.setIcon(Bitmap.getBitmapResource("img/icons/history.png"));
-		vfm.add(history);
-	}
-
-
 	private void addFavouriteItem() {
 
 		TitledPanel favourite = new TitledPanel(LangRes.getString(LangRes.FAVOURITE));
-		favourite.setChangeListener(this);
 		favourite.setIcon(Bitmap.getBitmapResource("img/icons/favourite.png"));
+		favourite.setPadding(5, 4, 5, 4);
+		favourite.setChangeListener(this);
+
+		FavouritesListField favouriteList = new FavouritesListField();
+		favouriteList.setChangeListener(this);
+
+		favourite.add(favouriteList);
+
+		if (favouriteList.isEmpty()) {
+			// 添加某个元素后favourite的状态将变为展开的。但如果列表中没元素，应将favourite重置为收缩的。
+			favourite.toggleStatus();
+		}
+
 		vfm.add(favourite);
+
 	}
 
 

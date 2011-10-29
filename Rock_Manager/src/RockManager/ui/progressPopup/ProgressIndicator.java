@@ -1,8 +1,6 @@
 
 package RockManager.ui.progressPopup;
 
-
-
 public class ProgressIndicator {
 
 	/**
@@ -90,6 +88,12 @@ public class ProgressIndicator {
 	public void setDisplay(ProgressPopup display) {
 
 		this.display = display;
+	}
+
+
+	public void closeDisplay() {
+
+		display.close();
 	}
 
 }

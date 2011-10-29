@@ -108,9 +108,9 @@ public class FileItem {
 	/**
 	 * 设置文件属性为隐藏，由于是根据已存在的文件创建，无需修改文件属性。
 	 */
-	public void setDisplayAttribute_Hide() {
+	public void setDisplayAttribute_Hide(boolean isHidden) {
 
-		isHidden = true;
+		this.isHidden = isHidden;
 	}
 
 

@@ -7,6 +7,7 @@ import net.rim.device.api.ui.UiApplication;
 import RockManager.archive.ArchiveListContextMenuHandler;
 import RockManager.archive.ArchiveListField;
 import RockManager.config.Config;
+import RockManager.favouritesList.FavouritesData;
 import RockManager.fileClipboard.FileClipboard;
 import RockManager.fileHandler.FileHandler;
 import RockManager.fileHandler.filePopup.browsePopup.CreateArchivePopup;
@@ -35,6 +36,9 @@ public class FileListContextMenuHandler {
 
 		// 添加其它项。
 		addOtherMenus(contextMenu, fileList); // 400-499
+
+		// 收藏夹相关项
+		addFavouriteMenus(contextMenu, fileList); // 500-599
 
 	}
 
@@ -81,20 +85,25 @@ public class FileListContextMenuHandler {
 
 		boolean added = false;
 
+		if (fileList.isFavouriteList()) {
+			addOpenItMenuItem(contextMenu, fileList, 210, PRIORITY_ONE);
+			added = true;
+		}
+
 		if (fileList.shouldShowProperty()) {
-			// 属性 210
-			addShowPropertyMenuItem(contextMenu, fileList, 210, PRIORITY_TWO);
+			// 属性 220
+			addShowPropertyMenuItem(contextMenu, fileList, 220, PRIORITY_TWO);
 			added = true;
 		}
 
-		if (!fileList.isPickerMode() && fileList.isRealFileItem()) {
-			addRenameMenuItem(contextMenu, fileList, 220, 220); // 重命名 220
-			addDeleteMenuItem(contextMenu, fileList, 230, 230); // 删除 230
+		if (fileList.isNormalFolder() && !fileList.isPickerMode() && fileList.isRealFileItem()) {
+			addRenameMenuItem(contextMenu, fileList, 230, 230); // 重命名 230
+			addDeleteMenuItem(contextMenu, fileList, 240, 240); // 删除 240
 			added = true;
 		}
 
-		if (Config.DEBUG_MODE && !fileList.isArchiveList()) { // 只在测试时添加此项。
-			addRefreashMenuItem(contextMenu, fileList, 240, 240); // 刷新 240
+		if (Config.DEBUG_MODE && fileList.isNormalFolder()) { // 只在测试时添加此项。
+			addRefreashMenuItem(contextMenu, fileList, 250, 250); // 刷新 250
 			added = true;
 		}
 
@@ -120,7 +129,7 @@ public class FileListContextMenuHandler {
 
 		FileItem thisItem = fileList.getThisItem();
 
-		if (!fileList.isPickerMode() && thisItem.isRealFile()) {
+		if (fileList.isNormalFolder() && !fileList.isPickerMode() && thisItem.isRealFile()) {
 
 			String suffix = thisItem.getSuffix();
 			boolean isArchiveFile = suffix.equals("zip") || suffix.equals("rar");
@@ -158,8 +167,8 @@ public class FileListContextMenuHandler {
 		boolean added = false;
 
 		FileItem thisItem = fileList.getThisItem();
-		boolean addCodItem = !fileList.isPickerMode() && thisItem != null && thisItem.isRealFile()
-				&& thisItem.getSuffix().equals("cod");
+		boolean addCodItem = fileList.isNormalFolder() && !fileList.isPickerMode() && thisItem != null
+				&& thisItem.isRealFile() && thisItem.getSuffix().equals("cod");
 
 		if (addCodItem) {
 			// cod文件, "安装" 410
@@ -191,14 +200,45 @@ public class FileListContextMenuHandler {
 		}
 
 		if (fileList.isNormalFolder()) {
+
 			// "新建文件夹" 440
 			addCreateNewFolderMenuItem(contextMenu, fileList, 440, 440);
 			added = true;
+
 		}
 
 		if (added) {
 			contextMenu.addItem(MenuItem.separator(400)); // 分割线
 			contextMenu.addItem(MenuItem.separator(499)); // 分割线
+		}
+
+	}
+
+
+	/**
+	 * 添加收藏夹操作相关菜单项。500-599
+	 * 
+	 * @param contextMenu
+	 * @param fileList
+	 */
+	private static void addFavouriteMenus(ContextMenu contextMenu, FileListField fileList) {
+
+		FileItem thisItem = fileList.getThisItem();
+		boolean added = false;
+
+		if (fileList.isNormalFolder() && thisItem.isRealFile()) {
+			// "添加到收藏夹" 510
+			addAddToFavouriteMenuItem(contextMenu, fileList, 510, 510);
+			added = true;
+		} else if (fileList.isFavouriteList()) {
+			// 从收藏夹移除 520
+			addDeleteFavouriteMenuItem(contextMenu, fileList, 520, 520);
+			added = true;
+		}
+
+		if (added) {
+			contextMenu.addItem(MenuItem.separator(500));
+			contextMenu.addItem(MenuItem.separator(599));
 		}
 
 	}
@@ -534,6 +574,28 @@ public class FileListContextMenuHandler {
 	}
 
 
+	private static void addAddToFavouriteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
+			int priority) {
+
+		MenuItem addToFavourite = new MenuItem(LangRes.getString(LangRes.MENU_ADD_TO_FAVOURITES), ordinal, priority) {
+
+			public void run() {
+
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+					public void run() {
+
+						FavouritesData.add(fileList.getThisItem());
+					}
+				});
+
+			}
+		};
+		contextMenu.addItem(addToFavourite);
+
+	}
+
+
 	private static void addSelectHereMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
@@ -564,4 +626,47 @@ public class FileListContextMenuHandler {
 		contextMenu.addItem(selectThisFolder);
 
 	}
+
+
+	/**
+	 * 打开文件项
+	 */
+	private static void addOpenItMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
+			int priority) {
+
+		MenuItem openItem = new MenuItem(LangRes.getString(LangRes.MENU_OPEN), ordinal, priority) {
+
+			public void run() {
+
+				fileList.navigationClick(0, 0);
+			}
+
+		};
+		contextMenu.addItem(openItem);
+	}
+
+
+	private static void addDeleteFavouriteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
+			int priority) {
+
+		MenuItem deleteFromFavouriteItem = new MenuItem(LangRes.getString(LangRes.MENU_DELETE_FROM_FAVOURITES),
+				ordinal, priority) {
+
+			public void run() {
+
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+					public void run() {
+
+						FileItem thisItem = fileList.getThisItem();
+						FavouritesData.delete(thisItem);
+					}
+				});
+
+			}
+		};
+		contextMenu.addItem(deleteFromFavouriteItem);
+
+	}
+
 }
