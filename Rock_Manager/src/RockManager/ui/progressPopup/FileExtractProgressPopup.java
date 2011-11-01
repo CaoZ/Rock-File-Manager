@@ -28,7 +28,7 @@ public class FileExtractProgressPopup extends ProgressPopup {
 		this.archiveFile = archiveFile;
 		this.targetURL = targetURL;
 
-		setTitle(LangRes.getString(LangRes.TITLE_EXTRACTING));
+		setTitle(LangRes.get(LangRes.TITLE_EXTRACTING));
 
 		// invokeLater: 等窗口出现再开始解压。
 		UiApplication.getUiApplication().invokeLater(new Runnable() {

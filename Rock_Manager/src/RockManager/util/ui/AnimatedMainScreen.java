@@ -1,9 +1,13 @@
 
 package RockManager.util.ui;
 
+import RockManager.config.ConfigData;
 import RockManager.util.FixUtil;
 import RockManager.util.OSVersionUtil;
 import RockManager.util.UtilCommon;
+import RockManager.util.quickExit.QuickExitMenuHandler;
+import RockManager.util.quickExit.QuickExitRegistry;
+import RockManager.util.quickExit.QuickExitScreen;
 import net.rim.device.api.system.Display;
 import net.rim.device.api.ui.Screen;
 import net.rim.device.api.ui.TransitionContext;
@@ -19,7 +23,18 @@ import net.rim.device.api.ui.container.MainScreen;
  */
 public class AnimatedMainScreen extends MainScreen {
 
+	private boolean hasAppliedAnimation = false;
+
 	private static int menuAnimateTime = -1;
+
+	static {
+		if (OSVersionUtil.isOS5()) {
+			// 也许是由于机能的问题，在os5上菜单弹出、收起时似乎比os6实际需要的时间长。
+			menuAnimateTime = 140;
+		} else {
+			menuAnimateTime = 180;
+		}
+	}
 
 
 	public AnimatedMainScreen() {
@@ -32,6 +47,16 @@ public class AnimatedMainScreen extends MainScreen {
 	public AnimatedMainScreen(long style) {
 
 		super(style);
+
+		if (this instanceof QuickExitScreen) {
+			QuickExitRegistry.addLog((QuickExitScreen) this);
+		}
+
+		boolean animationEffect = ConfigData.ANIMATION_EFFECT.booleanValue();
+
+		if (animationEffect == false) {
+			return;
+		}
 
 		UiEngineInstance uiEngine = Ui.getUiEngineInstance();
 
@@ -52,8 +77,6 @@ public class AnimatedMainScreen extends MainScreen {
 
 			uiEngine.setTransition(this, null, UiEngineInstance.TRIGGER_POP, transitionPop);
 
-			menuAnimateTime = 140; // 也许是由于机能的问题，在os5上菜单弹出、收起时似乎比os6实际需要的时间长。
-
 		} else {
 
 			TransitionContext transitionPop = new TransitionContext(TransitionContext.TRANSITION_ZOOM);
@@ -62,14 +85,20 @@ public class AnimatedMainScreen extends MainScreen {
 
 			uiEngine.setTransition(this, null, UiEngineInstance.TRIGGER_POP, transitionPop);
 
-			menuAnimateTime = 180;
-
 		}
+
+		hasAppliedAnimation = true;
 
 	}
 
 
 	public boolean onMenu(int instance) {
+
+		boolean animationEffect = ConfigData.ANIMATION_EFFECT.booleanValue();
+
+		if (animationEffect == false) {
+			return super.onMenu(instance);
+		}
 
 		final UiEngineInstance uiEngine = Ui.getUiEngineInstance();
 
@@ -102,6 +131,12 @@ public class AnimatedMainScreen extends MainScreen {
 
 
 	protected void onMenuDismissed(Menu menu) {
+
+		boolean animationEffect = ConfigData.ANIMATION_EFFECT.booleanValue();
+
+		if (animationEffect == false) {
+			return;
+		}
 
 		// 在os5上若有从短菜单的"Full Menu"进入完整菜单，完整菜单再关闭时调用此方法时menu为null.
 		boolean hasSelected = menu != null && menu.getSelectedItem() != null;
@@ -146,13 +181,15 @@ public class AnimatedMainScreen extends MainScreen {
 		FixUtil.fixVirtualKeyboardMenuItem(menu, this);
 		super.makeMenu(menu, instance);
 
+		QuickExitMenuHandler.handleExitMenuItem(menu);
+
 		UtilCommon.setMenuMinWidth(menu, Display.getWidth() / 3);
 	}
 
 
 	protected void onUiEngineAttached(boolean attached) {
 
-		if (attached == false) {
+		if (attached == false && hasAppliedAnimation == true) {
 
 			final Screen thisScreen = this;
 
@@ -178,20 +215,15 @@ public class AnimatedMainScreen extends MainScreen {
 
 	public static int getMenuAnimateTime() {
 
-		if (menuAnimateTime < 0) {
-			if (OSVersionUtil.isOS5()) {
-				menuAnimateTime = 140;
-			} else {
-				menuAnimateTime = 180;
-			}
-		}
-
 		return menuAnimateTime;
-
 	}
 
 
 	public void close() {
+
+		if (this instanceof QuickExitScreen) {
+			QuickExitRegistry.removeLog((QuickExitScreen) this);
+		}
 
 		// 在invokeLater中执行。作用：使从菜单中选择"关闭"来关闭本Screen时也有动画效果(等待Menu关闭后再关闭本Screen)。某则不会出现动画效果，原因是Menu也是一种Screen(DefaultMenuScreen)。
 		UiApplication.getUiApplication().invokeLater(new Runnable() {
@@ -199,6 +231,7 @@ public class AnimatedMainScreen extends MainScreen {
 			public void run() {
 
 				superDotClose();
+
 			}
 		});
 

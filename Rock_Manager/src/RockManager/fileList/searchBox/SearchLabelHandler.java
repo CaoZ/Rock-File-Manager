@@ -1,7 +1,7 @@
 
 package RockManager.fileList.searchBox;
 
-import RockManager.config.Config;
+import RockManager.config.ShortCutKeyConfig;
 import RockManager.languages.LangRes;
 import RockManager.util.CapabilityUtil;
 import RockManager.util.KeyUtil;
@@ -42,11 +42,11 @@ public class SearchLabelHandler implements DeviceCapabilityListener {
 		String label;
 
 		if (hasRealKeypad) {
-			char convenientKey = KeyUtil.getDistinctKey(Config.SHORTCUT_KEY_SEARCH);
-			String[] pattern = { LangRes.getString(LangRes.SEARCH_LABEL_KEY_VERSION), "{1}" };
+			char convenientKey = KeyUtil.getDistinctKey(ShortCutKeyConfig.SEARCH);
+			String[] pattern = { LangRes.get(LangRes.SEARCH_LABEL_KEY_VERSION), "{1}" };
 			label = UtilCommon.replaceString(pattern[0], pattern[1], String.valueOf(convenientKey));
 		} else {
-			label = LangRes.getString(LangRes.SEARCH_LABEL_TOUCH_VERSION);
+			label = LangRes.get(LangRes.SEARCH_LABEL_TOUCH_VERSION);
 		}
 
 		return label;

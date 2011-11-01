@@ -7,7 +7,6 @@ import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.component.ButtonField;
 import RockManager.languages.LangRes;
 import RockManager.ui.statusBar.StatusBar;
-import RockManager.util.UtilCommon;
 import RockManager.util.ui.BasePopupScreen;
 
 
@@ -54,7 +53,7 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 	private void addCancelButton() {
 
 		// add cancel button
-		cancelButton = new ButtonField(LangRes.getString(LangRes.BUTTON_LABEL_CANCEL), FIELD_HCENTER
+		cancelButton = new ButtonField(LangRes.get(LangRes.BUTTON_LABEL_CANCEL), FIELD_HCENTER
 				| ButtonField.CONSUME_CLICK);
 		cancelButton.setFont(getFont().derive(Font.PLAIN, 20));
 		cancelButton.setMargin(20, 0, 0, 0);
@@ -119,9 +118,8 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 
 		if (cancelRunnable != null) {
 			cancelRunnable.run();
-		} else {
-			UtilCommon.trace("Cancel Request!");
 		}
+
 	}
 
 }

@@ -24,6 +24,7 @@ import net.rim.device.api.ui.menu.DefaultContextMenuProvider;
 import net.rim.device.api.util.MathUtilities;
 import net.rim.device.api.util.SimpleSortingVector;
 import RockManager.archive.ArchiveListField;
+import RockManager.config.ConfigData;
 import RockManager.favouritesList.FavouritesListField;
 import RockManager.fileClipboard.FileClipboard;
 import RockManager.fileHandler.FileHandler;
@@ -487,6 +488,9 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	protected FileItem[] listFiles() {
 
+		// 是否显示隐藏文件。
+		boolean showHiddenFile = ConfigData.SHOW_HIDDEN_FILE.booleanValue();
+
 		Enumeration allFiles = null; // 文件名（String）的集合，可能包含隐藏文件。
 		Enumeration allFilesDetailInfo = null; // 文件信息（FileInfo）的集合，可能包含隐藏文件。由此获得的文件名不包括最后的'/'.
 		Enumeration normalFiles = null; // 文件名（String）的集合，不包含隐藏文件。
@@ -508,9 +512,13 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 					folderPath = FILE_PROTOCOL + fconn.getPath() + fconn.getName();
 					folderPathTotalURL = fconn.getURL();
 
-					allFiles = fconn.list("*", true);
-					allFilesDetailInfo = fconn.listWithDetails("*", true);
-					normalFiles = fconn.list();
+					allFiles = fconn.list("*", showHiddenFile);
+					allFilesDetailInfo = fconn.listWithDetails("*", showHiddenFile);
+
+					if (showHiddenFile) {
+						// 若不需要显示隐藏文件无需normalFiles这组数据就可完成任务。
+						normalFiles = fconn.list();
+					}
 
 				} else {
 
@@ -518,9 +526,9 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 					String message;
 
 					if (fconn.exists() == false) {
-						message = LangRes.getString(LangRes.UNABLE_OPEN_FOLDER_NOT_EXIST);
+						message = LangRes.get(LangRes.UNABLE_OPEN_FOLDER_NOT_EXIST);
 					} else {
-						message = LangRes.getString(LangRes.UNABLE_OPEN_FOLDER_NOT_FOLDER);
+						message = LangRes.get(LangRes.UNABLE_OPEN_FOLDER_NOT_FOLDER);
 					}
 
 					message = UtilCommon.replaceString(message, "{1}", targetPath);
@@ -584,16 +592,18 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 					isLocked = true;
 				}
 
-				// 是否从normalFiles中读取下一项。
-				if (fileNameFromNormal == null) {
-					if (normalFiles.hasMoreElements()) {
-						fileNameFromNormal = (String) normalFiles.nextElement();
+				if (showHiddenFile) {
+					// 是否从normalFiles中读取下一项。
+					if (fileNameFromNormal == null) {
+						if (normalFiles.hasMoreElements()) {
+							fileNameFromNormal = (String) normalFiles.nextElement();
+						}
 					}
 				}
 
 				thisItem = new FileItem(folderPath + fileNameFromAll);
 
-				boolean isHidden = !fileNameFromAll.equals(fileNameFromNormal);
+				boolean isHidden = showHiddenFile && !fileNameFromAll.equals(fileNameFromNormal);
 				boolean isFile = thisItem.isFile();
 
 				if (isHidden) {
@@ -637,7 +647,11 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		FileNameComparator comparator = new FileNameComparator();
 		fileVector.setSortComparator(comparator);
 		fileVector.reSort();
-		if (shouldHaveReturn()) {
+
+		// 根据设置是否应向菜单中添加返回项。
+		boolean addReturnItem = ConfigData.ADD_RETURN_ITEM.booleanValue();
+
+		if (addReturnItem && shouldHaveReturn()) {
 			FileItem returnItem = new FileItem("...", FileItem.TYPE_RETURN);
 			fileVector.insertElementAt(returnItem, 0);
 		}
@@ -649,9 +663,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 
 	/**
-	 * 依据basePath判断是否应该添加返回项。
-	 * 
-	 * @return
+	 * 依据basePath判断是否应该添加返回项或返回上级目录还是关闭Screen。
 	 */
 	boolean shouldHaveReturn() {
 
@@ -723,7 +735,8 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	protected boolean navigationClick(int status, int time) {
 
 		if (isEmpty()) {
-			return super.navigationClick(status, time);
+			// show nothing.
+			return true;
 		}
 
 		boolean consumed = false;
@@ -1236,11 +1249,9 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	private void matchEmptyString() {
 
 		if (keyWordEntered) {
-			setEmptyString(LangRes.getString(LangRes.SEARCH_RESULT_EMPTY), DrawStyle.HCENTER);
+			setEmptyString(LangRes.get(LangRes.SEARCH_RESULT_EMPTY), DrawStyle.HCENTER);
 		} else {
-			if (folderPath == null || folderPath.length() == 0) {
-				setEmptyString(getNoFileFindString(), DrawStyle.HCENTER);
-			}
+			setEmptyString(getNoFileFindString(), DrawStyle.HCENTER);
 		}
 	}
 
@@ -1252,7 +1263,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	protected String getNoFileFindString() {
 
-		return LangRes.getString(LangRes.FOLDER_IS_EMPTY);
+		return LangRes.get(LangRes.FOLDER_IS_EMPTY);
 	}
 
 

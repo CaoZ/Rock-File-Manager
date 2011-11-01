@@ -332,7 +332,7 @@ public class FilePasteThread extends StopableThread {
 	private String getCopyName(FileItem originFile, String originFolderURL) {
 
 		// hello.mp3
-		String copySuffix = LangRes.getString(LangRes.FILE_COPY_SUFFIX); // " - 副本"
+		String copySuffix = LangRes.get(LangRes.FILE_COPY_SUFFIX); // " - 副本"
 		String originFileName = originFile.getName(false); // hello
 		String originFileSuffix = originFile.getOriginSuffix(); // mp3
 		boolean haveSuffix = originFile.isFile() && originFileSuffix.length() > 0; // true

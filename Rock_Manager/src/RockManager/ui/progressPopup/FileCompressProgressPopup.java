@@ -28,7 +28,7 @@ public class FileCompressProgressPopup extends ProgressPopup {
 		this.compressMethod = compressMethod;
 		this.parentFileList = parentFileList;
 
-		setTitle(LangRes.getString(LangRes.TITLE_COMPRESSING));
+		setTitle(LangRes.get(LangRes.TITLE_COMPRESSING));
 
 		// invokeLater: 等窗口出现再开始压缩。
 		UiApplication.getUiApplication().invokeLater(new Runnable() {

@@ -28,7 +28,7 @@ public class FileClipboardPopup extends BasePopupScreen implements FieldChangeLi
 
 		super(VERTICAL_SCROLL | VERTICAL_SCROLLBAR, DEFAULT_CLOSE);
 
-		setTitle(LangRes.getString(LangRes.MENU_TITLE_CLIPBOARD));
+		setTitle(LangRes.get(LangRes.MENU_TITLE_CLIPBOARD));
 
 		FileItem thisItem = FileClipboard.get();
 
@@ -50,7 +50,7 @@ public class FileClipboardPopup extends BasePopupScreen implements FieldChangeLi
 
 		LeftRightManager fileNameArea = new LeftRightManager();
 
-		fileNameArea.addToLeft(new LabelField(LangRes.getString(LangRes.NAME)));
+		fileNameArea.addToLeft(new LabelField(LangRes.get(LangRes.NAME)));
 		fileNameArea.addToRight(new LabelField(fileName));
 
 		add(fileNameArea);
@@ -64,7 +64,7 @@ public class FileClipboardPopup extends BasePopupScreen implements FieldChangeLi
 
 		LeftRightManager fileLocationArea = new LeftRightManager();
 
-		fileLocationArea.addToLeft(new LabelField(LangRes.getString(LangRes.LOCATION)));
+		fileLocationArea.addToLeft(new LabelField(LangRes.get(LangRes.LOCATION)));
 		fileLocationArea.addToRight(new LabelField(fileLocation, DrawStyle.RIGHT));
 
 		MarginPaddingUtil.setMarginTop(fileLocationArea, 5);
@@ -77,12 +77,12 @@ public class FileClipboardPopup extends BasePopupScreen implements FieldChangeLi
 	private void addButtons() {
 
 		// 添加按钮。
-		HorizontalFieldManager buttons = new HorizontalFieldManager(Field.FIELD_HCENTER);
+		HorizontalFieldManager buttons = new HorizontalFieldManager(FIELD_HCENTER);
 
-		buttonOK = new BaseButtonField(LangRes.getString(LangRes.BUTTON_LABEL_OK_S), ButtonField.CONSUME_CLICK);
+		buttonOK = new BaseButtonField(LangRes.get(LangRes.BUTTON_LABEL_OK_S), ButtonField.CONSUME_CLICK);
 		buttonOK.setChangeListener(this);
 
-		buttonClear = new BaseButtonField(LangRes.getString(LangRes.BUTTON_LABEL_CLEAR_S), ButtonField.CONSUME_CLICK);
+		buttonClear = new BaseButtonField(LangRes.get(LangRes.BUTTON_LABEL_CLEAR_S), ButtonField.CONSUME_CLICK);
 		buttonClear.setChangeListener(this);
 
 		MarginPaddingUtil.setMarginRight(buttonOK, 10);
@@ -90,8 +90,8 @@ public class FileClipboardPopup extends BasePopupScreen implements FieldChangeLi
 		buttons.add(buttonClear);
 		add(buttons);
 
-		registerHotKey(buttonOK, LangRes.getString(LangRes.BUTTON_LABEL_OK));
-		registerHotKey(buttonClear, LangRes.getString(LangRes.BUTTON_LABEL_CLEAR_S));
+		registerHotKey(buttonOK, LangRes.get(LangRes.BUTTON_LABEL_OK));
+		registerHotKey(buttonClear, LangRes.get(LangRes.BUTTON_LABEL_CLEAR_S));
 
 	}
 

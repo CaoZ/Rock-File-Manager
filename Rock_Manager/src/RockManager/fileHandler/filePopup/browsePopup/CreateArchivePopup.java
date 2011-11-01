@@ -28,7 +28,7 @@ public class CreateArchivePopup extends FileBrowsePopup {
 
 		this.itemToCompress = itemToCompress;
 		this.parentFileList = parentFileList;
-		setTitle(LangRes.getString(LangRes.TITLE_CREATE_ARCHIVE));
+		setTitle(LangRes.get(LangRes.TITLE_CREATE_ARCHIVE));
 
 		String itemPath = itemToCompress.getPath();
 		String parentPath = UtilCommon.getParentDir(itemPath);
@@ -72,7 +72,7 @@ public class CreateArchivePopup extends FileBrowsePopup {
 
 	private void addCompressMethodArea() {
 
-		LabelField methodLabel = new LabelField(LangRes.getString(LangRes.LABEL_COMPRESS_METHOD));
+		LabelField methodLabel = new LabelField(LangRes.get(LangRes.LABEL_COMPRESS_METHOD));
 		// 设置左边距。因为上面的输入框有一定边框，使这个label右移4以跟输入框左对齐。
 		methodLabel.setMargin(4, 0, 3, 4);
 		add(methodLabel);

@@ -88,7 +88,7 @@ public class CodInstaller {
 	private String extractCod(final FileConnection cod) throws Exception {
 
 		installerPopup = new ProgressPopup();
-		installerPopup.setTitle(LangRes.getString(LangRes.TITLE_EXTRACTING));
+		installerPopup.setTitle(LangRes.get(LangRes.TITLE_EXTRACTING));
 
 		UiApplication.getUiApplication().invokeAndWait(new Runnable() {
 
@@ -196,7 +196,7 @@ public class CodInstaller {
 	private void installAllModules(String[] codPaths) throws IOException {
 
 		final ProgressPopup popup = (installerPopup == null) ? new ProgressPopup() : installerPopup;
-		popup.setTitle(LangRes.getString(LangRes.INSTALLING));
+		popup.setTitle(LangRes.get(LangRes.INSTALLING));
 		popup.setProgressName("initialing...");
 		popup.setProgressRate(0);
 
@@ -317,8 +317,8 @@ public class CodInstaller {
 		int lang_Run = CapabilityUtil.isPhysicalKeyboardAvailable() ? LangRes.BUTTON_LABEL_RUN_S
 				: LangRes.BUTTON_LABEL_RUN;
 
-		String choice_OK = LangRes.getString(lang_OK);
-		String choice_Run = LangRes.getString(lang_Run);
+		String choice_OK = LangRes.get(lang_OK);
+		String choice_Run = LangRes.get(lang_Run);
 
 		int choiceValue_OK = 1;
 		final int choiceValue_Run = 2;
@@ -332,7 +332,7 @@ public class CodInstaller {
 		if (installSuccessed == false) {
 			// 安装失败。
 
-			message = LangRes.getString(LangRes.INSTALL_FAILED) + installFailReason;
+			message = LangRes.get(LangRes.INSTALL_FAILED) + installFailReason;
 			appIcon = Bitmap.getPredefinedBitmap(Bitmap.EXCLAMATION);
 
 			// 回滚操作，删除安装了一半的module.
@@ -362,7 +362,7 @@ public class CodInstaller {
 					appName = appDes.getName();
 				}
 
-				message = UtilCommon.replaceString(LangRes.getString(LangRes.INSTALL_SUCCESSED_INFO), "{1}", appName);
+				message = UtilCommon.replaceString(LangRes.get(LangRes.INSTALL_SUCCESSED_INFO), "{1}", appName);
 				EncodedImage appIconEncoded = appDes.getEncodedIcon();
 				appIcon = appIconEncoded == null ? null : appIconEncoded.getBitmap();
 
@@ -375,7 +375,7 @@ public class CodInstaller {
 
 				// 安装成功，安装的可能是lib.
 				String codName = CodeModuleManager.getModuleName(moduleHandlers[0]);
-				message = UtilCommon.replaceString(LangRes.getString(LangRes.INSTALL_SUCCESSED_INFO), "{1}", codName);
+				message = UtilCommon.replaceString(LangRes.get(LangRes.INSTALL_SUCCESSED_INFO), "{1}", codName);
 				appIcon = Bitmap.getPredefinedBitmap(Bitmap.INFORMATION);
 
 			}

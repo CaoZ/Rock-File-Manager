@@ -19,7 +19,7 @@ public class FileRenamePopup extends FileOperationPopup {
 	public FileRenamePopup(FileItem fileItem, FileListField fileListField) {
 
 		setParentFileList(fileListField);
-		setTitle(LangRes.getString(LangRes.RENAME));
+		setTitle(LangRes.get(LangRes.RENAME));
 
 		itemToRename = fileItem;
 
@@ -77,7 +77,7 @@ public class FileRenamePopup extends FileOperationPopup {
 			getParentFileList().setItemToFocus(newFileName, itemToRename.getType());
 			return true;
 		} catch (Exception e) {
-			UtilCommon.trace(LangRes.getString(LangRes.FAILED_TO_RENAME) + e.getMessage());
+			UtilCommon.trace(LangRes.get(LangRes.FAILED_TO_RENAME) + e.getMessage());
 			return false;
 		} finally {
 			if (fconn != null) {

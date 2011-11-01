@@ -167,10 +167,10 @@ public class FileClipboard {
 
 		if (METHOD_NOW == METHOD_CUT) {
 			// 移动文件...
-			popup.setTitle(LangRes.getString(LangRes.TITLE_MOVING_FILES));
+			popup.setTitle(LangRes.get(LangRes.TITLE_MOVING_FILES));
 		} else {
 			// 复制文件...
-			popup.setTitle(LangRes.getString(LangRes.TITLE_COPYING_FILES));
+			popup.setTitle(LangRes.get(LangRes.TITLE_COPYING_FILES));
 		}
 
 		final ProgressIndicator progressIndicator = new ProgressIndicator();

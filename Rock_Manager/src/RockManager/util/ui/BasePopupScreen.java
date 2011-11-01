@@ -18,9 +18,13 @@ import net.rim.device.api.ui.container.PopupScreen;
 import net.rim.device.api.ui.container.VerticalFieldManager;
 import net.rim.device.api.ui.decor.Border;
 import net.rim.device.api.ui.decor.BorderFactory;
+import RockManager.config.ConfigData;
 import RockManager.util.FixUtil;
 import RockManager.util.KeyUtil;
 import RockManager.util.UtilCommon;
+import RockManager.util.quickExit.QuickExitMenuHandler;
+import RockManager.util.quickExit.QuickExitRegistry;
+import RockManager.util.quickExit.QuickExitScreen;
 
 
 public class BasePopupScreen extends PopupScreen {
@@ -31,6 +35,8 @@ public class BasePopupScreen extends PopupScreen {
 	private LabelField titleField;
 
 	private Hashtable hotKeyTable;
+
+	private boolean hasAppliedAnimation = false;
 
 
 	public BasePopupScreen(long managerStyle, long screenStyle) {
@@ -44,6 +50,16 @@ public class BasePopupScreen extends PopupScreen {
 		setBorder(border);
 		setPadding(10, 8, 7, 8);
 
+		if (this instanceof QuickExitScreen) {
+			QuickExitRegistry.addLog((QuickExitScreen) this);
+		}
+
+		boolean animationEffect = ConfigData.ANIMATION_EFFECT.booleanValue();
+
+		if (animationEffect == false) {
+			return;
+		}
+
 		// 动画push效果。
 		TransitionContext transitionPush = new TransitionContext(TransitionContext.TRANSITION_ZOOM);
 		transitionPush.setIntAttribute(TransitionContext.ATTR_DURATION, 200);
@@ -56,6 +72,8 @@ public class BasePopupScreen extends PopupScreen {
 		transitionPop.setIntAttribute(TransitionContext.ATTR_KIND, TransitionContext.KIND_OUT);
 		transitionPop.setIntAttribute(5, 30);// TransitionContext.ATTR_SCALE
 		Ui.getUiEngineInstance().setTransition(this, null, UiEngineInstance.TRIGGER_POP, transitionPop);
+
+		hasAppliedAnimation = true;
 
 	}
 
@@ -161,6 +179,12 @@ public class BasePopupScreen extends PopupScreen {
 
 	public boolean onMenu(int instance) {
 
+		boolean animationEffect = ConfigData.ANIMATION_EFFECT.booleanValue();
+
+		if (animationEffect == false) {
+			return super.onMenu(instance);
+		}
+
 		UiEngineInstance uiEngine = Ui.getUiEngineInstance();
 
 		// 原来的Push时效果。
@@ -186,6 +210,12 @@ public class BasePopupScreen extends PopupScreen {
 
 
 	protected void onMenuDismissed(Menu menu) {
+
+		boolean animationEffect = ConfigData.ANIMATION_EFFECT.booleanValue();
+
+		if (animationEffect == false) {
+			return;
+		}
 
 		boolean hasSelected = (menu.getSelectedItem() != null);
 
@@ -230,13 +260,15 @@ public class BasePopupScreen extends PopupScreen {
 		FixUtil.fixVirtualKeyboardMenuItem(menu, this);
 		super.makeMenu(menu, instance);
 
+		QuickExitMenuHandler.handleExitMenuItem(menu);
+
 		UtilCommon.setMenuMinWidth(menu, Display.getWidth() / 3);
 	}
 
 
 	protected void onUiEngineAttached(boolean attached) {
 
-		if (attached == false) {
+		if (attached == false && hasAppliedAnimation) {
 
 			final Screen thisScreen = this;
 
@@ -261,6 +293,10 @@ public class BasePopupScreen extends PopupScreen {
 
 
 	public void close() {
+
+		if (this instanceof QuickExitScreen) {
+			QuickExitRegistry.removeLog((QuickExitScreen) this);
+		}
 
 		// 在invokeLater中执行。作用：使从菜单中选择"关闭"来关闭本Screen时也有动画效果(等待Menu关闭后再关闭本Screen)。某则不会出现动画效果，原因是Menu也是一种Screen(DefaultMenuScreen)。
 		UiApplication.getUiApplication().invokeLater(new Runnable() {

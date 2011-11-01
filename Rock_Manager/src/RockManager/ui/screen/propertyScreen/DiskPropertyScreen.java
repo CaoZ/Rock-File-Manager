@@ -63,8 +63,8 @@ public class DiskPropertyScreen extends BasePropertyScreen {
 			removeable = true;
 		}
 
-		String builtInStorage = LangRes.getString(LangRes.BUILT_IN_STORAGE);
-		String externalStorage = LangRes.getString(LangRes.EXTERNAL_STORAGE);
+		String builtInStorage = LangRes.get(LangRes.BUILT_IN_STORAGE);
+		String externalStorage = LangRes.get(LangRes.EXTERNAL_STORAGE);
 		String title = (removeable ? externalStorage : builtInStorage) + diskName;
 
 		TitledPanel infoPanel = new TitledPanel(title);
@@ -89,7 +89,7 @@ public class DiskPropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager locationArea = new LeftRightManager();
 
-		locationArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.LOCATION)));
+		locationArea.addToLeft(new KeyLabel(LangRes.get(LangRes.LOCATION)));
 		locationArea.addToRight(new ValueLabel(location));
 
 		return locationArea;
@@ -104,7 +104,7 @@ public class DiskPropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager totalSizeArea = new LeftRightManager();
 
-		totalSizeArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.CAPACITY)));
+		totalSizeArea.addToLeft(new KeyLabel(LangRes.get(LangRes.CAPACITY)));
 		totalSizeArea.addToRight(new ValueLabel(totalSizeString));
 
 		return totalSizeArea;
@@ -119,7 +119,7 @@ public class DiskPropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager usedSizeArea = new LeftRightManager();
 
-		usedSizeArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.USED_SPACE)));
+		usedSizeArea.addToLeft(new KeyLabel(LangRes.get(LangRes.USED_SPACE)));
 		usedSizeArea.addToRight(new ValueLabel(usedSizeString));
 
 		return usedSizeArea;
@@ -134,7 +134,7 @@ public class DiskPropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager freeSizeArea = new LeftRightManager();
 
-		freeSizeArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.FREE_SPACE)));
+		freeSizeArea.addToLeft(new KeyLabel(LangRes.get(LangRes.FREE_SPACE)));
 		freeSizeArea.addToRight(new ValueLabel(freeSizeString));
 
 		return freeSizeArea;

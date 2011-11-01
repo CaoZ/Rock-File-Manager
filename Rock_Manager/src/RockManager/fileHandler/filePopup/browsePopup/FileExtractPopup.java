@@ -24,7 +24,7 @@ public class FileExtractPopup extends FileBrowsePopup {
 	public FileExtractPopup(ArchiveListField fileList, FileItem[] itemsToExtract) {
 
 		super();
-		setTitle(LangRes.getString(LangRes.MENU_TITLE_EXTRACT_FILES));
+		setTitle(LangRes.get(LangRes.MENU_TITLE_EXTRACT_FILES));
 		this.itemsToExtract = itemsToExtract;
 		archiveList = fileList;
 		setDestinationPath(getPreferedDestinationPath());

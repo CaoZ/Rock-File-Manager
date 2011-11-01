@@ -21,8 +21,8 @@ public class FavouritesData {
 
 	static {
 
-		// "Rock File Manager FavouriteData_V1";
-		long key = 0xaf8947e3f1aee17cL;
+		// "Rock File Manager FavouriteData V1";
+		long key = 0x81000565cb170d13L;
 		PERSIST = PersistentStore.getPersistentObject(key);
 		Object contents = PERSIST.getContents();
 
@@ -98,10 +98,8 @@ public class FavouritesData {
 
 	private static void favouritesChanged() {
 
-		Enumeration listeners = CHANGE_LISTENERS.elements();
-
-		while (listeners.hasMoreElements()) {
-			FavouritesChangedListener thisListener = (FavouritesChangedListener) listeners.nextElement();
+		for (int i = 0; i < CHANGE_LISTENERS.size(); i++) {
+			FavouritesChangedListener thisListener = (FavouritesChangedListener) CHANGE_LISTENERS.elementAt(i);
 			thisListener.favouritesChanged();
 		}
 
@@ -110,7 +108,9 @@ public class FavouritesData {
 
 	public static void addChangeListener(FavouritesChangedListener listener) {
 
-		CHANGE_LISTENERS.addElement(listener);
+		if (CHANGE_LISTENERS.contains(listener) == false) {
+			CHANGE_LISTENERS.addElement(listener);
+		}
 	}
 
 

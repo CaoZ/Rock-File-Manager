@@ -41,7 +41,7 @@ public class FileBrowsePopup extends BaseFilePopup {
 
 	protected void addMainArea() {
 
-		LabelField destinationPath = new LabelField(LangRes.getString(LangRes.LABEL_DESTINATION_PATH));
+		LabelField destinationPath = new LabelField(LangRes.get(LangRes.LABEL_DESTINATION_PATH));
 		// 设置左边距。因为输入框有一定边框，使这个label右移4以跟输入框左对齐。
 		MarginPaddingUtil.setMarginLeft(destinationPath, 4);
 		add(destinationPath);
@@ -134,7 +134,7 @@ public class FileBrowsePopup extends BaseFilePopup {
 	 */
 	private ButtonField createBrowseButton() {
 
-		ButtonField browseButton = new ButtonField(LangRes.getString(LangRes.BUTTON_LABEL_BROWSE), FIELD_VCENTER
+		ButtonField browseButton = new ButtonField(LangRes.get(LangRes.BUTTON_LABEL_BROWSE), FIELD_VCENTER
 				| ButtonField.CONSUME_CLICK);
 
 		browseButton.setChangeListener(new FieldChangeListener() {
@@ -177,7 +177,7 @@ public class FileBrowsePopup extends BaseFilePopup {
 
 	protected void showTextEmptyError() {
 
-		UtilCommon.trace(LangRes.getString(LangRes.ERR_PATH_CANNOT_EMPTY));
+		UtilCommon.trace(LangRes.get(LangRes.ERR_PATH_CANNOT_EMPTY));
 	}
 
 

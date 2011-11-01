@@ -97,7 +97,7 @@ public class AddressBar extends Field {
 
 		if (address == null) {
 			// 当是listRoots的DiskList时。
-			address = LangRes.getString(LangRes.MY_DEVICE);
+			address = LangRes.get(LangRes.MY_DEVICE);
 		}
 
 		if (address.equals(rawAddress)) {

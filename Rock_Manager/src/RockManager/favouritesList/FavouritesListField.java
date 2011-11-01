@@ -45,7 +45,7 @@ public class FavouritesListField extends FileListField implements FavouritesChan
 
 		if (exists == false) {
 
-			String deleteConfirmAsk = LangRes.getString(LangRes.FAVOURITE_OLD_DELETE_ASK);
+			String deleteConfirmAsk = LangRes.get(LangRes.FAVOURITE_OLD_DELETE_ASK);
 			String message = UtilCommon.replaceString(deleteConfirmAsk, "{1}", thisItem.getDisplayName());
 			Bitmap bitmap = Bitmap.getPredefinedBitmap(Bitmap.QUESTION);
 
@@ -96,7 +96,9 @@ public class FavouritesListField extends FileListField implements FavouritesChan
 
 	public void refresh() {
 
+		int selectedInex = getSelectedIndex();
 		listFavourites();
+		setSelectedIndex(selectedInex);
 	}
 
 
@@ -125,6 +127,10 @@ public class FavouritesListField extends FileListField implements FavouritesChan
 
 	protected void onDisplay() {
 
+		if (isVisible()) {
+			// 如果是第一次显示，isVisible()会是false, 无需刷新数据，因为刚刚在构造函数中列出数据了。
+			refresh();
+		}
 		FavouritesData.addChangeListener(this);
 		super.onDisplay();
 	}

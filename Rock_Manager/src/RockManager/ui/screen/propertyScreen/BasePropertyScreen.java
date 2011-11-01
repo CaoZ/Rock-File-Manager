@@ -52,7 +52,7 @@ public class BasePropertyScreen extends AnimatedMainScreen {
 
 		String fileName = thisFile.getDisplayName();
 
-		String properties = " " + LangRes.getString(LangRes.PROPERTIES);
+		String properties = " " + LangRes.get(LangRes.PROPERTIES);
 
 		LabelField label = new LabelField(fileName + properties, FIELD_VCENTER | DrawStyle.ELLIPSIS
 				| DrawStyle.TRUNCATE_BEGINNING);

@@ -1,6 +1,7 @@
 
 package RockManager.util.ui;
 
+import RockManager.util.UtilCommon;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
 import net.rim.device.api.ui.container.VerticalFieldManager;
@@ -50,7 +51,7 @@ public class LeftRightManager extends HorizontalFieldManager {
 
 	protected void sublayout(int maxWidth, int maxHeight) {
 
-		// 最多只使用88%的宽度，使leftVFM, ightVFM不能完全占据整行，而能左对齐或右对齐。
+		// 最多只使用85%的宽度，使leftVFM, rightVFM不能完全占据整行，而能左对齐或右对齐。
 		int widthForSeparateUse = (int) (maxWidth * 0.85);
 
 		layoutChild(leftVFM, widthForSeparateUse, maxHeight);
@@ -61,30 +62,37 @@ public class LeftRightManager extends HorizontalFieldManager {
 		int rightWidth = rightVFM.getWidth();
 		int rightHeight = rightVFM.getHeight();
 
-		setPositionChild(leftVFM, 0, 0);
+		int realHeight;
 
 		if (leftWidth + rightWidth > maxWidth) {
-
 			// 宽度：一行显示不开，需分多行
 
-			int rightStartX = maxWidth - rightWidth;
-			int rightStartY = leftHeight;
+			realHeight = leftHeight + rightHeight;
+
+			int rightStartX = maxWidth - rightWidth; // rightVFM开始的位置x.
+			int rightStartY = leftHeight; // rightVFM开始的位置y.
+
+			setPositionChild(leftVFM, 0, 0);
 			setPositionChild(rightVFM, rightStartX, rightStartY);
 
-			int realHeight = leftHeight + rightHeight;
-			setExtent(maxWidth, realHeight);
-
 		} else {
-
 			// 宽度：一行即可完全显示
 
-			int rightStartX = maxWidth - rightWidth;
-			setPositionChild(rightVFM, rightStartX, 0);
+			realHeight = Math.max(leftHeight, rightHeight);
 
-			int realHeight = Math.max(leftHeight, rightHeight);
-			setExtent(maxWidth, realHeight);
+			int leftStartY = UtilCommon.getOffset(realHeight, leftHeight);
+
+			int rightStartX = maxWidth - rightWidth;
+			int rightStartY = UtilCommon.getOffset(realHeight, rightHeight);
+
+			// 使两者都垂直居中。
+			setPositionChild(leftVFM, 0, leftStartY);
+			setPositionChild(rightVFM, rightStartX, rightStartY);
 
 		}
 
+		setExtent(maxWidth, realHeight);
+
 	}
+
 }

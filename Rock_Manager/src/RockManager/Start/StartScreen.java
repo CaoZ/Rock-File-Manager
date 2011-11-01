@@ -3,8 +3,12 @@ package RockManager.Start;
 
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.Field;
+import net.rim.device.api.ui.MenuItem;
+import net.rim.device.api.ui.UiApplication;
+import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.StandardTitleBar;
 import net.rim.device.api.ui.decor.BackgroundFactory;
+import RockManager.config.OptionsScreen;
 import RockManager.favouritesList.FavouritesListField;
 import RockManager.fileList.FileListField;
 import RockManager.languages.LangRes;
@@ -37,17 +41,18 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 
 		vfm = new VFMwithScrollbar(USE_ALL_WIDTH);
 		vfm.setBackground(BackgroundFactory.createSolidBackground(0xf7f7f7));
-		add(vfm);
 
 		addDeviceItem();
 		addFavouriteItem();
+
+		add(vfm);
 
 	}
 
 
 	private void addDeviceItem() {
 
-		TitledPanel device = new TitledPanel(LangRes.getString(LangRes.MY_DEVICE));
+		TitledPanel device = new TitledPanel(LangRes.get(LangRes.MY_DEVICE));
 		device.setIcon(Bitmap.getBitmapResource("img/icons/device.png"));
 		device.setPadding(5, 4, 5, 4);
 		device.setChangeListener(this);
@@ -56,19 +61,17 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 		diskList.setChangeListener(this); // 高度改变时(如SD卡插入拔出)通知Screen重新布局。
 		diskList.setSearchable(false);
 		diskList.setClipboardAllowed(false);
+		diskList.registerRootChangeListener();
 
 		device.add(diskList);
 		vfm.add(device);
-
-		diskList.setFocus();
-		diskList.registerRootChangeListener();
 
 	}
 
 
 	private void addFavouriteItem() {
 
-		TitledPanel favourite = new TitledPanel(LangRes.getString(LangRes.FAVOURITE));
+		TitledPanel favourite = new TitledPanel(LangRes.get(LangRes.FAVOURITE));
 		favourite.setIcon(Bitmap.getBitmapResource("img/icons/favourite.png"));
 		favourite.setPadding(5, 4, 5, 4);
 		favourite.setChangeListener(this);
@@ -88,10 +91,41 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 	}
 
 
+	protected void makeMenu(Menu menu, int instance) {
+
+		String label = LangRes.get(LangRes.MENU_TITLE_OPTIONS);
+
+		MenuItem config = new MenuItem(label, 1, 1) {
+
+			public void run() {
+
+				UiApplication.getUiApplication().pushScreen(new OptionsScreen());
+			}
+		};
+		menu.add(config);
+		menu.add(MenuItem.separator(2));
+
+		super.makeMenu(menu, instance);
+
+	}
+
+
 	protected boolean onSavePrompt() {
 
 		// 避免保存对话框的出现。
 		return true;
+
+	}
+
+
+	protected void onUiEngineAttached(boolean attached) {
+
+		if (attached) {
+			diskList.setFocus();
+		}
+
+		super.onUiEngineAttached(attached);
+
 	}
 
 
@@ -111,6 +145,7 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 				&& context != ScreenHeightChangeEvent.SCREEN_HEIGHT_NOT_CHANGED) {
 			updateLayout();
 		}
+
 	}
 
 }

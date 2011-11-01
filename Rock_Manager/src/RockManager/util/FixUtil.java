@@ -42,7 +42,7 @@ public class FixUtil {
 
 		if (isShown) {
 			// virtual keyboard已显示，添加隐藏菜单。
-			text = LangRes.getString(LangRes.MENU_VIRTUAL_KEYBOARD_HIDE);
+			text = LangRes.get(LangRes.MENU_VIRTUAL_KEYBOARD_HIDE);
 			vkItem = new MenuItem(text, ordinal, priority) {
 
 				public void run() {
@@ -53,7 +53,7 @@ public class FixUtil {
 
 		} else {
 			// virtual keyboard未显示，添加呼出菜单。
-			text = LangRes.getString(LangRes.MENU_VIRTUAL_KEYBOARD_SHOW);
+			text = LangRes.get(LangRes.MENU_VIRTUAL_KEYBOARD_SHOW);
 			vkItem = new MenuItem(text, ordinal, priority) {
 
 				public void run() {

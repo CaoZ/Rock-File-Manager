@@ -38,7 +38,7 @@ public class FileInArchivePropertyScreen extends BasePropertyScreen {
 
 	private void addBasicInfoPanel() {
 
-		TitledPanel basicInfoPanel = new TitledPanel(LangRes.getString(LangRes.BASIC_INFO));
+		TitledPanel basicInfoPanel = new TitledPanel(LangRes.get(LangRes.BASIC_INFO));
 		basicInfoPanel.setPadding(9, 10, 9, 10);
 
 		addInfoToPanel(basicInfoPanel, getFileNameArea(), 7);
@@ -68,7 +68,7 @@ public class FileInArchivePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager fileNameArea = new LeftRightManager();
 
-		fileNameArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.NAME)));
+		fileNameArea.addToLeft(new KeyLabel(LangRes.get(LangRes.NAME)));
 		fileNameArea.addToRight(new ValueLabel(fileName));
 
 		return fileNameArea;
@@ -81,7 +81,7 @@ public class FileInArchivePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager fileLocationArea = new LeftRightManager();
 
-		fileLocationArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.LOCATION)));
+		fileLocationArea.addToLeft(new KeyLabel(LangRes.get(LangRes.LOCATION)));
 		fileLocationArea.addToRight(new ValueLabel(fileLocation));
 
 		return fileLocationArea;
@@ -99,7 +99,7 @@ public class FileInArchivePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager originSizeArea = new LeftRightManager();
 
-		originSizeArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.SIZE)));
+		originSizeArea.addToLeft(new KeyLabel(LangRes.get(LangRes.SIZE)));
 		originSizeArea.addToRight(new ValueLabel(originSizeString));
 
 		return originSizeArea;
@@ -117,7 +117,7 @@ public class FileInArchivePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager packedSizeArea = new LeftRightManager();
 
-		packedSizeArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.PACKED_SIZE)));
+		packedSizeArea.addToLeft(new KeyLabel(LangRes.get(LangRes.PACKED_SIZE)));
 		packedSizeArea.addToRight(new ValueLabel(packedSizeString));
 
 		return packedSizeArea;
@@ -138,7 +138,7 @@ public class FileInArchivePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager compressRatioArea = new LeftRightManager();
 
-		compressRatioArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.COMPRESSION_RATIO)));
+		compressRatioArea.addToLeft(new KeyLabel(LangRes.get(LangRes.COMPRESSION_RATIO)));
 		compressRatioArea.addToRight(new ValueLabel(compressRatioString));
 
 		return compressRatioArea;
@@ -153,7 +153,7 @@ public class FileInArchivePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager folderCountArea = new LeftRightManager();
 
-		folderCountArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.CONTAINS)));
+		folderCountArea.addToLeft(new KeyLabel(LangRes.get(LangRes.CONTAINS)));
 		folderCountArea.addToRight(new ValueLabel(countResult.toString()));
 
 		return folderCountArea;
@@ -186,7 +186,7 @@ public class FileInArchivePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager fileTimeArea = new LeftRightManager();
 
-		fileTimeArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.MODIFIED)));
+		fileTimeArea.addToLeft(new KeyLabel(LangRes.get(LangRes.MODIFIED)));
 		fileTimeArea.addToRight(new ValueLabel(fileTimeString));
 
 		return fileTimeArea;

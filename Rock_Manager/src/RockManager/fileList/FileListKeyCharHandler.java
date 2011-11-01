@@ -2,7 +2,7 @@
 package RockManager.fileList;
 
 import net.rim.device.api.ui.Keypad;
-import RockManager.config.Config;
+import RockManager.config.ShortCutKeyConfig;
 import RockManager.favouritesList.FavouritesData;
 import RockManager.util.KeyUtil;
 
@@ -30,7 +30,7 @@ public class FileListKeyCharHandler {
 				return true;
 			}
 
-		} else if (KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_SEARCH)) {
+		} else if (KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.SEARCH)) {
 
 			if (fileList.isSearchable()) {
 				fileList.getKeywordField().setFocus();
@@ -40,7 +40,7 @@ public class FileListKeyCharHandler {
 		}
 
 		// 这个快捷键默认是‘r’,在某些机型上可能与搜索快捷键‘s’在一个按键上（如9105），因此不用else if而用if.
-		if (KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_RENAME) && fileList.isRealFileItem()
+		if (KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.RENAME) && fileList.isRealFileItem()
 				&& fileList.isNormalFolder()) {
 
 			fileList.renameFile();
@@ -49,7 +49,7 @@ public class FileListKeyCharHandler {
 		}
 
 		// 显示属性。
-		if (KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_SHOW_PROPERTY) && fileList.shouldShowProperty()) {
+		if (KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.SHOW_PROPERTY) && fileList.shouldShowProperty()) {
 
 			fileList.showProperty();
 			return true;
@@ -69,7 +69,7 @@ public class FileListKeyCharHandler {
 		}
 
 		// 复制
-		if (fileList.isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_COPY)
+		if (fileList.isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.COPY)
 				&& fileList.isRealFileItem()) {
 
 			fileList.copyToClipboard();
@@ -78,7 +78,7 @@ public class FileListKeyCharHandler {
 		}
 
 		// 剪切
-		if (fileList.isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_CUT)
+		if (fileList.isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.CUT)
 				&& fileList.isRealFileItem()) {
 
 			fileList.cutToClipboard();
@@ -87,7 +87,7 @@ public class FileListKeyCharHandler {
 		}
 
 		// 粘贴
-		if (fileList.isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, Config.SHORTCUT_KEY_PASTE)) {
+		if (fileList.isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.PASTE)) {
 
 			fileList.pasteFromClipboard();
 			return true;

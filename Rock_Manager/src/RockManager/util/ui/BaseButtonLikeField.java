@@ -18,7 +18,7 @@ public abstract class BaseButtonLikeField extends Field {
 
 	public BaseButtonLikeField(long style) {
 
-		super(Field.FOCUSABLE | style);
+		super(FOCUSABLE | style);
 	}
 
 
@@ -77,4 +77,5 @@ public abstract class BaseButtonLikeField extends Field {
 
 		fieldChangeNotify(0);
 	}
+
 }

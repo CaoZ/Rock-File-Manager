@@ -60,7 +60,7 @@ public class FileCountResult {
 
 	public String toString() {
 
-		String resultString = LangRes.getString(LangRes.FILE_COUNT_RESULT);
+		String resultString = LangRes.get(LangRes.FILE_COUNT_RESULT);
 		resultString = UtilCommon.replaceString(resultString, "{1}", Integer.toString(fileNumber));
 		resultString = UtilCommon.replaceString(resultString, "{2}", Integer.toString(folderNumber));
 		return resultString;

@@ -16,7 +16,7 @@ public class FolderCreatePopup extends FileOperationPopup {
 	public FolderCreatePopup(FileListField fileListField) {
 
 		setParentFileList(fileListField);
-		setTitle(LangRes.getString(LangRes.NEW_FOLDER_TITLE));
+		setTitle(LangRes.get(LangRes.NEW_FOLDER_TITLE));
 
 		setInputFilter(new FilenameTextFilter());
 		setAutoSelectLevel(FileNameInputField.LEVEL_ALL);
@@ -51,7 +51,7 @@ public class FolderCreatePopup extends FileOperationPopup {
 			getParentFileList().setItemToFocus(folderName, FileItem.TYPE_DIR);
 			return true;
 		} catch (Exception e) {
-			UtilCommon.trace(LangRes.getString(LangRes.FAILED_TO_CREATE_NEW_FOLDER) + e.getMessage());
+			UtilCommon.trace(LangRes.get(LangRes.FAILED_TO_CREATE_NEW_FOLDER) + e.getMessage());
 			return false;
 		} finally {
 			if (fconn != null) {

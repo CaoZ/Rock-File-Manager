@@ -216,7 +216,7 @@ public class FileItem {
 			String sizeString = getSizeString(fileSize);
 
 			if (isDisk()) {
-				sizeString += LangRes.getString(LangRes.DISK_AVAILABLE_SIZE);
+				sizeString += LangRes.get(LangRes.DISK_AVAILABLE_SIZE);
 			}
 
 			fileSizeString = sizeString;

@@ -42,7 +42,7 @@ public class ArchiveListContextMenuHandler extends FileListContextMenuHandler {
 	private static void addExtractThisItem(ContextMenu contextMenu, final ArchiveListField fileList, int ordinal,
 			int priority, final FileItem thisItem) {
 
-		MenuItem extractThis = new MenuItem(LangRes.getString(LangRes.MENU_EXTRACT_THIS), ordinal, priority) {
+		MenuItem extractThis = new MenuItem(LangRes.get(LangRes.MENU_EXTRACT_THIS), ordinal, priority) {
 
 			public void run() {
 
@@ -69,7 +69,7 @@ public class ArchiveListContextMenuHandler extends FileListContextMenuHandler {
 	private static void addExtractAllItem(ContextMenu contextMenu, final ArchiveListField fileList, int ordinal,
 			int priority, final FileItem[] allFiles) {
 
-		MenuItem extractAll = new MenuItem(LangRes.getString(LangRes.MENU_EXTRACT_ALL), ordinal, priority) {
+		MenuItem extractAll = new MenuItem(LangRes.get(LangRes.MENU_EXTRACT_ALL), ordinal, priority) {
 
 			public void run() {
 

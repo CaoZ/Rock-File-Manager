@@ -80,7 +80,7 @@ public class FileHandler {
 
 			if (parentScreen != null) {
 				// 提示无法打开此文件。
-				AutoHideStatusBar noSuchAppStatusbar = new AutoHideStatusBar(LangRes.getString(LangRes.CAN_NOT_OPEN),
+				AutoHideStatusBar noSuchAppStatusbar = new AutoHideStatusBar(LangRes.get(LangRes.CAN_NOT_OPEN),
 						1500);
 				noSuchAppStatusbar.addTo(parentScreen);
 			}
@@ -340,7 +340,7 @@ public class FileHandler {
 	 */
 	public static void deleteWithUI(FileItem thisItem) {
 
-		String deleteConfirmAsk = LangRes.getString(LangRes.DELETE_CONFIRM_ASK);
+		String deleteConfirmAsk = LangRes.get(LangRes.DELETE_CONFIRM_ASK);
 		String message = UtilCommon.replaceString(deleteConfirmAsk, "{1}", thisItem.getDisplayName());
 		Bitmap bitmap = Bitmap.getPredefinedBitmap(Bitmap.QUESTION);
 
@@ -516,7 +516,7 @@ public class FileHandler {
 			final FileListField parentFileList) {
 
 		final ProgressPopup progressPopup = new ProgressPopup();
-		progressPopup.setTitle(LangRes.getString(LangRes.TITLE_EXTRACTING));
+		progressPopup.setTitle(LangRes.get(LangRes.TITLE_EXTRACTING));
 
 		Thread extractThread = new Thread() {
 

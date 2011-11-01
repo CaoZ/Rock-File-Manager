@@ -64,7 +64,8 @@ public class CompressMethod {
 
 		}
 
-		return LangRes.getString(langKey);
+		return LangRes.get(langKey);
 
 	}
+
 }

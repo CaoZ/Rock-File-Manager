@@ -15,7 +15,7 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 
 	private int width;
 
-	private static Border border;
+	private static Border BORDER;
 
 	private VerticalFieldManager vfm;
 
@@ -26,7 +26,7 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 	static {
 		XYEdges edges = new XYEdges(7, 6, 7, 6);
 		Bitmap borderImage = Bitmap.getBitmapResource("img/titledPanel/border.png");
-		border = BorderFactory.createBitmapBorder(edges, borderImage);
+		BORDER = BorderFactory.createBitmapBorder(edges, borderImage);
 	}
 
 
@@ -43,7 +43,7 @@ public class TitledPanel extends VerticalFieldManager implements FieldChangeList
 		titleBar = new TitleBar(title);
 		titleBar.setChangeListener(this);
 		super.add(titleBar);
-		setBorder(border);
+		setBorder(BORDER);
 		// 整个panel与父容器的margin
 		// 当设置为2,4,4,4时，单击收起时有抖动的现象，而其它值时不会，bug
 		setMargin(3, 4, 2, 4);

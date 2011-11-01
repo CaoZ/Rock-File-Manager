@@ -33,7 +33,7 @@ public class FilePicker extends BasePopupScreen {
 		super(NO_VERTICAL_SCROLL, DEFAULT_CLOSE | DEFAULT_MENU | NO_SYSTEM_MENU_ITEMS);
 		useSystemTheme();
 
-		setTitle(LangRes.getString(LangRes.TITLE_SELECT_DESTINATION));
+		setTitle(LangRes.get(LangRes.TITLE_SELECT_DESTINATION));
 		LabelField titleField = getTitleField();
 		titleField.setMargin(0, 0, 0, 6); // AddressBar 在不绘制图标时与左侧的距离是6.
 

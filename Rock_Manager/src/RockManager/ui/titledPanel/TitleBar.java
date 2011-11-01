@@ -60,8 +60,7 @@ public class TitleBar extends BaseButtonLikeField {
 
 		int colorTop = 0xfdfdfd;
 		int colorBottom = 0xdddddd;
-		background = BackgroundFactory.createLinearGradientBackground(colorTop, colorTop,
-				colorBottom, colorBottom);
+		background = BackgroundFactory.createLinearGradientBackground(colorTop, colorTop, colorBottom, colorBottom);
 		expandedIcon = Bitmap.getBitmapResource("img/titledPanel/expanded.png");
 		expandedWhiteIcon = Bitmap.getBitmapResource("img/titledPanel/expandedWhite.png");
 		shrinkedIcon = Bitmap.getBitmapResource("img/titledPanel/shrinked.png");
@@ -166,8 +165,7 @@ public class TitleBar extends BaseButtonLikeField {
 		int color = focused ? textColorHighlight : textColor;
 		g.setColor(color);
 		g.setFont(textFont);
-		g.drawText(title, x, padding, DrawStyle.ELLIPSIS, getWidth() - x - expandedIcon.getWidth()
-				- 10);
+		g.drawText(title, x, padding, DrawStyle.ELLIPSIS, getWidth() - x - expandedIcon.getWidth() - 10);
 	}
 
 

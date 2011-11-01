@@ -19,7 +19,7 @@ public class FileDeleteProgressPopup extends ProgressPopup {
 
 	public FileDeleteProgressPopup(final String folderURL) {
 
-		setTitle(LangRes.getString(LangRes.TITLE_DELETING));
+		setTitle(LangRes.get(LangRes.TITLE_DELETING));
 
 		this.folderURL = folderURL;
 

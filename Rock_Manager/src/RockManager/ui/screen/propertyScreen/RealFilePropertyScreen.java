@@ -15,6 +15,7 @@ import RockManager.ui.titledPanel.TitledPanel;
 import RockManager.util.MarginPaddingUtil;
 import RockManager.util.UtilCommon;
 import RockManager.util.ui.LeftRightManager;
+import RockManager.util.ui.MyStyle;
 
 
 /**
@@ -27,6 +28,10 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 	private CheckboxField isReadOnlyCheckbox;
 
 	private CheckboxField isHiddenCheckbox;
+
+	private boolean originIsReadOnly;
+
+	private boolean originIsHidden;
 
 
 	public RealFilePropertyScreen(FileItem file) {
@@ -79,7 +84,7 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 	 */
 	private void addBasicInfo() {
 
-		TitledPanel basicInfoPanel = new TitledPanel(LangRes.getString(LangRes.BASIC_INFO));
+		TitledPanel basicInfoPanel = new TitledPanel(LangRes.get(LangRes.BASIC_INFO));
 		basicInfoPanel.setPadding(9, 10, 9, 10);
 
 		addInfoToPanel(basicInfoPanel, getFileNameArea(), 7);
@@ -105,7 +110,7 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager fileNameArea = new LeftRightManager();
 
-		fileNameArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.NAME)));
+		fileNameArea.addToLeft(new KeyLabel(LangRes.get(LangRes.NAME)));
 		fileNameArea.addToRight(new ValueLabel(fileName));
 
 		return fileNameArea;
@@ -119,7 +124,7 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager fileLocationArea = new LeftRightManager();
 
-		fileLocationArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.LOCATION)));
+		fileLocationArea.addToLeft(new KeyLabel(LangRes.get(LangRes.LOCATION)));
 		fileLocationArea.addToRight(new ValueLabel(fileLocation));
 
 		return fileLocationArea;
@@ -131,7 +136,7 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager fileSizeArea = new LeftRightManager();
 
-		fileSizeArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.SIZE)));
+		fileSizeArea.addToLeft(new KeyLabel(LangRes.get(LangRes.SIZE)));
 		fileSizeArea.addToRight(new FileSizeLabel(getThisFile()));
 
 		return fileSizeArea;
@@ -159,7 +164,7 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager fileTimeArea = new LeftRightManager();
 
-		fileTimeArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.MODIFIED)));
+		fileTimeArea.addToLeft(new KeyLabel(LangRes.get(LangRes.MODIFIED)));
 		fileTimeArea.addToRight(new ValueLabel(fileTimeString));
 
 		return fileTimeArea;
@@ -171,7 +176,7 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 
 		LeftRightManager folderCountArea = new LeftRightManager();
 
-		folderCountArea.addToLeft(new KeyLabel(LangRes.getString(LangRes.CONTAINS)));
+		folderCountArea.addToLeft(new KeyLabel(LangRes.get(LangRes.CONTAINS)));
 		folderCountArea.addToRight(new FileCountLabel(fconn.getURL()));
 
 		return folderCountArea;
@@ -181,7 +186,7 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 
 	private void addAttributeInfo() {
 
-		TitledPanel attributeInfoPanel = new TitledPanel(LangRes.getString(LangRes.ATTRIBUTES));
+		TitledPanel attributeInfoPanel = new TitledPanel(LangRes.get(LangRes.ATTRIBUTES));
 		attributeInfoPanel.setPadding(4, 10, 4, 10);
 
 		attributeInfoPanel.add(getAttributeArea());
@@ -193,17 +198,15 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 
 	private Field getAttributeArea() {
 
-		boolean readOnly = false, hidden = false;
-
 		try {
-			readOnly = (fconn.canWrite() == false);
-			hidden = fconn.isHidden();
+			originIsReadOnly = (fconn.canWrite() == false);
+			originIsHidden = fconn.isHidden();
 		} catch (Exception e) {
 		}
 
-		isReadOnlyCheckbox = new CheckboxField(LangRes.getString(LangRes.READ_ONLY), readOnly);
-
-		isHiddenCheckbox = new CheckboxField(LangRes.getString(LangRes.HIDDEN), hidden);
+		isReadOnlyCheckbox = new CheckboxField(LangRes.get(LangRes.READ_ONLY), originIsReadOnly,
+				MyStyle.NO_USE_ALL_WIDTH);
+		isHiddenCheckbox = new CheckboxField(LangRes.get(LangRes.HIDDEN), originIsHidden, MyStyle.NO_USE_ALL_WIDTH);
 
 		HorizontalFieldManager hfm = new HorizontalFieldManager() {
 
@@ -244,11 +247,22 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 		boolean isReadOnly = isReadOnlyCheckbox.getChecked();
 		boolean isHidden = isHiddenCheckbox.getChecked();
 
+		boolean attributeReadOnlyChanged = (isReadOnly != originIsReadOnly);
+		boolean attributeHiddenChanged = (isHidden != originIsHidden);
+
+		if (attributeHiddenChanged == false && attributeReadOnlyChanged == false) {
+			return true;
+		}
+
 		createConnect();
 
 		try {
-			fconn.setHidden(isHidden);
-			fconn.setWritable(!isReadOnly);
+			if (attributeHiddenChanged) {
+				fconn.setHidden(isHidden);
+			}
+			if (attributeReadOnlyChanged) {
+				fconn.setWritable(!isReadOnly);
+			}
 		} catch (Exception e) {
 			// 不能修改文件属性。
 			UtilCommon.trace("Unable to modify file attributes: " + e.getMessage());

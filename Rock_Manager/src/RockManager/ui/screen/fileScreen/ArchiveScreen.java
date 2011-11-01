@@ -11,9 +11,10 @@ import RockManager.fileList.FileListField;
 import RockManager.languages.LangRes;
 import RockManager.ui.statusBar.StatusBar;
 import RockManager.util.UtilCommon;
+import RockManager.util.quickExit.QuickExitScreen;
 
 
-public class ArchiveScreen extends FileScreen {
+public class ArchiveScreen extends FileScreen implements QuickExitScreen {
 
 	private ArchiveListField archiveList;
 
@@ -29,15 +30,15 @@ public class ArchiveScreen extends FileScreen {
 
 		vfm.add(archiveList);
 		archiveList.setFocus();
-		// CZTODO 压缩文件打开时应阻止输入框获得焦点。
 
+		// 载入时不显示文字。
 		archiveList.setEmptyString("", DrawStyle.HCENTER);
 		boolean archiveTooBig = archiveList.isTooBig();
 
 		if (archiveTooBig) {
 			// 初始化文件结构可能需些时间，显示进度条。
 
-			StatusBar statusBar = new StatusBar(LangRes.getString(LangRes.LOADING), StatusBar.STYLE_BLUE);
+			StatusBar statusBar = new StatusBar(LangRes.get(LangRes.LOADING), StatusBar.STYLE_BLUE);
 			final ArchiveLoadingIndicator indicator = new ArchiveLoadingIndicator(statusBar);
 			indicator.setProgress(0);
 			setStatus(statusBar);
@@ -101,12 +102,20 @@ public class ArchiveScreen extends FileScreen {
 		super.close();
 		// super.close()中会unRegisterRootChangeListener()。
 
+		doCleanJob();
+
+	}
+
+
+	public void doCleanJob() {
+
 		try {
 			// 关闭文件，释放文件连接。
 			archiveList.closeArchiveFile();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
 	}
 
 }

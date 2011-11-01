@@ -55,7 +55,7 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 	protected void addMainArea() {
 
 		HorizontalFieldManager mainHFM = new HorizontalFieldManager();
-		mainHFM.add(new LabelField(LangRes.getString(LangRes.NAME), FIELD_VCENTER));
+		mainHFM.add(new LabelField(LangRes.get(LangRes.NAME), FIELD_VCENTER));
 
 		WrappedOneLineInputArea inputArea = new WrappedOneLineInputArea(FIELD_VCENTER | USE_ALL_WIDTH);
 		inputArea.activeDefaultBorder();
@@ -97,11 +97,11 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 
 		HorizontalFieldManager buttons = new HorizontalFieldManager(FIELD_HCENTER);
 
-		buttonOK = new BaseButtonField(LangRes.getString(LangRes.BUTTON_LABEL_OK_S), ButtonField.CONSUME_CLICK);
+		buttonOK = new BaseButtonField(LangRes.get(LangRes.BUTTON_LABEL_OK_S), ButtonField.CONSUME_CLICK);
 
 		buttonOK.setChangeListener(this);
 
-		buttonCancel = new BaseButtonField(LangRes.getString(LangRes.BUTTON_LABEL_CANCEL_S), ButtonField.CONSUME_CLICK);
+		buttonCancel = new BaseButtonField(LangRes.get(LangRes.BUTTON_LABEL_CANCEL_S), ButtonField.CONSUME_CLICK);
 
 		buttonCancel.setChangeListener(this);
 
@@ -110,8 +110,8 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 		buttons.add(buttonCancel);
 		add(buttons);
 
-		registerHotKey(buttonOK, LangRes.getString(LangRes.BUTTON_LABEL_OK));
-		registerHotKey(buttonCancel, LangRes.getString(LangRes.BUTTON_LABEL_CANCEL));
+		registerHotKey(buttonOK, LangRes.get(LangRes.BUTTON_LABEL_OK));
+		registerHotKey(buttonCancel, LangRes.get(LangRes.BUTTON_LABEL_CANCEL));
 
 	}
 
@@ -175,7 +175,7 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 	 */
 	protected void showTextEmptyError() {
 
-		UtilCommon.trace(LangRes.getString(LangRes.ERR_FILENAME_CANNOT_EMPTY));
+		UtilCommon.trace(LangRes.get(LangRes.ERR_FILENAME_CANNOT_EMPTY));
 	}
 
 
@@ -219,7 +219,7 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 
 	private void addMenuItemOK(Menu menu, int ordinal) {
 
-		String text = LangRes.getString(LangRes.BUTTON_LABEL_OK);
+		String text = LangRes.get(LangRes.BUTTON_LABEL_OK);
 		MenuItem ok = new MenuItem(text, ordinal, ordinal) {
 
 			public void run() {
@@ -234,7 +234,7 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 
 	private void addMenuItemCancel(Menu menu, int ordinal) {
 
-		String text = LangRes.getString(LangRes.BUTTON_LABEL_CANCEL);
+		String text = LangRes.get(LangRes.BUTTON_LABEL_CANCEL);
 		MenuItem cancel = new MenuItem(text, ordinal, ordinal) {
 
 			public void run() {

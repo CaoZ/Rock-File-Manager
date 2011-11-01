@@ -234,7 +234,7 @@ public class ArchiveListField extends FileListField {
 
 	protected String getNoFileFindString() {
 
-		return LangRes.getString(LangRes.EMPTY_ARCHIVE_FILE);
+		return LangRes.get(LangRes.EMPTY_ARCHIVE_FILE);
 	}
 
 }

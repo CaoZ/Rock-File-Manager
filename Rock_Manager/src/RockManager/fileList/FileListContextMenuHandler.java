@@ -253,7 +253,7 @@ public class FileListContextMenuHandler {
 			int priority) {
 
 		String fileName = FileClipboard.get().getDisplayName();
-		String labelPaste = UtilCommon.replaceString(LangRes.getString(LangRes.MENU_PASTE), "{1}", fileName);
+		String labelPaste = UtilCommon.replaceString(LangRes.get(LangRes.MENU_PASTE), "{1}", fileName);
 
 		MenuItem pasteFile = new MenuItem(labelPaste, ordinal, priority) {
 
@@ -280,7 +280,7 @@ public class FileListContextMenuHandler {
 	private static void addCopyFileMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem copyFile = new MenuItem(LangRes.getString(LangRes.MENU_COPY), ordinal, priority) {
+		MenuItem copyFile = new MenuItem(LangRes.get(LangRes.MENU_COPY), ordinal, priority) {
 
 			public void run() {
 
@@ -300,7 +300,7 @@ public class FileListContextMenuHandler {
 	private static void addCutFileMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem cutFile = new MenuItem(LangRes.getString(LangRes.MENU_CUT), ordinal, priority) {
+		MenuItem cutFile = new MenuItem(LangRes.get(LangRes.MENU_CUT), ordinal, priority) {
 
 			public void run() {
 
@@ -318,7 +318,7 @@ public class FileListContextMenuHandler {
 	private static void addClipboardDetailMenuItem(ContextMenu contextMenu, FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem clipBoard = new MenuItem(LangRes.getString(LangRes.MENU_TITLE_CLIPBOARD), ordinal, priority) {
+		MenuItem clipBoard = new MenuItem(LangRes.get(LangRes.MENU_TITLE_CLIPBOARD), ordinal, priority) {
 
 			public void run() {
 
@@ -345,7 +345,7 @@ public class FileListContextMenuHandler {
 	private static void addShowPropertyMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		String properties = LangRes.getString(LangRes.PROPERTIES);
+		String properties = LangRes.get(LangRes.PROPERTIES);
 
 		MenuItem property = new MenuItem(properties, ordinal, priority) {
 
@@ -366,7 +366,7 @@ public class FileListContextMenuHandler {
 	private static void addRenameMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem renameFile = new MenuItem(LangRes.getString(LangRes.MENU_RENAME), ordinal, priority) {
+		MenuItem renameFile = new MenuItem(LangRes.get(LangRes.MENU_RENAME), ordinal, priority) {
 
 			public void run() {
 
@@ -392,7 +392,7 @@ public class FileListContextMenuHandler {
 	private static void addDeleteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem deleteFile = new MenuItem(LangRes.getString(LangRes.DELETE), ordinal, priority) {
+		MenuItem deleteFile = new MenuItem(LangRes.get(LangRes.DELETE), ordinal, priority) {
 
 			public void run() {
 
@@ -415,7 +415,7 @@ public class FileListContextMenuHandler {
 	private static void addRefreashMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem refresh = new MenuItem(LangRes.getString(LangRes.MENU_REFRESH), ordinal, priority) {
+		MenuItem refresh = new MenuItem(LangRes.get(LangRes.MENU_REFRESH), ordinal, priority) {
 
 			public void run() {
 
@@ -437,7 +437,7 @@ public class FileListContextMenuHandler {
 	private static void addInstallCodMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem installCod = new MenuItem(LangRes.getString(LangRes.MENU_INSTALL), ordinal, priority) {
+		MenuItem installCod = new MenuItem(LangRes.get(LangRes.MENU_INSTALL), ordinal, priority) {
 
 			public void run() {
 
@@ -454,8 +454,8 @@ public class FileListContextMenuHandler {
 		final FileItem thisItem = fileList.getThisItem();
 		final String targetFolder = UtilCommon.getName(thisItem.getPath(), false) + "/";
 
-		String extractToFolderText = UtilCommon.replaceString(LangRes.getString(LangRes.MENU_EXTRACT_TO), "{1}",
-				targetFolder);
+		String extractToFolderText = UtilCommon
+				.replaceString(LangRes.get(LangRes.MENU_EXTRACT_TO), "{1}", targetFolder);
 
 		MenuItem extractToFolder = new MenuItem(extractToFolderText, ordinal, priority) {
 
@@ -481,12 +481,11 @@ public class FileListContextMenuHandler {
 	private static void addExtractMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem extract = new MenuItem(LangRes.getString(LangRes.MENU_TITLE_EXTRACT_FILES), ordinal, priority) {
+		MenuItem extract = new MenuItem(LangRes.get(LangRes.MENU_TITLE_EXTRACT_FILES), ordinal, priority) {
 
 			public void run() {
 
-				final FileBrowsePopup browsePopup = new FileBrowsePopup(
-						LangRes.getString(LangRes.MENU_TITLE_EXTRACT_FILES));
+				final FileBrowsePopup browsePopup = new FileBrowsePopup(LangRes.get(LangRes.MENU_TITLE_EXTRACT_FILES));
 
 				final FileItem thisItem = fileList.getThisItem();
 
@@ -530,7 +529,7 @@ public class FileListContextMenuHandler {
 	private static void addCompressMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem compress = new MenuItem(LangRes.getString(LangRes.MENU_ADD_TO_ARCHIVE), ordinal, priority) {
+		MenuItem compress = new MenuItem(LangRes.get(LangRes.MENU_ADD_TO_ARCHIVE), ordinal, priority) {
 
 			public void run() {
 
@@ -554,7 +553,7 @@ public class FileListContextMenuHandler {
 	private static void addCreateNewFolderMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem createNewFolder = new MenuItem(LangRes.getString(LangRes.NEW_FOLDER_MENU), ordinal, priority) {
+		MenuItem createNewFolder = new MenuItem(LangRes.get(LangRes.NEW_FOLDER_MENU), ordinal, priority) {
 
 			public void run() {
 
@@ -577,7 +576,7 @@ public class FileListContextMenuHandler {
 	private static void addAddToFavouriteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem addToFavourite = new MenuItem(LangRes.getString(LangRes.MENU_ADD_TO_FAVOURITES), ordinal, priority) {
+		MenuItem addToFavourite = new MenuItem(LangRes.get(LangRes.MENU_ADD_TO_FAVOURITES), ordinal, priority) {
 
 			public void run() {
 
@@ -599,7 +598,7 @@ public class FileListContextMenuHandler {
 	private static void addSelectHereMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem selectHere = new MenuItem(LangRes.getString(LangRes.MENU_SELECT_HERE), ordinal, priority) {
+		MenuItem selectHere = new MenuItem(LangRes.get(LangRes.MENU_SELECT_HERE), ordinal, priority) {
 
 			public void run() {
 
@@ -615,7 +614,7 @@ public class FileListContextMenuHandler {
 			int ordinal, int priority) {
 
 		String folderName = UtilCommon.getFullFileName(fileList.getThisItem().getRawPath());
-		String label = UtilCommon.replaceString(LangRes.getString(LangRes.MENU_SELECT_A_FOLDER), "{1}", folderName);
+		String label = UtilCommon.replaceString(LangRes.get(LangRes.MENU_SELECT_A_FOLDER), "{1}", folderName);
 		MenuItem selectThisFolder = new MenuItem(label, ordinal, priority) {
 
 			public void run() {
@@ -634,7 +633,7 @@ public class FileListContextMenuHandler {
 	private static void addOpenItMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem openItem = new MenuItem(LangRes.getString(LangRes.MENU_OPEN), ordinal, priority) {
+		MenuItem openItem = new MenuItem(LangRes.get(LangRes.MENU_OPEN), ordinal, priority) {
 
 			public void run() {
 
@@ -649,8 +648,8 @@ public class FileListContextMenuHandler {
 	private static void addDeleteFavouriteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem deleteFromFavouriteItem = new MenuItem(LangRes.getString(LangRes.MENU_DELETE_FROM_FAVOURITES),
-				ordinal, priority) {
+		MenuItem deleteFromFavouriteItem = new MenuItem(LangRes.get(LangRes.MENU_DELETE_FROM_FAVOURITES), ordinal,
+				priority) {
 
 			public void run() {
 
