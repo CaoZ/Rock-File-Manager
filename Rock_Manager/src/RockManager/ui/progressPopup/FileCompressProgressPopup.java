@@ -47,6 +47,9 @@ public class FileCompressProgressPopup extends ProgressPopup {
 
 	private Thread createCompressThread() {
 
+		// 即将开始压缩，准备工作，计算文件大小。
+		setProgressName("Calculating file size...");
+
 		final ProgressIndicator compressIndicator = new ProgressIndicator();
 		compressIndicator.setDisplay(this);
 

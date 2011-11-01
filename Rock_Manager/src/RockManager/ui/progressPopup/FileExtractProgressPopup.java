@@ -52,6 +52,9 @@ public class FileExtractProgressPopup extends ProgressPopup {
 	 */
 	private Thread createExtractThread() {
 
+		// 即将开始解压，准备工作，计算文件大小。
+		setProgressName("Calculating file size...");
+
 		final ProgressIndicator indicator = new ProgressIndicator();
 		indicator.setDisplay(this);
 

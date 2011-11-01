@@ -80,8 +80,7 @@ public class FileHandler {
 
 			if (parentScreen != null) {
 				// 提示无法打开此文件。
-				AutoHideStatusBar noSuchAppStatusbar = new AutoHideStatusBar(LangRes.get(LangRes.CAN_NOT_OPEN),
-						1500);
+				AutoHideStatusBar noSuchAppStatusbar = new AutoHideStatusBar(LangRes.get(LangRes.CAN_NOT_OPEN), 1500);
 				noSuchAppStatusbar.addTo(parentScreen);
 			}
 
@@ -518,14 +517,9 @@ public class FileHandler {
 		final ProgressPopup progressPopup = new ProgressPopup();
 		progressPopup.setTitle(LangRes.get(LangRes.TITLE_EXTRACTING));
 
-		Thread extractThread = new Thread() {
+		final Thread extractThread = new Thread() {
 
 			public void run() {
-
-				try {
-					Thread.sleep(300); // 等待窗口出现，使UI流畅
-				} catch (Exception e) {
-				}
 
 				ArchiveFile archive = null;
 
@@ -560,7 +554,15 @@ public class FileHandler {
 		};
 
 		UiApplication.getUiApplication().pushScreen(progressPopup);
-		extractThread.start();
+
+		// invokeLater: 等窗口出现了再开始解压。
+		UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+			public void run() {
+
+				extractThread.start();
+			}
+		});
 
 	}
 

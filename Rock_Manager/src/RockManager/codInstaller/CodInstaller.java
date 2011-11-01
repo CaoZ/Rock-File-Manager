@@ -57,8 +57,8 @@ public class CodInstaller {
 		String tempDirPath = null;
 
 		if (isArchive(cod)) {
+			// cod其实是个压缩文件
 
-			// archive, need unzip
 			tempDirPath = extractCod(cod);
 
 			FileConnection codDir = (FileConnection) Connector.open(tempDirPath);
@@ -100,7 +100,7 @@ public class CodInstaller {
 		});
 
 		try {
-			Thread.sleep(300); // 等待窗口出现，使UI流畅
+			Thread.sleep(280); // 等待窗口出现，使UI流畅
 		} catch (Exception e) {
 		}
 
@@ -227,7 +227,7 @@ public class CodInstaller {
 		synchronized (popup) {
 			try {
 				popup.wait();
-				Thread.sleep(250); // 等待直到popup完全显示。popup出现时有200ms的动画效果。
+				Thread.sleep(280); // 等待直到popup完全显示。popup出现时有200ms的动画效果。
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

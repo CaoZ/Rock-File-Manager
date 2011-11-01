@@ -234,7 +234,14 @@ public class ArchiveListField extends FileListField {
 
 	protected String getNoFileFindString() {
 
-		return LangRes.get(LangRes.EMPTY_ARCHIVE_FILE);
+		if (archiveFile.getSubDirPath().length() == 0) {
+			// 根目录。
+			return LangRes.get(LangRes.EMPTY_ARCHIVE_FILE);
+		} else {
+			// 文件夹中。
+			return LangRes.get(LangRes.FOLDER_IS_EMPTY);
+		}
+
 	}
 
 }

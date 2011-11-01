@@ -523,6 +523,7 @@ public class FileListContextMenuHandler {
 			}
 		};
 		contextMenu.addItem(extract);
+
 	}
 
 

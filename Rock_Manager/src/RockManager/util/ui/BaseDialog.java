@@ -1,6 +1,7 @@
 
 package RockManager.util.ui;
 
+import RockManager.config.ConfigData;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.Screen;
 import net.rim.device.api.ui.TransitionContext;
@@ -14,6 +15,9 @@ import net.rim.device.api.ui.decor.BorderFactory;
 
 
 public class BaseDialog extends Dialog {
+
+	private boolean hasAppliedAnimation = false;
+
 
 	public BaseDialog(int type, String message, int defaultChoice, Bitmap bitmap, long style) {
 
@@ -58,6 +62,10 @@ public class BaseDialog extends Dialog {
 		setBorder(border);
 		setPadding(10, 8, 8, 8);
 
+		if (ConfigData.ANIMATION_EFFECT.booleanValue() == false) {
+			return;
+		}
+
 		// 动画push效果。
 		TransitionContext transitionPush = new TransitionContext(TransitionContext.TRANSITION_ZOOM);
 		transitionPush.setIntAttribute(TransitionContext.ATTR_DURATION, 200);
@@ -71,12 +79,14 @@ public class BaseDialog extends Dialog {
 		transitionPop.setIntAttribute(5, 30);// TransitionContext.ATTR_SCALE
 		Ui.getUiEngineInstance().setTransition(this, null, UiEngineInstance.TRIGGER_POP, transitionPop);
 
+		hasAppliedAnimation = true;
+
 	}
 
 
 	protected void onUiEngineAttached(boolean attached) {
 
-		if (attached == false) {
+		if (attached == false && hasAppliedAnimation == true) {
 
 			final Screen thisScreen = this;
 

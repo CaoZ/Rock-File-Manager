@@ -61,16 +61,17 @@ public class FileExtractPopup extends FileBrowsePopup {
 
 		close();
 
-		ArchiveFile archiveFile = archiveList.getArchiveFile();
-		String targetURL = UtilCommon.toURLForm(getInputedText());
+		final ArchiveFile archiveFile = archiveList.getArchiveFile();
+		final String targetURL = UtilCommon.toURLForm(getInputedText());
 
-		final FileExtractProgressPopup progressPopup = new FileExtractProgressPopup(itemsToExtract, archiveFile,
-				targetURL);
-
+		// invokeLater: 等待此窗口关闭再弹出新窗口。
 		UiApplication.getUiApplication().invokeLater(new Runnable() {
 
 			public void run() {
 
+				// popup中有一个将在invokeLater中执行的线程，故popup的构造要放在此invokeLater中。
+				FileExtractProgressPopup progressPopup = new FileExtractProgressPopup(itemsToExtract, archiveFile,
+						targetURL);
 				UiApplication.getUiApplication().pushScreen(progressPopup);
 
 			}

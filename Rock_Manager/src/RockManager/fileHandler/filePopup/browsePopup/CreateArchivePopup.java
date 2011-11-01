@@ -105,18 +105,19 @@ public class CreateArchivePopup extends FileBrowsePopup {
 
 		close();
 
-		String originFileURL = itemToCompress.getURL();
-		String saveURL = UtilCommon.toURLForm(getInputedText());
+		final String originFileURL = itemToCompress.getURL();
+		final String saveURL = UtilCommon.toURLForm(getInputedText());
 		CompressMethod method = (CompressMethod) compressMethodChoiceField.getChoice(compressMethodChoiceField
 				.getSelectedIndex());
-		int compressMethod = method.getMethod();
-		final FileCompressProgressPopup progressPopup = new FileCompressProgressPopup(originFileURL, saveURL,
-				compressMethod, parentFileList);
+		final int compressMethod = method.getMethod();
 
 		UiApplication.getUiApplication().invokeLater(new Runnable() {
 
 			public void run() {
 
+				// popup中有一个将在invokeLater中执行的线程，故popup的构造要放在此invokeLater中。
+				FileCompressProgressPopup progressPopup = new FileCompressProgressPopup(originFileURL, saveURL,
+						compressMethod, parentFileList);
 				UiApplication.getUiApplication().pushScreen(progressPopup);
 
 			}

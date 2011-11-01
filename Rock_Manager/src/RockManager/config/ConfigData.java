@@ -28,7 +28,7 @@ public class ConfigData {
 
 		Vector configVector = new Vector();
 
-		SHOW_HIDDEN_FILE = new ConfigElement("SHOW_HIDDEN_FILE", Boolean.TRUE);
+		SHOW_HIDDEN_FILE = new ConfigElement("SHOW_HIDDEN_FILE", Boolean.FALSE);
 		configVector.addElement(SHOW_HIDDEN_FILE);
 
 		ADD_RETURN_ITEM = new ConfigElement("ADD_RETURN_ITEM", Boolean.TRUE);

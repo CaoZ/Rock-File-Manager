@@ -565,6 +565,17 @@ public class ArchiveFile {
 
 
 	/**
+	 * 返回压缩文件内的路径。如若是根目录，为"", 若是在压缩文件内的文件夹A中的文件夹B中，则是"A/B/"(zip)或"A\B\"(rar).
+	 * 
+	 * @return
+	 */
+	public String getSubDirPath() {
+
+		return subDirPath;
+	}
+
+
+	/**
 	 * 返回地址栏显示的压缩文件路径形式。 若是根目录显示压缩文件名称，否则显示压缩文件名称加压缩文件内的路径。
 	 * 
 	 * @return

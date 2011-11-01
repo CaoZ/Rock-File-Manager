@@ -3,6 +3,7 @@ package RockManager.config;
 
 import net.rim.device.api.ui.Touchscreen;
 import net.rim.device.api.ui.component.CheckboxField;
+import net.rim.device.api.ui.component.NullField;
 import net.rim.device.api.ui.component.StandardTitleBar;
 import net.rim.device.api.ui.decor.BackgroundFactory;
 import RockManager.languages.LangRes;
@@ -29,10 +30,12 @@ public class OptionsScreen extends AnimatedMainScreen {
 		super(NO_VERTICAL_SCROLL | NO_SYSTEM_MENU_ITEMS);
 
 		StandardTitleBar titleBar = new StandardTitleBar();
-		titleBar.addTitle(LangRes.get(LangRes.OPENING));
+		titleBar.addTitle(LangRes.get(LangRes.MENU_TITLE_OPTIONS));
 		titleBar.addNotifications();
 		titleBar.addSignalIndicator();
 		setTitle(titleBar);
+
+		add(new NullField());
 
 		// MainManager也设置背景色，保证拖动时不会露出白色（在触摸屏机型上即使下面没内容了还可以向下拉，类似弹性缓冲效果）。
 		getMainManager().setBackground(BackgroundFactory.createSolidBackground(0xf7f7f7));
