@@ -785,8 +785,9 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 		// 6.0.0.534以下(只确定534无此问题而438有此问题)需修正unclick, unclick应返回true,
 		// 否则navigationClick会调用两次。
+		// OS 7 也需修正unclick, 否则进入文件夹后还是会点击的位置获得焦点
 		if (message.getEvent() == TouchEvent.UNCLICK) {
-			if (OSVersionUtil.isOS6() && OSVersionUtil.getRevisionVersion() < 534) {
+			if (OSVersionUtil.isOS6() && OSVersionUtil.getRevisionVersion() < 534 || OSVersionUtil.isOS7()) {
 				return true;
 			}
 		}

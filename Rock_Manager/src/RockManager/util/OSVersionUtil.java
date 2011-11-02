@@ -32,6 +32,12 @@ public class OSVersionUtil {
 	}
 
 
+	public static boolean isOS7() {
+
+		return isOS(7);
+	}
+
+
 	public static boolean isOS(int mainVersion) {
 
 		return MAIN_VERSION == mainVersion;
