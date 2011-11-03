@@ -95,7 +95,9 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 
 		String label = LangRes.get(LangRes.MENU_TITLE_OPTIONS);
 
-		MenuItem config = new MenuItem(label, 1, 1) {
+		menu.add(MenuItem.separator(4999));
+
+		MenuItem config = new MenuItem(label, 5000, 5000) {
 
 			public void run() {
 
@@ -103,7 +105,8 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 			}
 		};
 		menu.add(config);
-		menu.add(MenuItem.separator(2));
+
+		menu.add(MenuItem.separator(5001));
 
 		super.makeMenu(menu, instance);
 
