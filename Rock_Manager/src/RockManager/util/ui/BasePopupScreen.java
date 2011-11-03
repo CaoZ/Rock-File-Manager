@@ -49,7 +49,7 @@ public class BasePopupScreen extends PopupScreen {
 		Border border = BorderFactory.createBitmapBorder(edges, borderImg);
 		setBorder(border);
 
-		int paddingTop = MyUI.deriveSize(10);
+		int paddingTop = MyUI.deriveSize(9);
 		int paddingRight = MyUI.deriveSize(8);
 		int paddingBottom = MyUI.deriveSize(7);
 		int paddingLeft = MyUI.deriveSize(8);
@@ -105,7 +105,7 @@ public class BasePopupScreen extends PopupScreen {
 			if (titleField == null) {
 				titleField = new LabelField();
 
-				int marginBottom = MyUI.deriveSize(20);
+				int marginBottom = MyUI.deriveSize(18);
 				titleField.setMargin(0, 0, marginBottom, 0);
 
 				getDelegate().insert(titleField, 0);

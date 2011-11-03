@@ -42,6 +42,7 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 		progressBar = new StatusBar(StatusBar.STYLE_BLUE);
 		progressBar.setHeight(10);
 		progressBar.setProgress(0);
+		progressBar.setMargin(0, 0, 10, 0);
 		add(progressBar);
 
 	}
@@ -56,9 +57,13 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 		cancelButton = new ButtonField(LangRes.get(LangRes.BUTTON_LABEL_CANCEL), FIELD_HCENTER
 				| ButtonField.CONSUME_CLICK);
 		cancelButton.setFont(MyUI.deriveFont(0.8f));
-		cancelButton.setMargin(20, 0, 0, 0);
+
+		int marginTop = MyUI.deriveSize(10);
+		cancelButton.setMargin(marginTop, 0, 0, 0);
+
 		cancelButton.setChangeListener(this);
 		add(cancelButton);
+
 	}
 
 

@@ -43,7 +43,7 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 
 		// 添加一分隔线条。
 		int marginTop = MyUI.deriveSize(15);
-		int marginBottom = MyUI.deriveSize(10);
+		int marginBottom = MyUI.deriveSize(11);
 
 		SeparatorField sep = new SeparatorField(marginTop, marginBottom);
 		add(sep);
