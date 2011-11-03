@@ -69,7 +69,7 @@ public class InputField extends TextField {
 
 		super.onFocus(direction);
 
-		if (direction > 0 && !isSelecting()) {
+		if (direction != 0 && !isSelecting()) {
 			setCursorPosition(getTextLength());
 		}
 
