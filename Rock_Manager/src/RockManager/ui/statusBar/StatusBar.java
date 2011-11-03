@@ -8,6 +8,7 @@ import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.XYRect;
 import net.rim.device.api.util.MathUtilities;
+import RockManager.ui.MyUI;
 import RockManager.util.UtilCommon;
 
 
@@ -39,7 +40,7 @@ public class StatusBar extends Field {
 
 	private static int TEXT_COLOR_CONTRAST = 0x3b3b3b;
 
-	private static Font TEXT_FONT = Font.getDefault().derive(Font.PLAIN, 27);
+	private static Font TEXT_FONT = MyUI.deriveFont(1.1f);
 
 	private static int PADDING = 5;
 
@@ -334,8 +335,8 @@ public class StatusBar extends Field {
 			Graphics g = Graphics.create(backImg);
 			int[] xPts = { 0, width, width, 0 };
 			int[] yPts = { 0, 0, height, height };
-			int[] colors = { BACK_FINISHED_COLOR_TOP, BACK_FINISHED_COLOR_TOP,
-					BACK_FINISHED_COLOR_BOTTOM, BACK_FINISHED_COLOR_BOTTOM };
+			int[] colors = { BACK_FINISHED_COLOR_TOP, BACK_FINISHED_COLOR_TOP, BACK_FINISHED_COLOR_BOTTOM,
+					BACK_FINISHED_COLOR_BOTTOM };
 			g.drawShadedFilledPath(xPts, yPts, null, colors, null);
 		}
 	}

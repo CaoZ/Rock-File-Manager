@@ -10,6 +10,7 @@ import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
 import RockManager.languages.LangRes;
+import RockManager.ui.MyUI;
 import RockManager.ui.oneLineInputField.InputField;
 import RockManager.ui.oneLineInputField.WrappedOneLineInputArea;
 import RockManager.util.MarginPaddingUtil;
@@ -41,7 +42,10 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 		addMainArea();
 
 		// 添加一分隔线条。
-		SeparatorField sep = new SeparatorField(15, 10);
+		int marginTop = MyUI.deriveSize(15);
+		int marginBottom = MyUI.deriveSize(10);
+
+		SeparatorField sep = new SeparatorField(marginTop, marginBottom);
 		add(sep);
 
 		addButtons();

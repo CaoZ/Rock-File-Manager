@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Random;
 import RockManager.util.UtilCommon;
+import RockManager.util.ui.GPATools;
 import net.rim.device.api.io.LineReader;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.component.Dialog;
@@ -21,6 +22,8 @@ public class IconSet {
 	 * 将格式与文件地址相对应的表。
 	 */
 	private static Hashtable PATH_SET = new Hashtable();
+
+	private static int desiredSize = -1;
 
 
 	public IconSet() {
@@ -114,7 +117,21 @@ public class IconSet {
 		if (icon == null) {
 			icon = getUnknownIcon();
 		}
+
+		// 如有必要，调整大小。
+		if (desiredSize > 0) {
+			icon = GPATools.ResizeTransparentBitmap(icon, desiredSize, desiredSize);
+		}
+
 		CACHE_SET.put(path, icon);
+
+	}
+
+
+	public void setDesiredSize(int iconSize) {
+
+		desiredSize = iconSize;
+
 	}
 
 }
@@ -149,4 +166,5 @@ class LimitedHashTable extends Hashtable {
 
 		return super.put(key, value);
 	}
+
 }

@@ -9,6 +9,7 @@ import net.rim.device.api.ui.component.LabelField;
 import net.rim.device.api.ui.container.HorizontalFieldManager;
 import RockManager.fileList.FileItem;
 import RockManager.languages.LangRes;
+import RockManager.ui.MyUI;
 import RockManager.util.MarginPaddingUtil;
 import RockManager.util.UtilCommon;
 import RockManager.util.ui.BaseButtonField;
@@ -36,7 +37,10 @@ public class FileClipboardPopup extends BasePopupScreen implements FieldChangeLi
 		addFileLocationArea(thisItem);
 
 		// 添加一分隔线条。
-		SeparatorField sep = new SeparatorField(15, 10);
+		int marginTop = MyUI.deriveSize(15);
+		int marginBottom = MyUI.deriveSize(10);
+
+		SeparatorField sep = new SeparatorField(marginTop, marginBottom);
 		add(sep);
 
 		addButtons();

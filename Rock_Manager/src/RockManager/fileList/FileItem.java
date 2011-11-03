@@ -6,9 +6,11 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.component.ListField;
+import net.rim.device.api.util.MathUtilities;
 import RockManager.archive.ArchiveEntry;
 import RockManager.fileHandler.FileSizeString;
 import RockManager.languages.LangRes;
+import RockManager.ui.MyUI;
 import RockManager.util.IOUtil;
 import RockManager.util.UtilCommon;
 
@@ -50,7 +52,7 @@ public class FileItem {
 	 */
 	public static final int TYPE_FILE_IN_ARCHIVE = 5;
 
-	private static IconSet ICON_SET = new IconSet();
+	private static IconSet ICON_SET;
 
 	private int fileType;
 
@@ -76,6 +78,21 @@ public class FileItem {
 	private long fileSize = -1;
 
 	private ArchiveEntry originArchiveEntry;
+
+	static {
+
+		ICON_SET = new IconSet();
+
+		// 文字大小的1.28倍。当文字大小为25时正好为32.
+		int iconSize = MathUtilities.round((MyUI.MAIN_FONT.getHeight() * 1.28f));
+		if (iconSize >= 32 && iconSize <= 36) {
+			iconSize = 32;
+		}
+
+		// 缩放
+		ICON_SET.setDesiredSize(iconSize);
+
+	}
 
 
 	public FileItem(String path, int fileType) {

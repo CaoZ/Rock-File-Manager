@@ -5,7 +5,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.Display;
-import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.Screen;
 import net.rim.device.api.ui.TransitionContext;
 import net.rim.device.api.ui.Ui;
@@ -19,6 +18,7 @@ import net.rim.device.api.ui.container.VerticalFieldManager;
 import net.rim.device.api.ui.decor.Border;
 import net.rim.device.api.ui.decor.BorderFactory;
 import RockManager.config.ConfigData;
+import RockManager.ui.MyUI;
 import RockManager.util.FixUtil;
 import RockManager.util.KeyUtil;
 import RockManager.util.UtilCommon;
@@ -48,7 +48,13 @@ public class BasePopupScreen extends PopupScreen {
 		Bitmap borderImg = Bitmap.getBitmapResource("img/other/popupBack.png");
 		Border border = BorderFactory.createBitmapBorder(edges, borderImg);
 		setBorder(border);
-		setPadding(10, 8, 7, 8);
+
+		int paddingTop = MyUI.deriveSize(10);
+		int paddingRight = MyUI.deriveSize(8);
+		int paddingBottom = MyUI.deriveSize(7);
+		int paddingLeft = MyUI.deriveSize(8);
+
+		setPadding(paddingTop, paddingRight, paddingBottom, paddingLeft);
 
 		if (this instanceof QuickExitScreen) {
 			QuickExitRegistry.addLog((QuickExitScreen) this);
@@ -98,10 +104,13 @@ public class BasePopupScreen extends PopupScreen {
 
 			if (titleField == null) {
 				titleField = new LabelField();
-				titleField.setFont(getFont().derive(Font.PLAIN, 24));
-				titleField.setMargin(0, 0, 20, 0);
+
+				int marginBottom = MyUI.deriveSize(20);
+				titleField.setMargin(0, 0, marginBottom, 0);
+
 				getDelegate().insert(titleField, 0);
 			}
+
 			titleField.setText(title);
 
 		}

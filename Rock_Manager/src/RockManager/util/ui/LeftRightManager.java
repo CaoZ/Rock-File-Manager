@@ -16,6 +16,18 @@ public class LeftRightManager extends HorizontalFieldManager {
 
 	public LeftRightManager() {
 
+		this(0);
+	}
+
+
+	/**
+	 * @param style
+	 *            若含有FIELD_VCENTER则其中的元素可一行显示或可并列显示时垂直居中。
+	 */
+	public LeftRightManager(long style) {
+
+		super(style);
+
 		leftVFM = new VerticalFieldManager();
 		rightVFM = new VerticalFieldManager();
 
@@ -76,16 +88,22 @@ public class LeftRightManager extends HorizontalFieldManager {
 			setPositionChild(rightVFM, rightStartX, rightStartY);
 
 		} else {
-			// 宽度：一行即可完全显示
+			// 宽度：一行即可完全显示或可并列显示，即至少一行的宽度小于0.15.
 
 			realHeight = Math.max(leftHeight, rightHeight);
 
-			int leftStartY = UtilCommon.getOffset(realHeight, leftHeight);
-
+			int leftStartY = 0;
 			int rightStartX = maxWidth - rightWidth;
-			int rightStartY = UtilCommon.getOffset(realHeight, rightHeight);
+			int rightStartY = 0;
 
-			// 使两者都垂直居中。
+			boolean vCenter = isStyle(FIELD_VCENTER);
+
+			if (vCenter) {
+				// 使两者垂直居中。
+				leftStartY = UtilCommon.getOffset(realHeight, leftHeight);
+				rightStartY = UtilCommon.getOffset(realHeight, rightHeight);
+			}
+
 			setPositionChild(leftVFM, 0, leftStartY);
 			setPositionChild(rightVFM, rightStartX, rightStartY);
 

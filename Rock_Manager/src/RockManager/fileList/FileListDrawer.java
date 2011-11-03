@@ -7,6 +7,7 @@ import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.Manager;
 import net.rim.device.api.ui.XYRect;
+import RockManager.ui.MyUI;
 import RockManager.util.UtilCommon;
 import RockManager.util.ui.VFMwithScrollbar;
 
@@ -62,8 +63,7 @@ public class FileListDrawer {
 		if (thisItem.isDRMLocked() || thisItem.isEncrypted()) {
 			// 绘制小锁图标
 			Bitmap lockIcon = FileItem.getLockIcon();
-			XYRect lockIconDest = new XYRect(fileIconDest.x + 18, iconY + 15, lockIcon.getWidth(), lockIcon.getHeight());
-			g.drawBitmap(lockIconDest, lockIcon, 0, 0);
+			g.drawBitmap(fileIconDest, lockIcon, 0, 0);
 		}
 
 		if (thisItem.isHidden()) {
@@ -239,20 +239,18 @@ public class FileListDrawer {
 		// 没有文件项找到，绘制emptyString
 		int width = listField.getWidth();
 		int height = listField.getHeight();
-		Font font = listField.getFont();
-		int fontHeight = font.getHeight() - 1;
-		// 将字体缩小一号
-		font = font.derive(Font.PLAIN, fontHeight);
-		g.setFont(font);
+
+		Font smallerFont = MyUI.SMALLER_FONT;
+		g.setFont(smallerFont);
 
 		// 浅色
 		g.setColor(FileListDrawer.FONT_COLOR_LIGHT);
 
 		String emptyString = listField.getEmptyString();
 
-		int offsetX = UtilCommon.getOffset(width, font.getBounds(emptyString));
+		int offsetX = UtilCommon.getOffset(width, smallerFont.getBounds(emptyString));
 		// 与底部对齐，给上部留出更多空间
-		int offsetY = height - fontHeight;
+		int offsetY = height - smallerFont.getHeight();
 		g.drawText(emptyString, offsetX, offsetY);
 
 	}

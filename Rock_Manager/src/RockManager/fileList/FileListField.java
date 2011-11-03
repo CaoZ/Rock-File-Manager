@@ -13,7 +13,6 @@ import net.rim.device.api.ui.ContextMenu;
 import net.rim.device.api.ui.DrawStyle;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
-import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.Manager;
 import net.rim.device.api.ui.TouchEvent;
@@ -55,8 +54,6 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 * 当前目录的url形式（由FileConnection.getURL()获得）。
 	 */
 	protected String folderPathTotalURL;
-
-	protected static int ROW_HEIGHT = 40;
 
 	protected AddressBar addressBar = new AddressBar();
 
@@ -107,11 +104,6 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	private boolean isSearchable = true;
 
-	/**
-	 * 文字字体。
-	 */
-	private Font textFont = getFont().derive(Font.PLAIN, 25);
-
 	private FileJournalListener journalListener;
 
 	private FileRootChangeListener rootChangeListener;
@@ -131,10 +123,18 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 	protected FileListField() {
 
-		setRowHeight(ROW_HEIGHT);
-		setFont(textFont);
+		int rowHeight = MathUtilities.round(getFont().getHeight() * 1.6f); // 字体高度的1.6倍
+		if (Touchscreen.isSupported()) {
+			// 若支持触屏，再乘1.333
+			rowHeight = MathUtilities.round(rowHeight * 1.333f);
+		}
 
+		// 即使不改变RowHeight也必须设置RowHeight, drawListRow时y值会不从0开始而从文字开始位置开始，存在一定偏移。
+		setRowHeight(rowHeight);
+
+		// 若是压缩文件，载入时EmptyString为空.
 		setEmptyString("", DrawStyle.HCENTER);
+
 		keywordField.setChangeListener(this);
 		// 禁止pre-suffix搜索。
 		super.setSearchable(false);
@@ -441,13 +441,13 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	private int restorPositionNeedScroll(int index, boolean isSameDir) {
 
-		if (getSize() * ROW_HEIGHT < getManager().getVisibleHeight()) {
+		if (getSize() * getRowHeight() < getManager().getVisibleHeight()) {
 			// 不会填满整个manager,无需滚动。
 			return -1;
 		}
 
 		// 与Manager最上端的距离，未滚动
-		int distanceInManager = ROW_HEIGHT * index;
+		int distanceInManager = getRowHeight() * index;
 		// 与Manager最上端的距离，已滚动
 		int distanceWithManager;
 
@@ -464,17 +464,17 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 			needScroll = distanceInManager - distanceWithManager;
 		}
 
-		int remains = getSize() * ROW_HEIGHT - needScroll;
+		int remains = getSize() * getRowHeight() - needScroll;
 		if (remains < getManager().getVisibleHeight()) {
 			// 若采用此数据滚动后剩下的高度不足以填满整个manager，则减小需滚动的距离。
 			// 如在搜索结果中进入了新文件夹，然后返回的情况，此时记录的距离可能是不准确的，故需重新验证。
-			needScroll = getSize() * ROW_HEIGHT - getManager().getVisibleHeight();
+			needScroll = getSize() * getRowHeight() - getManager().getVisibleHeight();
 		}
 
 		// 可滚动最大距离，超过此距离上部无法完全显示。
-		int scrollMax = index * ROW_HEIGHT;
+		int scrollMax = index * getRowHeight();
 		// 可滚动最大距离，小于此距离下部无法完全显示。
-		int scrollMin = (index + 1) * ROW_HEIGHT - getManager().getVisibleHeight();
+		int scrollMin = (index + 1) * getRowHeight() - getManager().getVisibleHeight();
 
 		needScroll = MathUtilities.clamp(scrollMin, needScroll, scrollMax);
 
@@ -786,6 +786,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		// 6.0.0.534以下(只确定534无此问题而438有此问题)需修正unclick, unclick应返回true,
 		// 否则navigationClick会调用两次。
 		// OS 7 也需修正unclick, 否则进入文件夹后还是会点击的位置获得焦点
+		// 但是这样在OS7上在压缩文件内的文件上点击时不会弹出菜单了。
 		if (message.getEvent() == TouchEvent.UNCLICK) {
 			if (OSVersionUtil.isOS6() && OSVersionUtil.getRevisionVersion() < 534 || OSVersionUtil.isOS7()) {
 				return true;
@@ -1055,7 +1056,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		Manager manager = getManager();
 		if (manager != null) {
 			// 距离Manager最顶端的距离，未滚动
-			int distanceInManager = ROW_HEIGHT * getSelectedIndex();
+			int distanceInManager = getRowHeight() * getSelectedIndex();
 			// 距离Manager最顶端的距离，已滚动
 			distanceWithManager = distanceInManager - manager.getVerticalScroll();
 		}

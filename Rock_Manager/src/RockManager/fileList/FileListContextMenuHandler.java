@@ -226,7 +226,7 @@ public class FileListContextMenuHandler {
 		FileItem thisItem = fileList.getThisItem();
 		boolean added = false;
 
-		if (fileList.isNormalFolder() && thisItem.isRealFile()) {
+		if (fileList.isNormalFolder() && !fileList.isPickerMode() && thisItem.isRealFile()) {
 			// "添加到收藏夹" 510
 			addAddToFavouriteMenuItem(contextMenu, fileList, 510, 510);
 			added = true;

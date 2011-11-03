@@ -4,11 +4,10 @@ package RockManager.fileList;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.DrawStyle;
 import net.rim.device.api.ui.Field;
-import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.Graphics;
-import net.rim.device.api.ui.XYDimension;
 import RockManager.languages.LangRes;
 import RockManager.util.UtilCommon;
+import RockManager.util.ui.GPATools;
 
 
 public class AddressBar extends Field {
@@ -33,9 +32,9 @@ public class AddressBar extends Field {
 	 */
 	private int[] pathLengths;
 
-	private int paddintY = 4;
+	public static final int PADDING_TOP = 4;
 
-	private Font textFont;
+	public static final int PADDING_LEFT = 6;
 
 	private int barHeight;
 
@@ -48,18 +47,7 @@ public class AddressBar extends Field {
 
 	public AddressBar() {
 
-		XYDimension deviceResolution = UtilCommon.getDeviceResolution();
-		int width = deviceResolution.width;
-		int height = deviceResolution.height;
-
-		if (width >= height) {
-			// 横屏机器，一般来说需要较大字体。
-			textFont = getFont().derive(Font.PLAIN, 25);
-		} else {
-			textFont = getFont().derive(Font.PLAIN, 24);
-		}
-
-		barHeight = textFont.getHeight() + paddintY * 2;
+		barHeight = getFont().getHeight() + PADDING_TOP;
 
 		separator = Bitmap.getBitmapResource("img/other/separator.png");
 		leftIndicator = Bitmap.getBitmapResource("img/other/leftIndicator.png");
@@ -80,11 +68,23 @@ public class AddressBar extends Field {
 	 */
 	public void setIcon(Bitmap icon) {
 
-		if (!drawIcon || this.icon == icon) {
+		if (!drawIcon || icon == null) {
+			// 若不绘制图标，无需设置图标。
 			return;
 		}
-		this.icon = icon;
+
+		int iconW = barHeight - PADDING_TOP;
+		int iconH = iconW;
+
+		Bitmap processedIcon = GPATools.ResizeTransparentBitmap(icon, iconW, iconH);
+
+		if (processedIcon.equals(this.icon)) {
+			return;
+		}
+
+		this.icon = processedIcon;
 		invalidate();
+
 	}
 
 
@@ -164,7 +164,7 @@ public class AddressBar extends Field {
 
 		pathLengths = new int[paths.length];
 		for (int i = 0; i < paths.length; i++) {
-			pathLengths[i] = textFont.getBounds(paths[i]);
+			pathLengths[i] = getFont().getBounds(paths[i]);
 		}
 
 	}
@@ -184,7 +184,7 @@ public class AddressBar extends Field {
 
 	protected void paint(Graphics g) {
 
-		int x = 6;
+		int x = PADDING_LEFT;
 		if (drawIcon && icon != null) {
 			x = drawIcon(g, x);
 		}
@@ -204,8 +204,7 @@ public class AddressBar extends Field {
 
 		int iconWidth = icon.getWidth();
 		int iconHeight = icon.getHeight();
-		int startY = UtilCommon.getOffset(barHeight, iconHeight);
-		g.drawBitmap(startX, startY, iconWidth, iconHeight, icon, 0, 0);
+		g.drawBitmap(startX, PADDING_TOP, iconWidth, iconHeight, icon, 0, 0);
 		return startX + iconWidth + 5;
 	}
 
@@ -216,13 +215,12 @@ public class AddressBar extends Field {
 		int end = getWidth() - 10; // 结束位置，离开右侧一定距离，使之不太靠边。
 		int availableWidth = end - start; // 可用宽度
 
-		g.setFont(textFont);
 		g.setColor(0xe7e7e7);
 
 		if (paths.length == 1) {
 			// 只有一层路径时的情况。
 			g.setColor(0xffffff);
-			g.drawText(paths[0], start, paddintY, DrawStyle.ELLIPSIS, availableWidth);
+			g.drawText(paths[0], start, PADDING_TOP, DrawStyle.ELLIPSIS, availableWidth);
 			return;
 		}
 
@@ -231,7 +229,7 @@ public class AddressBar extends Field {
 		int sepMarginX = 10;
 		int sepWidth = separator.getWidth() + sepMarginX * 2;
 		int sepHeight = separator.getHeight();
-		int sepOffsetY = UtilCommon.getOffset(barHeight, separator.getHeight());
+		int sepOffsetY = PADDING_TOP + UtilCommon.getOffset(barHeight - PADDING_TOP, separator.getHeight());
 
 		int widthOfTotal = 0;
 
@@ -254,7 +252,7 @@ public class AddressBar extends Field {
 					g.setColor(0xffffff);
 				}
 
-				x += g.drawText(paths[i], x, paddintY);
+				x += g.drawText(paths[i], x, PADDING_TOP);
 
 				if (i < paths.length - 1) {
 					g.drawBitmap(x + sepMarginX, sepOffsetY, sepWidth - sepMarginX * 2, sepHeight, separator, 0, 0);
@@ -268,8 +266,9 @@ public class AddressBar extends Field {
 
 		// ****绘制不能完整画出所有路径时的情况**** //
 
-		g.drawBitmap(start, UtilCommon.getOffset(barHeight, leftIndicator.getHeight()), leftIndicator.getWidth(),
-				leftIndicator.getHeight(), leftIndicator, 0, 0);
+		int indicatorOffsetY = PADDING_TOP + UtilCommon.getOffset(barHeight - PADDING_TOP, leftIndicator.getHeight());
+
+		g.drawBitmap(start, indicatorOffsetY, leftIndicator.getWidth(), leftIndicator.getHeight(), leftIndicator, 0, 0);
 		x += leftIndicator.getWidth() + sepMarginX;
 		start = x;
 		availableWidth = end - start;
@@ -299,7 +298,7 @@ public class AddressBar extends Field {
 					g.setColor(0xffffff);
 				}
 
-				x += g.drawText(paths[i], x, paddintY);
+				x += g.drawText(paths[i], x, PADDING_TOP);
 
 				if (i < paths.length - 1) {
 					g.drawBitmap(x + sepMarginX, sepOffsetY, sepWidth - sepMarginX * 2, sepHeight, separator, 0, 0);
@@ -324,7 +323,7 @@ public class AddressBar extends Field {
 		if (levelOne.length() > 3) {
 
 			String levelOneEllipsis = levelOne.substring(0, 3) + "…";
-			int levelOneEllipsisWidth = textFont.getBounds(levelOneEllipsis);
+			int levelOneEllipsisWidth = getFont().getBounds(levelOneEllipsis);
 			levelOneLeastWidth = Math.min(levelOneLeastWidth, levelOneEllipsisWidth);
 
 		}
@@ -335,23 +334,23 @@ public class AddressBar extends Field {
 			// 可完整的画出最后一层。
 
 			int widthForLevelOne = availableWidth - sepWidth - levelTwoWidth;
-			x += g.drawText(levelOne, start, paddintY, DrawStyle.ELLIPSIS, widthForLevelOne);
+			x += g.drawText(levelOne, start, PADDING_TOP, DrawStyle.ELLIPSIS, widthForLevelOne);
 			g.drawBitmap(x + sepMarginX, sepOffsetY, sepWidth, sepHeight, separator, 0, 0);
 			x += sepWidth;
 			g.setColor(0xffffff);
-			g.drawText(levelTwo, x, paddintY);
+			g.drawText(levelTwo, x, PADDING_TOP);
 
 			return;
 
 		} else {
 			// 两层都不能完整画出。
 
-			x += g.drawText(levelOne, start, paddintY, DrawStyle.ELLIPSIS, levelOneLeastWidth);
+			x += g.drawText(levelOne, start, PADDING_TOP, DrawStyle.ELLIPSIS, levelOneLeastWidth);
 			g.drawBitmap(x + sepMarginX, sepOffsetY, sepWidth, sepHeight, separator, 0, 0);
 			x += sepWidth;
 			int widthForLevelTwo = end - x;
 			g.setColor(0xffffff);
-			g.drawText(levelTwo, x, paddintY, DrawStyle.ELLIPSIS, widthForLevelTwo);
+			g.drawText(levelTwo, x, PADDING_TOP, DrawStyle.ELLIPSIS, widthForLevelTwo);
 
 		}
 

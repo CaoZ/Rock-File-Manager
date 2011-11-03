@@ -34,8 +34,8 @@ public class GPATools {
 	 *            <code>Bitmap.SCALE_STRETCH</code>.
 	 * @return The resized Bitmap in a new object.
 	 */
-	public static Bitmap ResizeTransparentBitmap(Bitmap bmpSrc, int nWidth, int nHeight,
-			int nFilterType, int nAspectRatio) {
+	public static Bitmap ResizeTransparentBitmap(Bitmap bmpSrc, int nWidth, int nHeight, int nFilterType,
+			int nAspectRatio) {
 
 		if (bmpSrc == null)
 			return null;
@@ -96,8 +96,7 @@ public class GPATools {
 					// Compute the alpha value based on the difference of
 					// intensity
 					// in the red channel
-					int nAlpha = ((aPixelLine[1][x] >> 16) & 0xff)
-							- ((aPixelLine[0][x] >> 16) & 0xff) + 255;
+					int nAlpha = ((aPixelLine[1][x] >> 16) & 0xff) - ((aPixelLine[0][x] >> 16) & 0xff) + 255;
 					if (nAlpha == 0)
 						aPixelLine[0][x] = 0x00000000; // Completely transparent
 					else if (nAlpha >= 255)
@@ -128,4 +127,20 @@ public class GPATools {
 		}
 		return bmpFinal;
 	}
+
+
+	/**
+	 * ResizeTransparentBitmap(bmpSrc, nWidth, nHeight, Bitmap.FILTER_LANCZOS,
+	 * Bitmap.SCALE_STRETCH);
+	 * 
+	 * @param bmpSrc
+	 * @param nWidth
+	 * @param nHeight
+	 * @return
+	 */
+	public static Bitmap ResizeTransparentBitmap(Bitmap bmpSrc, int nWidth, int nHeight) {
+
+		return ResizeTransparentBitmap(bmpSrc, nWidth, nHeight, Bitmap.FILTER_LANCZOS, Bitmap.SCALE_STRETCH);
+	}
+
 }

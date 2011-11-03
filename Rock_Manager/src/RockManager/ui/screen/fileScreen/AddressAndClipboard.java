@@ -36,21 +36,22 @@ public class AddressAndClipboard extends HorizontalFieldManager {
 		}
 
 		int addressHeight = addressBar.getPreferredHeight();
-		int clipboardHeight = clipboardIndicator.getPreferredHeight();
+		int clipboardHeight = clipboardIndicator.getPreferredHeight() + AddressBar.PADDING_TOP;
 		height = Math.max(addressHeight, clipboardHeight);
 
 		int addressY = UtilCommon.getOffset(height, addressHeight);
-		int clipboardY = UtilCommon.getOffset(height, clipboardHeight);
+		int clipboardY = UtilCommon.getOffset(height, clipboardHeight) + AddressBar.PADDING_TOP;
 
-		int clipboardWidth = clipboardIndicator.getPreferredWidth();
+		int clipboardWidth = clipboardIndicator.getPreferredWidth() + AddressBar.PADDING_LEFT;
 
 		setPositionChild(addressBar, 0, addressY);
 		layoutChild(addressBar, width - clipboardWidth, height);
 
 		setPositionChild(clipboardIndicator, width - clipboardWidth, clipboardY);
-		layoutChild(clipboardIndicator, clipboardWidth, height);
+		layoutChild(clipboardIndicator, clipboardWidth - AddressBar.PADDING_LEFT, height);
 
 		setExtent(width, height);
 
 	}
+
 }

@@ -4,7 +4,6 @@ package RockManager.fileList.searchBox;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
-import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.TouchEvent;
 import net.rim.device.api.ui.Touchscreen;
 import net.rim.device.api.ui.UiApplication;
@@ -16,6 +15,7 @@ import net.rim.device.api.ui.container.HorizontalFieldManager;
 import net.rim.device.api.ui.decor.Border;
 import net.rim.device.api.ui.decor.BorderFactory;
 import RockManager.fileList.FileListField;
+import RockManager.ui.MyUI;
 import RockManager.ui.oneLineInputField.InputField;
 import RockManager.ui.oneLineInputField.OneLineInputArea;
 import RockManager.util.OSVersionUtil;
@@ -53,7 +53,9 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 	public SearchBox(FileListField parentListField) {
 
 		super(NO_HORIZONTAL_SCROLL | NON_FOCUSABLE | USE_ALL_WIDTH);
-		setFont(getFont().derive(Font.PLAIN, 24));
+
+		setFont(MyUI.SMALLER_FONT); // 较小字体
+
 		// setMargin(3, 4, 5, 4); // 外面的黑色区域
 		setPadding(0, paddingX, 0, paddingX); // 与内部的间隔
 
@@ -64,10 +66,7 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 				Bitmap.getBitmapResource("img/other/inputBack_Focus.png"));
 		setBorder(borderNormal);
 
-		BitmapField searchIcon = new BitmapField(Bitmap.getBitmapResource("img/other/searchIcon.png"), FIELD_VCENTER);
-		// 不直接安置在容器SearchBox上而在每个Field都设置padding，是希望扩大关闭按钮的范围，使触摸操作容易完成。
-		searchIcon.setPadding(paddingY, paddingText, paddingY, 0);
-		add(searchIcon);
+		addSearchIcon();
 
 		inputArea = new OneLineInputArea(FIELD_VCENTER | USE_ALL_WIDTH);
 		inputArea.setPadding(paddingY, 0, paddingY, 0);
@@ -79,13 +78,27 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 	}
 
 
+	private void addSearchIcon() {
+
+		Bitmap searchImg = Bitmap.getBitmapResource("img/other/searchIcon.png");
+		searchImg = MyUI.deriveImg(searchImg);
+
+		BitmapField searchIcon = new BitmapField(searchImg, FIELD_VCENTER);
+
+		// 不直接安置在容器SearchBox上而在每个Field都设置padding，是希望扩大关闭按钮的范围，使触摸操作容易完成。
+		searchIcon.setPadding(paddingY, paddingText, paddingY, 0);
+		add(searchIcon);
+
+	}
+
+
 	protected void onFocus(int direction) {
 
 		showFocusBorder();
 
 		if (Touchscreen.isSupported()) {
 
-			// showClearIcon();
+			showClearIcon();
 
 			// 使虚拟键盘显示。
 			if (VirtualKeyboard.isSupported()) {
@@ -94,8 +107,6 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 			}
 
 		}
-
-		showClearIcon(); // TEST only
 
 		super.onFocus(direction);
 	}
@@ -232,16 +243,23 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 	public void showClearIcon() {
 
 		if (clearIcon == null) {
-			clearIcon = new ClearIcon(Bitmap.getBitmapResource("img/other/clearIcon.png"), FIELD_VCENTER | FIELD_RIGHT);
+
+			Bitmap clearIconImg = Bitmap.getBitmapResource("img/other/clearIcon.png");
+			clearIconImg = MyUI.deriveImg(clearIconImg);
+
+			clearIcon = new ClearIcon(clearIconImg, FIELD_VCENTER | FIELD_RIGHT);
 			clearIcon.setPadding(paddingY, paddingX, paddingY, paddingText);
 			clearIcon.setChangeListener(this);
+
 		}
+
 		if (clearIcon.getManager() != null) {
 			return;
 		}
 
 		setPadding(0, 0, 0, paddingX); // 减小右边空闲距离添加到clearIcon上，使触摸操作容易完成。
 		add(clearIcon);
+
 	}
 
 
@@ -250,7 +268,7 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 	 */
 	public void hideClearIcon() {
 
-		if (clearIcon.getManager() == null) {
+		if (clearIcon == null || clearIcon.getManager() == null) {
 			return;
 		}
 
@@ -266,6 +284,12 @@ public class SearchBox extends HorizontalFieldManager implements FieldChangeList
 			if (parentListField.getKeyword().length() > 0) {
 				// 已经输入了关键字，使关键字重置。
 				parentListField.setKeyword("");
+
+				if (isFocus() == false) {
+					// 不处于焦点状态，隐藏clearIcon.
+					hideClearIcon();
+				}
+
 			} else {
 				// 还未输入关键字，使输入框失去焦点。
 				parentListField.setFocus();

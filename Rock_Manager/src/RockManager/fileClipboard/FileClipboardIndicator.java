@@ -1,6 +1,7 @@
 
 package RockManager.fileClipboard;
 
+import RockManager.ui.MyUI;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.Graphics;
@@ -8,9 +9,16 @@ import net.rim.device.api.ui.Graphics;
 
 public class FileClipboardIndicator extends Field {
 
-	public static final Bitmap ICON_COPY = Bitmap.getBitmapResource("img/clipboard/copy.png");
+	private static final Bitmap ICON_COPY;
 
-	public static final Bitmap ICON_CUT = Bitmap.getBitmapResource("img/clipboard/cut.png");
+	private static final Bitmap ICON_CUT;
+
+	static {
+		Bitmap copy = Bitmap.getBitmapResource("img/clipboard/copy.png");
+		ICON_COPY = MyUI.deriveImg(copy);
+		Bitmap cut = Bitmap.getBitmapResource("img/clipboard/cut.png");
+		ICON_CUT = MyUI.deriveImg(cut);
+	}
 
 
 	public FileClipboardIndicator() {

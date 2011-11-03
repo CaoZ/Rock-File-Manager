@@ -3,9 +3,9 @@ package RockManager.ui.progressPopup;
 
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
-import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.component.ButtonField;
 import RockManager.languages.LangRes;
+import RockManager.ui.MyUI;
 import RockManager.ui.statusBar.StatusBar;
 import RockManager.util.ui.BasePopupScreen;
 
@@ -33,7 +33,7 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 
 		// add progress Label
 		progressLabel = new ProgressLabelField();
-		progressLabel.setFont(getFont().derive(Font.PLAIN, 20));
+		progressLabel.setFont(MyUI.deriveFont(0.8f));
 		progressLabel.setMargin(0, 0, 13, 0);
 		progressLabel.setName("initialing...");
 		add(progressLabel);
@@ -55,7 +55,7 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 		// add cancel button
 		cancelButton = new ButtonField(LangRes.get(LangRes.BUTTON_LABEL_CANCEL), FIELD_HCENTER
 				| ButtonField.CONSUME_CLICK);
-		cancelButton.setFont(getFont().derive(Font.PLAIN, 20));
+		cancelButton.setFont(MyUI.deriveFont(0.8f));
 		cancelButton.setMargin(20, 0, 0, 0);
 		cancelButton.setChangeListener(this);
 		add(cancelButton);

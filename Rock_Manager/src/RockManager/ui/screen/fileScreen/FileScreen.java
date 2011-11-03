@@ -22,13 +22,14 @@ public class FileScreen extends AnimatedMainScreen implements VFMwithScrollbarCo
 	private FileListField fileList;
 
 
-	public FileScreen() {
+	protected FileScreen() {
 
 		super(NO_VERTICAL_SCROLL | NO_SYSTEM_MENU_ITEMS);
 
 		// outerVFM, 主要目的是添加一个阴影效果。
 		// 也曾试图添加一个浅蓝色渐变背景，但BlackBerry只能显示65000色，表现不出渐变效果，遂移除。
 		VFMwithTopShadow outerVFM = new VFMwithTopShadow(USE_ALL_WIDTH | USE_ALL_HEIGHT);
+
 		Bitmap rgb248 = Bitmap.getBitmapResource("img/other/248back.png");
 		Background background = BackgroundFactory.createBitmapBackground(rgb248, Background.POSITION_X_LEFT,
 				Background.POSITION_Y_TOP, Background.REPEAT_BOTH);

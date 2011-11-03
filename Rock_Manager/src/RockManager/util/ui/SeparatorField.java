@@ -53,8 +53,7 @@ public class SeparatorField extends Field {
 
 			if (trueColorSupport && backImg.getWidth() != width) {
 				// 支持真彩，进行缩放。
-				backImg = GPATools.ResizeTransparentBitmap(backImg, width, backImg.getHeight(),
-						Bitmap.FILTER_LANCZOS, Bitmap.SCALE_STRETCH);
+				backImg = GPATools.ResizeTransparentBitmap(backImg, width, backImg.getHeight());
 			}
 
 		}

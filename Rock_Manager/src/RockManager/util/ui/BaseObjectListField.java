@@ -1,12 +1,15 @@
 
 package RockManager.util.ui;
 
+import RockManager.ui.MyUI;
+import RockManager.util.UtilCommon;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.KeypadListener;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.Keypad;
 import net.rim.device.api.ui.component.ListField;
 import net.rim.device.api.ui.component.ObjectListField;
+import net.rim.device.api.util.MathUtilities;
 
 
 public class BaseObjectListField extends ObjectListField {
@@ -196,7 +199,15 @@ public class BaseObjectListField extends ObjectListField {
 		int[] colors = { BACK_COLOR_TOP, BACK_COLOR_TOP, BACK_COLOR_BOTTOM, BACK_COLOR_BOTTOM };
 		g.drawShadedFilledPath(xPts, yPts, null, colors, null);
 
-		Bitmap alphaMask = Bitmap.getBitmapResource("img/other/alphaMask_7.png");
+		// 根据字体大小设置设置适当的圆边半径。
+		int alphaMaskR = MyUI.deriveSize(7);
+		// 可用圆边范围：4-9。
+		alphaMaskR = MathUtilities.clamp(4, alphaMaskR, 9);
+
+		String alphaMask_path = "img/other/alphaMask_{1}.png";
+		alphaMask_path = UtilCommon.replaceString(alphaMask_path, "{1}", Integer.toString(alphaMaskR));
+		Bitmap alphaMask = Bitmap.getBitmapResource(alphaMask_path);
+
 		int arcSize = alphaMask.getWidth() / 2;
 		int[] backData = new int[arcSize * arcSize];
 		int[] alphaData = new int[arcSize * arcSize];

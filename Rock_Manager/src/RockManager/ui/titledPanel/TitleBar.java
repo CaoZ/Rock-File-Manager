@@ -3,11 +3,11 @@ package RockManager.ui.titledPanel;
 
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.DrawStyle;
-import net.rim.device.api.ui.Font;
 import net.rim.device.api.ui.Graphics;
 import net.rim.device.api.ui.XYRect;
 import net.rim.device.api.ui.decor.Background;
 import net.rim.device.api.ui.decor.BackgroundFactory;
+import RockManager.ui.MyUI;
 import RockManager.util.UtilCommon;
 import RockManager.util.ui.BaseButtonLikeField;
 
@@ -39,8 +39,6 @@ public class TitleBar extends BaseButtonLikeField {
 	 * focus时背景渐变色底部颜色。
 	 */
 	private static int backHighlightColorBottom = 0x1065de;
-
-	private Font textFont = getFont().derive(Font.PLAIN, 25);
 
 	private static int padding = 5;
 
@@ -76,15 +74,22 @@ public class TitleBar extends BaseButtonLikeField {
 	}
 
 
+	/**
+	 * 设置一个图标，显示在文字前面。这个图标将会被按照MyUI.UI_RATIO缩放。
+	 * 
+	 * @param icon
+	 */
 	public void setIcon(Bitmap icon) {
 
+		icon = MyUI.deriveImg(icon);
 		this.icon = icon;
+
 	}
 
 
 	public int getPreferredHeight() {
 
-		return textFont.getHeight() + padding * 2;
+		return getFont().getHeight() + padding * 2;
 	}
 
 
@@ -164,7 +169,6 @@ public class TitleBar extends BaseButtonLikeField {
 		// 绘制文字
 		int color = focused ? textColorHighlight : textColor;
 		g.setColor(color);
-		g.setFont(textFont);
 		g.drawText(title, x, padding, DrawStyle.ELLIPSIS, getWidth() - x - expandedIcon.getWidth() - 10);
 	}
 
