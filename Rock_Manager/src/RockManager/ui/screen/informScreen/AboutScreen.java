@@ -16,7 +16,7 @@ public class AboutScreen extends InformScreen {
 
 	protected void addMainArea() {
 
-		addLabelField(Config.VERSION_NAME);
+		addLabelField(Config.APP_NAME);
 		addLabelField("Version: " + Config.VERSION_NUMBER);
 		String osVersion = DeviceInfo.getDeviceName() + " " + DeviceInfo.getSoftwareVersion();
 		addLabelField("OS: " + osVersion);

@@ -13,6 +13,7 @@ import RockManager.config.OptionsScreen;
 import RockManager.favouritesList.FavouritesListField;
 import RockManager.fileList.FileListField;
 import RockManager.languages.LangRes;
+import RockManager.stat.Stat;
 import RockManager.ui.ScreenHeightChangeEvent;
 import RockManager.ui.ScreenHeightChangeListener;
 import RockManager.ui.screen.informScreen.AboutScreen;
@@ -55,6 +56,15 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 		addFavouriteItem();
 
 		add(vfm);
+
+		UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+			public void run() {
+
+				new Stat();
+
+			}
+		});
 
 	}
 

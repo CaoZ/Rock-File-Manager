@@ -9,6 +9,8 @@ import net.rim.device.api.util.MathUtilities;
 
 public class MyUI {
 
+	public static final Font SYSTEM_FONT;
+
 	public static final Font MAIN_FONT;
 
 	public static final Font SMALLER_FONT;
@@ -24,14 +26,14 @@ public class MyUI {
 		float mainFontRatio = 0.9259f; // 25/27;
 		float smallerFontRatio = 0.8889f; // 24/27;
 
-		Font defaultFont = Font.getDefault();
-		int defaultFontHeight = defaultFont.getHeight();
+		SYSTEM_FONT = Font.getDefault();
+		int systemFontHeight = SYSTEM_FONT.getHeight();
 
-		int mainFontHeight = MathUtilities.round((defaultFontHeight * mainFontRatio));
-		MAIN_FONT = defaultFont.derive(Font.PLAIN, mainFontHeight);
+		int mainFontHeight = MathUtilities.round((systemFontHeight * mainFontRatio));
+		MAIN_FONT = SYSTEM_FONT.derive(Font.PLAIN, mainFontHeight);
 
-		int smallerFontHeight = MathUtilities.round((defaultFontHeight * smallerFontRatio));
-		SMALLER_FONT = defaultFont.derive(Font.PLAIN, smallerFontHeight);
+		int smallerFontHeight = MathUtilities.round((systemFontHeight * smallerFontRatio));
+		SMALLER_FONT = SYSTEM_FONT.derive(Font.PLAIN, smallerFontHeight);
 
 		UI_RATIO = mainFontHeight / 25f;
 
