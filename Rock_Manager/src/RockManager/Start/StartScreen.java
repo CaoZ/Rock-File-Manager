@@ -8,6 +8,7 @@ import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.component.Menu;
 import net.rim.device.api.ui.component.StandardTitleBar;
 import net.rim.device.api.ui.decor.BackgroundFactory;
+import RockManager.config.Config;
 import RockManager.config.OptionsScreen;
 import RockManager.favouritesList.FavouritesListField;
 import RockManager.fileList.FileListField;
@@ -33,8 +34,13 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 
 		super(NO_VERTICAL_SCROLL | NO_SYSTEM_MENU_ITEMS);
 
+		String title = "Rock File Manager";
+		if (Config.DEBUG_MODE) {
+			title += " [DEBUG]";
+		}
+
 		StandardTitleBar titleBar = new StandardTitleBar();
-		titleBar.addTitle("Rock File Manager");
+		titleBar.addTitle(title);
 		titleBar.addNotifications();
 		titleBar.addSignalIndicator();
 		setTitle(titleBar);
