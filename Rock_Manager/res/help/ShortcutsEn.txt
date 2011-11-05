@@ -1,13 +1,15 @@
-﻿Enter: perform default action
-Backspace/Del: delete
-Space: move down, can be hold down
-Alt + Space/Movement: fast move
-Alt + T: move to top
-Alt + B: move to bottom
+﻿• Enter: perform default action
+• Backspace/Del: delete
+• Space: move down, can be hold down
+• Alt + Space/Movement: fast move
+• Alt + T: move to top
+• Alt + B: move to bottom
 
-S: search
-X: cut
-C: copy
-V: paste
-R: rename
-P: properties
+• S: search
+• X: cut
+• C: copy
+• V: paste
+• R: rename
+• P: properties
+
+* According to the type of keyboard, some shortcuts may be unavailable on some devices.

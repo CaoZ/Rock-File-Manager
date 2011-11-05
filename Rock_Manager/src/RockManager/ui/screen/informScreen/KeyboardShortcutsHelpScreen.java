@@ -1,41 +1,28 @@
 
 package RockManager.ui.screen.informScreen;
 
-import java.io.EOFException;
-import java.io.IOException;
 import java.io.InputStream;
-import net.rim.device.api.io.LineReader;
+import net.rim.device.api.io.IOUtilities;
 import RockManager.languages.LangRes;
+import RockManager.util.IOUtil;
 
 
 public class KeyboardShortcutsHelpScreen extends InformScreen {
 
 	protected void addMainArea() {
 
+		String helpInfo = null;
+
 		String txtPath = LangRes.get(LangRes.HELP_SHORTCUTS_TXT_PATH);
 		InputStream txtIn = getClass().getResourceAsStream(txtPath);
-
-		if (txtIn != null) {
-
-			LineReader reader = new LineReader(txtIn);
-
-			while (true) {
-				try {
-					String thisLine = new String(reader.readLine(), "UTF-8");
-					addLabelField(thisLine);
-				} catch (EOFException e) {
-					break;
-				} catch (IOException e) {
-					break;
-				}
-			}
-
-			try {
-				txtIn.close();
-			} catch (IOException e) {
-			}
-
+		try {
+			helpInfo = new String(IOUtilities.streamToBytes(txtIn), "UTF-8");
+		} catch (Exception e) {
+		} finally {
+			IOUtil.closeStream(txtIn);
 		}
+
+		addTextField(helpInfo);
 
 	}
 

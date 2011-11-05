@@ -44,6 +44,12 @@ public class OSVersionUtil {
 	}
 
 
+	public static int getMainVersion() {
+
+		return MAIN_VERSION;
+	}
+
+
 	public static int getRevisionVersion() {
 
 		try {
