@@ -2,6 +2,7 @@
 package RockManager.util.ui;
 
 import RockManager.ui.MyUI;
+import RockManager.util.KeyUtil;
 import RockManager.util.UtilCommon;
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.system.KeypadListener;
@@ -80,7 +81,7 @@ public class BaseObjectListField extends ObjectListField {
 
 	protected boolean keyRepeat(int keycode, int time) {
 
-		if (getSize() < 1) {
+		if (isEmpty()) {
 			return super.keyRepeat(keycode, time);
 		}
 
@@ -98,11 +99,12 @@ public class BaseObjectListField extends ObjectListField {
 
 	protected boolean keyChar(char key, int status, int time) {
 
-		if (getSize() < 1) {
+		if (isEmpty()) {
 			return super.keyChar(key, status, time);
 		}
 
 		switch (key) {
+
 			case Keypad.KEY_SPACE:
 				if (getSelectedIndex() == getSize() - 1) {
 					// 到达末尾后移动到开头。
@@ -111,12 +113,32 @@ public class BaseObjectListField extends ObjectListField {
 					moveFocus(1, status, time);
 				}
 				return true;
+
 			case Keypad.KEY_ENTER:
 				boolean consumed = navigationClick(status, time);
 				if (consumed) {
 					return true;
 				}
 				break;
+
+		}
+
+		boolean altDown = KeyUtil.isAltPressed(status);
+
+		if (altDown && getSize() > 1) {
+
+			char unAltedKey = Character.toUpperCase(Keypad.getUnaltedChar(key));
+
+			if (unAltedKey == 'T') {
+				// 跳转到顶部
+				setSelectedIndex(0);
+				return true;
+			} else if (unAltedKey == 'B') {
+				// 跳转到底部
+				setSelectedIndex(getSize() - 1);
+				return true;
+			}
+
 		}
 
 		return super.keyChar(key, status, time);

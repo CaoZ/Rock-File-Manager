@@ -85,7 +85,7 @@ public class FileListContextMenuHandler {
 
 		boolean added = false;
 
-		if (fileList.isFavouriteList()) {
+		if (fileList.isFavouriteList() && fileList.isRealFileItem()) {
 			addOpenItMenuItem(contextMenu, fileList, 210, PRIORITY_ONE);
 			added = true;
 		}
@@ -122,6 +122,10 @@ public class FileListContextMenuHandler {
 
 		if (fileList instanceof ArchiveListField) {
 			ArchiveListContextMenuHandler.addArchiveMenus(contextMenu, (ArchiveListField) fileList);
+			return;
+		}
+
+		if (fileList.isEmpty()) {
 			return;
 		}
 
@@ -186,7 +190,8 @@ public class FileListContextMenuHandler {
 				addSelectHereMenuItem(contextMenu, fileList, 420, PRIORITY_ONE);
 				subAdded = true;
 			}
-			if (thisItem.isDisk() || thisItem.isDir()) {
+
+			if (thisItem != null && (thisItem.isDisk() || thisItem.isDir())) {
 				// 选择子文件夹。
 				addSelectThisSubFolderMenuItem(contextMenu, fileList, 430, PRIORITY_TWO);
 				subAdded = true;
@@ -223,10 +228,13 @@ public class FileListContextMenuHandler {
 	 */
 	private static void addFavouriteMenus(ContextMenu contextMenu, FileListField fileList) {
 
-		FileItem thisItem = fileList.getThisItem();
+		if (fileList.isRealFileItem() == false) {
+			return;
+		}
+
 		boolean added = false;
 
-		if (fileList.isNormalFolder() && !fileList.isPickerMode() && thisItem.isRealFile()) {
+		if (fileList.isNormalFolder() && !fileList.isPickerMode()) {
 			// "添加到收藏夹" 510
 			addAddToFavouriteMenuItem(contextMenu, fileList, 510, 510);
 			added = true;

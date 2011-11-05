@@ -14,17 +14,22 @@ public class ArchiveListContextMenuHandler extends FileListContextMenuHandler {
 
 	public static void addArchiveMenus(ContextMenu contextMenu, ArchiveListField fileList) {
 
+		if (fileList.isEmpty()) {
+			return;
+		}
+
 		boolean added = false;
 
 		FileItem thisItem = fileList.getThisItem();
 
-		if (thisItem != null && !thisItem.isReturn()) {
+		if (!thisItem.isReturn()) {
 			// 解压此项
 			addExtractThisItem(contextMenu, fileList, 310, PRIORITY_ONE, thisItem);
 			added = true;
 		}
 
 		FileItem[] allFiles = fileList.getAllFiles();
+
 		if (allFiles.length > 1) {
 			// 全部解压
 			addExtractAllItem(contextMenu, fileList, 320, PRIORITY_ONE, allFiles);

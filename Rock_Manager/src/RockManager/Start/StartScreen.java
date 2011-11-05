@@ -14,7 +14,10 @@ import RockManager.fileList.FileListField;
 import RockManager.languages.LangRes;
 import RockManager.ui.ScreenHeightChangeEvent;
 import RockManager.ui.ScreenHeightChangeListener;
+import RockManager.ui.screen.informScreen.AboutScreen;
+import RockManager.ui.screen.informScreen.KeyboardShortcutsHelpScreen;
 import RockManager.ui.titledPanel.TitledPanel;
+import RockManager.util.CapabilityUtil;
 import RockManager.util.ui.AnimatedMainScreen;
 import RockManager.util.ui.VFMwithScrollbar;
 
@@ -93,11 +96,32 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 
 	protected void makeMenu(Menu menu, int instance) {
 
-		String label = LangRes.get(LangRes.MENU_TITLE_OPTIONS);
+		menu.add(MenuItem.separator(4000));
 
-		menu.add(MenuItem.separator(4999));
+		addConfigMenu(menu, 4001);
 
-		MenuItem config = new MenuItem(label, 5000, 5000) {
+		if (CapabilityUtil.isPhysicalKeyboardSupported()) {
+			// 拥有物理键盘，添加"键盘快捷键"菜单。
+			addShortcutsMenu(menu, 4002);
+		}
+
+		addAboutMenu(menu, 4003);
+
+		menu.add(MenuItem.separator(4010));
+
+		super.makeMenu(menu, instance);
+
+	}
+
+
+	/**
+	 * 添加"设置"菜单项。
+	 */
+	private void addConfigMenu(Menu menu, int ordinal) {
+
+		String configLabel = LangRes.get(LangRes.MENU_TITLE_OPTIONS);
+
+		MenuItem config = new MenuItem(configLabel, ordinal, ordinal) {
 
 			public void run() {
 
@@ -106,9 +130,55 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 		};
 		menu.add(config);
 
-		menu.add(MenuItem.separator(5001));
+	}
 
-		super.makeMenu(menu, instance);
+
+	/**
+	 * 添加"键盘快捷键"菜单。
+	 */
+	private void addShortcutsMenu(Menu menu, int ordinal) {
+
+		String shortCutLable = LangRes.get(LangRes.MENU_KEYBOARD_SHORTCUTS);
+
+		MenuItem shortCutKeyHelp = new MenuItem(shortCutLable, ordinal, ordinal) {
+
+			public void run() {
+
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+					public void run() {
+
+						UiApplication.getUiApplication().pushScreen(new KeyboardShortcutsHelpScreen());
+					}
+				});
+			}
+		};
+		menu.add(shortCutKeyHelp);
+
+	}
+
+
+	/**
+	 * 关于菜单。
+	 */
+	private void addAboutMenu(Menu menu, int ordinal) {
+
+		String aboutLable = LangRes.get(LangRes.MENU_ABOUT);
+
+		MenuItem about = new MenuItem(aboutLable, ordinal, ordinal) {
+
+			public void run() {
+
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+					public void run() {
+
+						UiApplication.getUiApplication().pushScreen(new AboutScreen());
+					}
+				});
+			}
+		};
+		menu.add(about);
 
 	}
 

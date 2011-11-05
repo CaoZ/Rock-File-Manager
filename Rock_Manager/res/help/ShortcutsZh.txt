@@ -1,0 +1,13 @@
+﻿Enter: 执行默认操作
+Backspace/Del: 删除
+Space: 向下移动，可按住
+Alt + Space/移动操作: 快速移动
+Alt + T: 移动到顶部
+Alt + B: 移动到底部
+
+S: 搜索
+X: 剪切
+C: 复制
+V: 粘贴
+R: 重命名
+P: 属性

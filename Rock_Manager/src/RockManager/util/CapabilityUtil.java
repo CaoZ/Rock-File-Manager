@@ -4,7 +4,21 @@ package RockManager.util;
 import net.rim.device.api.system.capability.DeviceCapability;
 
 
+/**
+ * 设备相关能力属性类。创建此类的目的是对OS5, OS6+设备提供相同的调用接口。
+ */
 public class CapabilityUtil {
+
+	/**
+	 * 此设备是否拥有物理键盘。
+	 * 
+	 * @return
+	 */
+	public static boolean isPhysicalKeyboardSupported() {
+
+		return DeviceCapability.isPhysicalKeyboardSupported();
+	}
+
 
 	/**
 	 * 物理键盘是否可用。

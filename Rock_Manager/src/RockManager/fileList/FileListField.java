@@ -1338,11 +1338,8 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 	protected void makeContextMenu(ContextMenu contextMenu) {
 
-		if (isEmpty()) {
-			super.makeContextMenu(contextMenu);
-		} else {
-			FileListContextMenuHandler.makeContextMenu(contextMenu, this);
-		}
+		// 即使是empty，也应弹出适当菜单，如：新建文件夹。
+		FileListContextMenuHandler.makeContextMenu(contextMenu, this);
 
 	}
 

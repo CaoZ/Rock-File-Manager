@@ -41,7 +41,6 @@ public class BasePopupScreen extends PopupScreen {
 
 	public BasePopupScreen(long managerStyle, long screenStyle) {
 
-		// 必要时可以滚动
 		super(new VerticalFieldManager(managerStyle), screenStyle);
 
 		XYEdges edges = new XYEdges(31, 31, 31, 31);

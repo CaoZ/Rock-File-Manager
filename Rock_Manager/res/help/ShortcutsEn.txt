@@ -1,0 +1,13 @@
+﻿Enter: perform default action
+Backspace/Del: delete
+Space: move down, can be hold down
+Alt + Space/Movement: fast move
+Alt + T: move to top
+Alt + B: move to bottom
+
+S: search
+X: cut
+C: copy
+V: paste
+R: rename
+P: properties

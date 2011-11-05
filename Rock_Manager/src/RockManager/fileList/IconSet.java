@@ -44,7 +44,6 @@ public class IconSet {
 			try {
 				input.close();
 			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
 

@@ -32,7 +32,8 @@ public class KeyUtil {
 		StringBuffer allChars = new StringBuffer();
 
 		if (isAltPressed(status)) {
-			char originKey = Keypad.getUnaltedChar(keyPressed);
+			// Keypad.getUnaltedChar(keyPressed) 获得的是可能是大写形式的
+			char originKey = Character.toLowerCase(Keypad.getUnaltedChar(keyPressed));
 			int keyCode = KeypadUtil.getKeyCode(originKey, 0, KeypadUtil.MODE_UI_CURRENT_LOCALE);
 			Keypad.getKeyChars(keyCode, allChars);
 			allChars.append(keyPressed);
