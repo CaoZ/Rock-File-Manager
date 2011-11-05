@@ -102,8 +102,14 @@ public class AnimatedMainScreen extends MainScreen {
 
 		final UiEngineInstance uiEngine = Ui.getUiEngineInstance();
 
-		// 原来的Push时效果。
-		final TransitionContext originPush = uiEngine.getTransition(this, null, UiEngineInstance.TRIGGER_PUSH);
+		// 由于在OS 5上有可能连续弹出两个菜单: short menu -> full menu,
+		// 而第二个菜单弹出时第一个菜单的onMenuDismissed方法未调用，所以第二个菜单弹出时取得的originPop是错误的。
+		// 所以现在设置为null。事实上除了菜单弹出时其它时候无需为其它Screen设置TransitionContext。
+
+		/*
+		 * // 原来的Push时效果 final TransitionContext originPush =
+		 * uiEngine.getTransition(this, null, UiEngineInstance.TRIGGER_PUSH);
+		 */
 
 		// menu弹出动画效果
 		TransitionContext transitionPush = new TransitionContext(TransitionContext.TRANSITION_SLIDE);
@@ -119,7 +125,7 @@ public class AnimatedMainScreen extends MainScreen {
 			public void run() {
 
 				// 还原原来Screen Push时效果.
-				uiEngine.setTransition(thisScreen, null, UiEngineInstance.TRIGGER_PUSH, originPush);
+				uiEngine.setTransition(thisScreen, null, UiEngineInstance.TRIGGER_PUSH, null);
 			}
 		});
 
@@ -149,7 +155,14 @@ public class AnimatedMainScreen extends MainScreen {
 
 		final UiEngineInstance uiEngine = Ui.getUiEngineInstance();
 
-		final TransitionContext originPop = uiEngine.getTransition(null, this, UiEngineInstance.TRIGGER_POP);
+		// 由于在OS 5上有可能连续弹出两个菜单: short menu -> full menu,
+		// 而第二个菜单弹出时第一个菜单的onMenuDismissed方法未调用，所以第二个菜单弹出时取得的originPop是错误的。
+		// 所以现在设置为null。事实上除了菜单弹出时其它时候无需为其它Screen设置TransitionContext。
+
+		/*
+		 * final TransitionContext originPop = uiEngine.getTransition(null,
+		 * this, UiEngineInstance.TRIGGER_POP);
+		 */
 
 		// menu收起动画效果, 在非Storm, Torch机型上可能无效。
 		// http://supportforums.blackberry.com/t5/Java-Development/Have-problem-to-create-a-AnimatedMainScreen-the-animated-slide/m-p/1304455
@@ -167,7 +180,7 @@ public class AnimatedMainScreen extends MainScreen {
 
 			public void run() {
 
-				uiEngine.setTransition(null, thisScreen, UiEngineInstance.TRIGGER_POP, originPop);
+				uiEngine.setTransition(null, thisScreen, UiEngineInstance.TRIGGER_POP, null);
 			}
 		});
 
