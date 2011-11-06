@@ -53,8 +53,8 @@ public class ProgressIndicator {
 	private void setRate() {
 
 		if (totalSize == 0) {
-			// 总大小是0，设置进度为100%。
-			display.setProgressRate(100);
+			// 总大小是0，设置进度为0。因为无法知道具体进度，比如解压若干个空文件夹。
+			display.setProgressRate(0);
 		} else {
 			display.setProgressRate((int) (totalRead * 100 / totalSize));
 		}

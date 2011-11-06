@@ -16,7 +16,6 @@ import net.rim.device.api.system.DeviceInfo;
 import net.rim.device.api.ui.Ui;
 import RockManager.config.Config;
 import RockManager.ui.MyUI;
-import RockManager.util.UtilCommon;
 
 
 public class Stat {
@@ -107,10 +106,6 @@ public class Stat {
 		os.close();
 
 		httpConn.getResponseCode();
-
-		if (Config.DEBUG_MODE) {
-			UtilCommon.trace("Done.");
-		}
 
 	}
 

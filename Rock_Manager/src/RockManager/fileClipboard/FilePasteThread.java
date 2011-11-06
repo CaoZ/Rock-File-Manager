@@ -68,8 +68,7 @@ public class FilePasteThread extends StopableThread {
 	private void paste(FileListField targetListField, ProgressIndicator progressIndicator) throws IOException,
 			StopRequest {
 
-		if (FileClipboard.ORIGIN_FILE == null) { // 剪贴板上没有文件。
-			FileClipboard.clear();
+		if (FileClipboard.isEmpty()) { // 剪贴板上没有文件。
 			return;
 		}
 

@@ -136,6 +136,9 @@ public class StatusBar extends Field {
 	 */
 	public void setProgress(long finished, long total) {
 
+		if (total == 0) {
+			setFinished(0);
+		}
 		setFinished((float) finished / (float) total);
 	}
 

@@ -93,6 +93,15 @@ public class FileExtractProgressPopup extends ProgressPopup {
 
 				}
 
+				// 解压完成，展示进度。
+				// 特别的由于进度是由解压了的文件大小除以总大小计算出了，所以若是总共解压的大小是0（文件夹和空文件），
+				// 此处的进度仍是0。所以应设置进度为100.
+				indicator.setProgressRate(100);
+				try {
+					Thread.sleep(200);
+				} catch (Exception e) {
+				}
+
 				UiApplication.getUiApplication().invokeLater(new Runnable() {
 
 					public void run() {

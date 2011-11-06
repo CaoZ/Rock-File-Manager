@@ -162,6 +162,10 @@ public class FileClipboard {
 	 */
 	public static void pasteWithUI(final FileListField fileListField) {
 
+		if (isEmpty()) { // 剪贴板上没有文件。
+			return;
+		}
+
 		final ProgressPopup popup = new ProgressPopup();
 		popup.setCancelable(true);
 

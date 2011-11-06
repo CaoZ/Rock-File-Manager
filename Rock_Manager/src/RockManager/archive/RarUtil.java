@@ -82,10 +82,9 @@ public class RarUtil {
 
 		}
 
-	}
-
-
-	public static void extractEntry() {
+		// 全部解压完成
+		// 设置进度为100%。
+		extractIndicator.setProgressRate(100);
 
 	}
 
