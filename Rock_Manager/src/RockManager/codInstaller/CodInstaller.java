@@ -168,13 +168,16 @@ public class CodInstaller {
 			// weird, but no cods will be loaded.
 			UtilCommon.alert("No CODs need to be installed.", true);
 
-			UiApplication.getUiApplication().invokeLater(new Runnable() {
+			if (installerPopup != null) {
 
-				public void run() {
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
 
-					installerPopup.close();
-				}
-			});
+					public void run() {
+
+						installerPopup.close();
+					}
+				});
+			}
 
 			return;
 		}
@@ -202,16 +205,12 @@ public class CodInstaller {
 
 		// 确保在实际载入module前显示进度窗口，因为载入第一个module可能需花费较多时间。
 
-		UiApplication.getUiApplication().invokeLater(new Runnable() {
+		UiApplication.getUiApplication().invokeAndWait(new Runnable() {
 
 			public void run() {
 
 				if (installerPopup == null) {
 					UiApplication.getUiApplication().pushScreen(popup);
-				}
-
-				synchronized (popup) {
-					popup.notifyAll();
 				}
 
 			}
@@ -224,12 +223,11 @@ public class CodInstaller {
 		// isVisible()返回true, 但还是肉眼不可见的）。
 		// 为改善这种情况，Thread.sleep()
 
-		synchronized (popup) {
+		if (installerPopup == null) {
+			// popup是第一次出现。
 			try {
-				popup.wait();
 				Thread.sleep(280); // 等待直到popup完全显示。popup出现时有200ms的动画效果。
 			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		}
 
@@ -291,7 +289,6 @@ public class CodInstaller {
 		try {
 			Thread.sleep(300); // 安装完毕，展示100%的进度。
 		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 
 		UiApplication.getUiApplication().invokeAndWait(new Runnable() {
@@ -421,6 +418,7 @@ public class CodInstaller {
 	/**
 	 * 通过一个cod文件名获取code module的name. 例如：输入"happy.cod",
 	 * "happy-1.cod"或"happy-1.cod.rem"将返回happy。
+	 * 竟然还有这样的："UC_zh-cn(20110101).cod"。
 	 * 
 	 * @param name
 	 * @return
@@ -429,14 +427,24 @@ public class CodInstaller {
 
 		boolean isEncrypted = (UtilCommon.getSuffix(name) == "rem");
 		if (isEncrypted) {
+			// 去掉最后的".rem"
 			name = UtilCommon.getName(name, false);
 		}
 
-		int end = name.lastIndexOf('-');
-		if (end < 0) {
-			end = name.lastIndexOf('.');
+		String codName = UtilCommon.getName(name, false);
+		char lastChar = codName.charAt(codName.length() - 1);
+		if (!Character.isDigit(lastChar)) {
+			// 不以数字结尾，这就是cod name了。
+			return codName;
+		} else {
+			int end = name.lastIndexOf('-');
+			if (end < 0) {
+				// 竟然没‘-’号，一般不会发生。
+				return codName;
+			}
+			return name.substring(0, end);
 		}
-		return name.substring(0, end);
+
 	}
 
 

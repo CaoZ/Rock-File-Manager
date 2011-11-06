@@ -58,7 +58,7 @@ public class ProgressPopup extends BasePopupScreen implements FieldChangeListene
 				| ButtonField.CONSUME_CLICK);
 		cancelButton.setFont(MyUI.deriveFont(0.8f));
 
-		int marginTop = MyUI.deriveSize(10);
+		int marginTop = MyUI.deriveSize(15);
 		cancelButton.setMargin(marginTop, 0, 0, 0);
 
 		cancelButton.setChangeListener(this);
