@@ -193,7 +193,9 @@ public class FileListContextMenuHandler {
 
 			if (thisItem != null && (thisItem.isDisk() || thisItem.isDir())) {
 				// 选择子文件夹。
-				addSelectThisSubFolderMenuItem(contextMenu, fileList, 430, PRIORITY_TWO);
+				// 由于上面显示属性用的PRIORITY_TWO, 而此处的优先级应高于显示属性，故用PRIORITY_ONE。
+				// 看来两个优先级有些不够用了。
+				addSelectThisSubFolderMenuItem(contextMenu, fileList, 430, PRIORITY_ONE);
 				subAdded = true;
 			}
 
