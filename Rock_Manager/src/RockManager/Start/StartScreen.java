@@ -10,10 +10,9 @@ import net.rim.device.api.ui.component.StandardTitleBar;
 import net.rim.device.api.ui.decor.BackgroundFactory;
 import RockManager.config.Config;
 import RockManager.config.OptionsScreen;
-import RockManager.favouritesList.FavouritesListField;
+import RockManager.favoritesList.FavoritesListField;
 import RockManager.fileList.FileListField;
 import RockManager.languages.LangRes;
-import RockManager.stat.Stat;
 import RockManager.ui.ScreenHeightChangeEvent;
 import RockManager.ui.ScreenHeightChangeListener;
 import RockManager.ui.screen.informScreen.AboutScreen;
@@ -53,18 +52,9 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 		vfm.setBackground(BackgroundFactory.createSolidBackground(0xf7f7f7));
 
 		addDeviceItem();
-		addFavouriteItem();
+		addFavoriteItem();
 
 		add(vfm);
-
-		UiApplication.getUiApplication().invokeLater(new Runnable() {
-
-			public void run() {
-
-				new Stat();
-
-			}
-		});
 
 	}
 
@@ -88,24 +78,24 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 	}
 
 
-	private void addFavouriteItem() {
+	private void addFavoriteItem() {
 
-		TitledPanel favourite = new TitledPanel(LangRes.get(LangRes.FAVOURITE));
-		favourite.setIcon(Bitmap.getBitmapResource("img/icons/favourite.png"));
-		favourite.setPadding(5, 4, 5, 4);
-		favourite.setChangeListener(this);
+		TitledPanel favorite = new TitledPanel(LangRes.get(LangRes.FAVORITE));
+		favorite.setIcon(Bitmap.getBitmapResource("img/icons/favorite.png"));
+		favorite.setPadding(5, 4, 5, 4);
+		favorite.setChangeListener(this);
 
-		FavouritesListField favouriteList = new FavouritesListField();
-		favouriteList.setChangeListener(this);
+		FavoritesListField favoriteList = new FavoritesListField();
+		favoriteList.setChangeListener(this);
 
-		favourite.add(favouriteList);
+		favorite.add(favoriteList);
 
-		if (favouriteList.isEmpty()) {
-			// 添加某个元素后favourite的状态将变为展开的。但如果列表中没元素，应将favourite重置为收缩的。
-			favourite.toggleStatus();
+		if (favoriteList.isEmpty()) {
+			// 添加某个元素后favorite的状态将变为展开的。但如果列表中没元素，应将favorite重置为收缩的。
+			favorite.toggleStatus();
 		}
 
-		vfm.add(favourite);
+		vfm.add(favorite);
 
 	}
 

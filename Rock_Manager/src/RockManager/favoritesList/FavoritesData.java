@@ -1,5 +1,5 @@
 
-package RockManager.favouritesList;
+package RockManager.favoritesList;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -11,7 +11,7 @@ import net.rim.device.api.system.PersistentStore;
 import net.rim.device.api.util.SimpleSortingVector;
 
 
-public class FavouritesData {
+public class FavoritesData {
 
 	private static Vector CHANGE_LISTENERS;
 
@@ -21,8 +21,8 @@ public class FavouritesData {
 
 	static {
 
-		// "Rock File Manager FavouriteData V1";
-		long key = 0x81000565cb170d13L;
+		// "Rock File Manager FavoriteData V1";
+		long key = 0xa8e14b2b775460c0L;
 		PERSIST = PersistentStore.getPersistentObject(key);
 		Object contents = PERSIST.getContents();
 
@@ -53,7 +53,7 @@ public class FavouritesData {
 		DATA.put(itemPath, simpleFileItem);
 		saveData();
 
-		favouritesChanged();
+		favoritesChanged();
 
 	}
 
@@ -90,23 +90,23 @@ public class FavouritesData {
 			DATA.remove(itemPath);
 			saveData();
 
-			favouritesChanged();
+			favoritesChanged();
 		}
 
 	}
 
 
-	private static void favouritesChanged() {
+	private static void favoritesChanged() {
 
 		for (int i = 0; i < CHANGE_LISTENERS.size(); i++) {
-			FavouritesChangedListener thisListener = (FavouritesChangedListener) CHANGE_LISTENERS.elementAt(i);
-			thisListener.favouritesChanged();
+			FavoritesChangedListener thisListener = (FavoritesChangedListener) CHANGE_LISTENERS.elementAt(i);
+			thisListener.favoritesChanged();
 		}
 
 	}
 
 
-	public static void addChangeListener(FavouritesChangedListener listener) {
+	public static void addChangeListener(FavoritesChangedListener listener) {
 
 		if (CHANGE_LISTENERS.contains(listener) == false) {
 			CHANGE_LISTENERS.addElement(listener);
@@ -114,7 +114,7 @@ public class FavouritesData {
 	}
 
 
-	public static void removeChangeListener(FavouritesChangedListener listener) {
+	public static void removeChangeListener(FavoritesChangedListener listener) {
 
 		CHANGE_LISTENERS.removeElement(listener);
 	}

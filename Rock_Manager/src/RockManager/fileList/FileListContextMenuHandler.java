@@ -7,7 +7,7 @@ import net.rim.device.api.ui.UiApplication;
 import RockManager.archive.ArchiveListContextMenuHandler;
 import RockManager.archive.ArchiveListField;
 import RockManager.config.Config;
-import RockManager.favouritesList.FavouritesData;
+import RockManager.favoritesList.FavoritesData;
 import RockManager.fileClipboard.FileClipboard;
 import RockManager.fileHandler.FileHandler;
 import RockManager.fileHandler.filePopup.browsePopup.CreateArchivePopup;
@@ -38,7 +38,7 @@ public class FileListContextMenuHandler {
 		addOtherMenus(contextMenu, fileList); // 400-499
 
 		// 收藏夹相关项
-		addFavouriteMenus(contextMenu, fileList); // 500-599
+		addFavoriteMenus(contextMenu, fileList); // 500-599
 
 	}
 
@@ -85,7 +85,7 @@ public class FileListContextMenuHandler {
 
 		boolean added = false;
 
-		if (fileList.isFavouriteList() && fileList.isRealFileItem()) {
+		if (fileList.isFavoriteList() && fileList.isRealFileItem()) {
 			addOpenItMenuItem(contextMenu, fileList, 210, PRIORITY_ONE);
 			added = true;
 		}
@@ -226,7 +226,7 @@ public class FileListContextMenuHandler {
 	 * @param contextMenu
 	 * @param fileList
 	 */
-	private static void addFavouriteMenus(ContextMenu contextMenu, FileListField fileList) {
+	private static void addFavoriteMenus(ContextMenu contextMenu, FileListField fileList) {
 
 		if (fileList.isRealFileItem() == false) {
 			return;
@@ -236,11 +236,11 @@ public class FileListContextMenuHandler {
 
 		if (fileList.isNormalFolder() && !fileList.isPickerMode()) {
 			// "添加到收藏夹" 510
-			addAddToFavouriteMenuItem(contextMenu, fileList, 510, 510);
+			addAddToFavoriteMenuItem(contextMenu, fileList, 510, 510);
 			added = true;
-		} else if (fileList.isFavouriteList()) {
+		} else if (fileList.isFavoriteList()) {
 			// 从收藏夹移除 520
-			addDeleteFavouriteMenuItem(contextMenu, fileList, 520, 520);
+			addDeleteFavoriteMenuItem(contextMenu, fileList, 520, 520);
 			added = true;
 		}
 
@@ -582,10 +582,10 @@ public class FileListContextMenuHandler {
 	}
 
 
-	private static void addAddToFavouriteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
+	private static void addAddToFavoriteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem addToFavourite = new MenuItem(LangRes.get(LangRes.MENU_ADD_TO_FAVOURITES), ordinal, priority) {
+		MenuItem addToFavorite = new MenuItem(LangRes.get(LangRes.MENU_ADD_TO_FAVORITES), ordinal, priority) {
 
 			public void run() {
 
@@ -593,13 +593,13 @@ public class FileListContextMenuHandler {
 
 					public void run() {
 
-						FavouritesData.add(fileList.getThisItem());
+						FavoritesData.add(fileList.getThisItem());
 					}
 				});
 
 			}
 		};
-		contextMenu.addItem(addToFavourite);
+		contextMenu.addItem(addToFavorite);
 
 	}
 
@@ -654,10 +654,10 @@ public class FileListContextMenuHandler {
 	}
 
 
-	private static void addDeleteFavouriteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
+	private static void addDeleteFavoriteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem deleteFromFavouriteItem = new MenuItem(LangRes.get(LangRes.MENU_DELETE_FROM_FAVOURITES), ordinal,
+		MenuItem deleteFromFavoriteItem = new MenuItem(LangRes.get(LangRes.MENU_DELETE_FROM_FAVORITES), ordinal,
 				priority) {
 
 			public void run() {
@@ -667,13 +667,13 @@ public class FileListContextMenuHandler {
 					public void run() {
 
 						FileItem thisItem = fileList.getThisItem();
-						FavouritesData.delete(thisItem);
+						FavoritesData.delete(thisItem);
 					}
 				});
 
 			}
 		};
-		contextMenu.addItem(deleteFromFavouriteItem);
+		contextMenu.addItem(deleteFromFavoriteItem);
 
 	}
 

@@ -1,5 +1,5 @@
 
-package RockManager.favouritesList;
+package RockManager.favoritesList;
 
 import RockManager.fileList.FileItem;
 import net.rim.device.api.util.Persistable;

@@ -3,7 +3,7 @@ package RockManager.fileList;
 
 import net.rim.device.api.ui.Keypad;
 import RockManager.config.ShortCutKeyConfig;
-import RockManager.favouritesList.FavouritesData;
+import RockManager.favoritesList.FavoritesData;
 import RockManager.util.KeyUtil;
 
 
@@ -61,9 +61,9 @@ public class FileListKeyCharHandler {
 				// 删除文件。
 				fileList.deleteFile();
 				return true;
-			} else if (fileList.isFavouriteList()) {
+			} else if (fileList.isFavoriteList()) {
 				// 删除一收藏条目。
-				FavouritesData.delete(fileList.getThisItem());
+				FavoritesData.delete(fileList.getThisItem());
 				return true;
 			}
 		}

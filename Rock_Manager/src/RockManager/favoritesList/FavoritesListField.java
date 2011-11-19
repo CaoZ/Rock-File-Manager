@@ -1,5 +1,5 @@
 
-package RockManager.favouritesList;
+package RockManager.favoritesList;
 
 import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.Color;
@@ -16,25 +16,25 @@ import RockManager.util.UtilCommon;
 import RockManager.util.ui.BaseDialog;
 
 
-public class FavouritesListField extends FileListField implements FavouritesChangedListener {
+public class FavoritesListField extends FileListField implements FavoritesChangedListener {
 
 	private Bitmap backWhenEmpty;
 
 	private int originRowHeight;
 
 
-	public FavouritesListField() {
+	public FavoritesListField() {
 
 		originRowHeight = getRowHeight();
 
 		setSearchable(false);
 		setClipboardAllowed(false);
-		listFavourites();
+		listFavorites();
 
 	}
 
 
-	private void listFavourites() {
+	private void listFavorites() {
 
 		FileItem[] items = listFiles();
 		set(items);
@@ -49,7 +49,7 @@ public class FavouritesListField extends FileListField implements FavouritesChan
 
 		if (exists == false) {
 
-			String deleteConfirmAsk = LangRes.get(LangRes.FAVOURITE_OLD_DELETE_ASK);
+			String deleteConfirmAsk = LangRes.get(LangRes.FAVORITE_OLD_DELETE_ASK);
 			String message = UtilCommon.replaceString(deleteConfirmAsk, "{1}", thisItem.getDisplayName());
 			Bitmap bitmap = Bitmap.getPredefinedBitmap(Bitmap.QUESTION);
 
@@ -58,7 +58,7 @@ public class FavouritesListField extends FileListField implements FavouritesChan
 			int answer = deleteConfirm.doModal();
 
 			if (answer == Dialog.YES) {
-				FavouritesData.delete(thisItem);
+				FavoritesData.delete(thisItem);
 			}
 
 		}
@@ -101,18 +101,18 @@ public class FavouritesListField extends FileListField implements FavouritesChan
 	public void refresh() {
 
 		int selectedInex = getSelectedIndex();
-		listFavourites();
+		listFavorites();
 		setSelectedIndex(selectedInex);
 	}
 
 
 	protected FileItem[] listFiles() {
 
-		return FavouritesData.listFiles();
+		return FavoritesData.listFiles();
 	}
 
 
-	public void favouritesChanged() {
+	public void favoritesChanged() {
 
 		refresh();
 	}
@@ -135,14 +135,14 @@ public class FavouritesListField extends FileListField implements FavouritesChan
 			// 如果是第一次显示，isVisible()会是false, 无需刷新数据，因为刚刚在构造函数中列出数据了。
 			refresh();
 		}
-		FavouritesData.addChangeListener(this);
+		FavoritesData.addChangeListener(this);
 		super.onDisplay();
 	}
 
 
 	protected void onUndisplay() {
 
-		FavouritesData.removeChangeListener(this);
+		FavoritesData.removeChangeListener(this);
 		super.onUndisplay();
 	}
 

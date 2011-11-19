@@ -24,7 +24,7 @@ import net.rim.device.api.util.MathUtilities;
 import net.rim.device.api.util.SimpleSortingVector;
 import RockManager.archive.ArchiveListField;
 import RockManager.config.ConfigData;
-import RockManager.favouritesList.FavouritesListField;
+import RockManager.favoritesList.FavoritesListField;
 import RockManager.fileClipboard.FileClipboard;
 import RockManager.fileHandler.FileHandler;
 import RockManager.fileHandler.FileProperty;
@@ -1395,7 +1395,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	public boolean isNormalFolder() {
 
-		return !isArchiveList() && !isFavouriteList() && folderPath != null;
+		return !isArchiveList() && !isFavoriteList() && folderPath != null;
 	}
 
 
@@ -1404,7 +1404,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	public boolean isDiskList() {
 
-		return !isArchiveList() && !isFavouriteList() && folderPath == null;
+		return !isArchiveList() && !isFavoriteList() && folderPath == null;
 	}
 
 
@@ -1420,9 +1420,9 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	/**
 	 * 是否是收藏夹列表。
 	 */
-	public boolean isFavouriteList() {
+	public boolean isFavoriteList() {
 
-		return this instanceof FavouritesListField;
+		return this instanceof FavoritesListField;
 	}
 
 
