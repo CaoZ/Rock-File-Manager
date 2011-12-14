@@ -172,7 +172,7 @@ public class FileHandler {
 
 		FileConnection fconn = null;
 		try {
-			fconn = (FileConnection) Connector.open(folderURL);
+			fconn = (FileConnection) Connector.open(folderURL, Connector.READ);
 			Enumeration allFiles = fconn.list("*", true);
 			if (allFiles.hasMoreElements() == false) {
 				empty = true;
@@ -204,7 +204,7 @@ public class FileHandler {
 
 		FileConnection fconn = null;
 		try {
-			fconn = (FileConnection) Connector.open(folderURL);
+			fconn = (FileConnection) Connector.open(folderURL, Connector.READ);
 			exists = fconn.isDirectory();
 		} catch (Exception e) {
 		} finally {

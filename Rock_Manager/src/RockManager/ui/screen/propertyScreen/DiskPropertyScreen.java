@@ -33,7 +33,8 @@ public class DiskPropertyScreen extends BasePropertyScreen {
 	private void createConnect() {
 
 		try {
-			fconn = (FileConnection) Connector.open(getThisFile().getURL());
+			// 为了在Storm、Torch机型中能读取System这个虚拟盘的属性，使用Connector.READ建立连接。
+			fconn = (FileConnection) Connector.open(getThisFile().getURL(), Connector.READ);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

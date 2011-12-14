@@ -68,7 +68,7 @@ public class IOUtil {
 		FileConnection fconn = null;
 		boolean exists = false;
 		try {
-			fconn = (FileConnection) Connector.open(fileURL);
+			fconn = (FileConnection) Connector.open(fileURL, Connector.READ);
 			exists = fconn.exists();
 		} catch (Exception e) {
 		} finally {
@@ -118,7 +118,7 @@ public class IOUtil {
 		long fileSize = -1;
 		FileConnection fconn = null;
 		try {
-			fconn = (FileConnection) Connector.open(fileURL);
+			fconn = (FileConnection) Connector.open(fileURL, Connector.READ);
 			fileSize = getFileSize(fconn);
 		} catch (Exception e) {
 		} finally {

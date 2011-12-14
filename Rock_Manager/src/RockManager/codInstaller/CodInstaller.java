@@ -53,7 +53,7 @@ public class CodInstaller {
 
 	private void installCod(String codPath) throws Exception {
 
-		FileConnection cod = (FileConnection) Connector.open(codPath);
+		FileConnection cod = (FileConnection) Connector.open(codPath, Connector.READ);
 		String tempDirPath = null;
 
 		if (isArchive(cod)) {
@@ -61,7 +61,7 @@ public class CodInstaller {
 
 			tempDirPath = extractCod(cod);
 
-			FileConnection codDir = (FileConnection) Connector.open(tempDirPath);
+			FileConnection codDir = (FileConnection) Connector.open(tempDirPath, Connector.READ);
 			installModules(codDir);
 			codDir.close();
 
@@ -138,7 +138,7 @@ public class CodInstaller {
 				if (isEncrypted) {
 					thisCodName += ".rem";
 				}
-				FileConnection thisCodFile = (FileConnection) Connector.open(dirPath + thisCodName);
+				FileConnection thisCodFile = (FileConnection) Connector.open(dirPath + thisCodName, Connector.READ);
 				if (thisCodFile.exists() && thisCodFile.isDirectory() == false) {
 					allCodPaths.addElement(dirPath + thisCodName);
 					thisCodFile.close();
@@ -242,7 +242,7 @@ public class CodInstaller {
 
 		for (int i = 0; i < totalCods; i++) {
 
-			FileConnection thisCod = (FileConnection) Connector.open(codPaths[i]);
+			FileConnection thisCod = (FileConnection) Connector.open(codPaths[i], Connector.READ);
 			popup.setProgressName(thisCod.getName());
 
 			InputStream codInput = thisCod.openInputStream();

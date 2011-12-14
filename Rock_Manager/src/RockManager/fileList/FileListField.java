@@ -502,7 +502,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 			try {
 
 				// now basePath is the new path, the folder of all listed files.
-				fconn = (ExtendedFileConnection) Connector.open(folderPath);
+				fconn = (ExtendedFileConnection) Connector.open(folderPath, Connector.READ);
 
 				// 若分开，先判断是否存在，然后判断是否是folder时曾出现fconn.exists()==true且fconn.isDirectory()==false的情况(文件被另外的程序删除了)。
 				// 所以应一步完成。

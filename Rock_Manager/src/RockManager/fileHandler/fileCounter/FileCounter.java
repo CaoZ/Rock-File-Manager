@@ -22,7 +22,7 @@ public class FileCounter {
 
 		FileConnection fconn = null;
 		try {
-			fconn = (FileConnection) Connector.open(folderURL);
+			fconn = (FileConnection) Connector.open(folderURL, Connector.READ);
 			if (fconn.isDirectory()) {
 				Enumeration allFiles = fconn.list("*", true);
 				while (allFiles.hasMoreElements()) {

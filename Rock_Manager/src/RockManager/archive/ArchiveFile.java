@@ -75,7 +75,7 @@ public class ArchiveFile {
 
 
 	/**
-	 * 通过给定的文件路径创建ArchiveFile.
+	 * 通过给定的文件路径建立ArchiveFile对象.
 	 * 
 	 * @param url
 	 * @throws IOException
@@ -83,7 +83,7 @@ public class ArchiveFile {
 	public ArchiveFile(String fileURL) throws IOException {
 
 		try {
-			archiveFile = (FileConnection) Connector.open(fileURL);
+			archiveFile = (FileConnection) Connector.open(fileURL, Connector.READ);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new IOException("Unable to open the archive, " + e.toString());

@@ -228,7 +228,7 @@ public class FileItem {
 		FileConnection fconn = null;
 
 		try {
-			fconn = (FileConnection) Connector.open(path);
+			fconn = (FileConnection) Connector.open(path, Connector.READ);
 			fileSize = isDisk() ? fconn.availableSize() : fconn.fileSize();
 			String sizeString = getSizeString(fileSize);
 

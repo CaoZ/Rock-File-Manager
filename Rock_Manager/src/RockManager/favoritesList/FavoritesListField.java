@@ -180,29 +180,40 @@ public class FavoritesListField extends FileListField implements FavoritesChange
 			backWhenEmpty = MyUI.deriveImg(back);
 		}
 
-		// 绘制背景
-		int backTotalWidth = (int) (getWidth() * 0.95);
-		int backHalfWidth = backWhenEmpty.getWidth() / 2;
+		int backImgWidth = backWhenEmpty.getWidth();
+		int backImgHeight = backWhenEmpty.getHeight();
 
-		int blackOffsetX = UtilCommon.getOffset(getWidth(), backTotalWidth);
-		int blackOffsetY = UtilCommon.getOffset(getHeight(), backWhenEmpty.getHeight());
+		int backImgHalfWidth = (int) Math.ceil(backImgWidth / 2f);
 
-		XYRect dest = new XYRect(blackOffsetX, blackOffsetY, backHalfWidth, backWhenEmpty.getHeight());
+		int backPaddingX = UtilCommon.getOffset(getWidth(), (int) (getWidth() * 0.95));
+		// 取到padding后再计算totalWidth, 因为总宽度减去2个padding后不一定等于总宽度的95%（奇偶等原因）。
+		int backTotalWidth = getWidth() - backPaddingX * 2;
+		int backOffsetY = UtilCommon.getOffset(getHeight(), backImgHeight);
+
+		// 开始绘制
 		g.setGlobalAlpha((int) (255 * 0.6));
-		g.drawBitmap(dest, backWhenEmpty, 0, 0);
+		// 图片左侧
+		XYRect backImgLeftRect = new XYRect(backPaddingX, backOffsetY, backImgHalfWidth, backImgHeight);
+		g.drawBitmap(backImgLeftRect, backWhenEmpty, 0, 0);
+
+		// 图片右侧
+		XYRect backImgRightRect = new XYRect(backImgLeftRect);
+		backImgRightRect.x = getWidth() - backPaddingX - backImgHalfWidth;
+		g.drawBitmap(backImgRightRect, backWhenEmpty, backImgWidth - backImgHalfWidth, 0);
+
+		// 黑色填充
+		XYRect blackRect = new XYRect(backImgLeftRect);
+		blackRect.x = backImgLeftRect.x + backImgLeftRect.width;
+		blackRect.width = backTotalWidth - backImgLeftRect.width - backImgRightRect.width;
 
 		g.setColor(0);
-		g.fillRect(dest.x + dest.width, blackOffsetY, backTotalWidth - backWhenEmpty.getWidth(),
-				backWhenEmpty.getHeight());
-
-		dest.x = dest.x + backTotalWidth - backHalfWidth;
-		g.drawBitmap(dest, backWhenEmpty, backHalfWidth, 0);
+		g.fillRect(blackRect.x, blackRect.y, blackRect.width, blackRect.height);
 
 		// 绘制文字
 		g.setGlobalAlpha(250);
 		g.setColor(Color.WHITE);
 		String text = "Empty";
-		int offsetX = UtilCommon.getOffset(getWidth(), getFont().getBounds(text));
+		int offsetX = UtilCommon.getOffset(getWidth(), getFont().getAdvance(text));
 		int offsetY = UtilCommon.getOffset(getHeight(), getFont().getHeight());
 		g.drawText(text, offsetX, offsetY);
 

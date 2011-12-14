@@ -50,7 +50,7 @@ public class ZipUtil {
 			// "方式"是程序中的叫法，如"存储", "最快", "标准"等，实际上对应zip中的level.
 			zos.setLevel(compressMethod);
 
-			originFileConn = (FileConnection) Connector.open(originFileURL);
+			originFileConn = (FileConnection) Connector.open(originFileURL, Connector.READ);
 
 			long totalSize = IOUtil.getFileSize(originFileConn);
 			compressIndicator.setTotalSize(totalSize);
@@ -146,7 +146,7 @@ public class ZipUtil {
 
 		try {
 
-			fconn = (FileConnection) Connector.open(originFileURL);
+			fconn = (FileConnection) Connector.open(originFileURL, Connector.READ);
 			compress(fconn, zos, baseDir, buffer, compressIndicator);
 
 		} catch (Exception e) {
