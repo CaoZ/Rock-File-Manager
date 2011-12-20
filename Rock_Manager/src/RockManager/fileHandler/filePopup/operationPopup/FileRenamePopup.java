@@ -77,7 +77,7 @@ public class FileRenamePopup extends FileOperationPopup {
 			getParentFileList().setItemToFocus(newFileName, itemToRename.getType());
 			return true;
 		} catch (Exception e) {
-			UtilCommon.trace(LangRes.get(LangRes.FAILED_TO_RENAME) + e.getMessage());
+			UtilCommon.trace(LangRes.get(LangRes.FAILED_TO_RENAME) + UtilCommon.getErrorMessage(e));
 			return false;
 		} finally {
 			if (fconn != null) {

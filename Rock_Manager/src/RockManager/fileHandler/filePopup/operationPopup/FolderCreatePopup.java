@@ -51,7 +51,7 @@ public class FolderCreatePopup extends FileOperationPopup {
 			getParentFileList().setItemToFocus(folderName, FileItem.TYPE_DIR);
 			return true;
 		} catch (Exception e) {
-			UtilCommon.trace(LangRes.get(LangRes.FAILED_TO_CREATE_NEW_FOLDER) + e.getMessage());
+			UtilCommon.trace(LangRes.get(LangRes.FAILED_TO_CREATE_NEW_FOLDER) + UtilCommon.getErrorMessage(e));
 			return false;
 		} finally {
 			if (fconn != null) {

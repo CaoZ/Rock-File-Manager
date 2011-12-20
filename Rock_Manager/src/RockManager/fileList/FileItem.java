@@ -504,7 +504,7 @@ public class FileItem {
 	 */
 	public String getName(boolean withSuffix) {
 
-		return UtilCommon.getName(getPath(), false);
+		return UtilCommon.getName(getPath(), withSuffix);
 	}
 
 

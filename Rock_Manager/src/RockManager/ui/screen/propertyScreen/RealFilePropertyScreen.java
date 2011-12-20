@@ -50,7 +50,9 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 
 	/**
 	 * 建立FileConnection连接。
-	 * @param type 方式，read或read_write
+	 * 
+	 * @param type
+	 *            方式，read或read_write
 	 */
 	private void createConnect(int type) {
 
@@ -259,17 +261,17 @@ public class RealFilePropertyScreen extends BasePropertyScreen {
 		try {
 			// 属性改变了
 			createConnect(Connector.READ_WRITE); // 在Storm、Torch机型上操作虚拟盘System上的文件时将引发异常。
-			
+
 			if (attributeHiddenChanged) {
 				fconn.setHidden(isHidden);
 			}
 			if (attributeReadOnlyChanged) {
 				fconn.setWritable(!isReadOnly);
 			}
-			
+
 		} catch (Exception e) {
 			// 不能修改文件属性。
-			UtilCommon.trace("Unable to modify file attributes: " + e.getMessage());
+			UtilCommon.trace("Unable to modify file attributes: " + UtilCommon.getErrorMessage(e));
 			e.printStackTrace();
 		}
 

@@ -57,7 +57,7 @@ public class FileHandler {
 
 		if (suffix.equals("cod")) {
 			// 是cod文件，尝试安装。
-			installCod(filePath);
+			installCod(fileItem);
 			return;
 		}
 
@@ -91,13 +91,26 @@ public class FileHandler {
 
 
 	/**
-	 * 安装cod文件。
+	 * 安装cod文件，安装前要求确认。
 	 * 
-	 * @param path
+	 * @param fileItem
 	 */
-	private static void installCod(String path) {
+	private static void installCod(FileItem fileItem) {
 
-		new CodInstaller(path);
+		String codName = CodInstaller.getCodName(fileItem.getName(true));
+		String installConfirmAsk = LangRes.get(LangRes.INSTALL_CONFIRM_ASK);
+		String message = UtilCommon.replaceString(installConfirmAsk, "{1}", codName);
+		Bitmap questionBMP = Bitmap.getPredefinedBitmap(Bitmap.QUESTION);
+
+		BaseDialog installConfirm = new BaseDialog(Dialog.D_YES_NO, message, Dialog.YES, questionBMP, 0);
+
+		int answer = installConfirm.doModal();
+
+		if (answer == Dialog.YES) {
+			String fileURL = fileItem.getURL();
+			new CodInstaller(fileURL);
+		}
+
 	}
 
 
@@ -346,6 +359,7 @@ public class FileHandler {
 		BaseDialog deleteConfirm = new BaseDialog(Dialog.D_YES_NO, message, Dialog.YES, bitmap, 0);
 
 		int answer = deleteConfirm.doModal();
+		
 		if (answer == Dialog.YES) {
 
 			final String fileURL = thisItem.getURL();

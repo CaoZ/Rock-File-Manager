@@ -423,7 +423,7 @@ public class CodInstaller {
 	 * @param name
 	 * @return
 	 */
-	private String getCodName(String name) {
+	public static String getCodName(String name) {
 
 		boolean isEncrypted = (UtilCommon.getSuffix(name) == "rem");
 		if (isEncrypted) {
