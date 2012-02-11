@@ -121,7 +121,7 @@ public class FilePasteThread extends StopableThread {
 			// 复制开始，准备工作，计算总文件大小。
 			progressIndicator.setProgressName("Calculating file size...");
 
-			originFileConn = (FileConnection) Connector.open(FileClipboard.ORIGIN_FILE.getURL(), Connector.READ);
+			originFileConn = (FileConnection) Connector.open(FileClipboard.ORIGIN_FILE.getURL());
 
 			if (originFileConn.exists() == false) {
 				FileClipboard.clear();
