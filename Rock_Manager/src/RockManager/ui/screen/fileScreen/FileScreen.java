@@ -5,17 +5,16 @@ import net.rim.device.api.system.Bitmap;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.FieldChangeListener;
 import net.rim.device.api.ui.container.VerticalFieldManager;
-import net.rim.device.api.ui.decor.Background;
-import net.rim.device.api.ui.decor.BackgroundFactory;
 import RockManager.fileList.FileListField;
 import RockManager.ui.ScreenHeightChangeEvent;
 import RockManager.util.ui.AnimatedMainScreen;
 import RockManager.util.ui.VFMwithScrollbar;
 import RockManager.util.ui.VFMwithScrollbarControl;
-import RockManager.util.ui.VFMwithTopShadow;
 
 
 public class FileScreen extends AnimatedMainScreen implements VFMwithScrollbarControl {
+
+	private MainManager mainVFM;
 
 	protected VFMwithScrollbar vfm;
 
@@ -26,19 +25,14 @@ public class FileScreen extends AnimatedMainScreen implements VFMwithScrollbarCo
 
 		super(NO_VERTICAL_SCROLL | NO_SYSTEM_MENU_ITEMS);
 
-		// outerVFM, 主要目的是添加一个阴影效果。
+		// VFM, 主要目的是添加一个阴影效果及选择统计标签。
 		// 也曾试图添加一个浅蓝色渐变背景，但BlackBerry只能显示65000色，表现不出渐变效果，遂移除。
-		VFMwithTopShadow outerVFM = new VFMwithTopShadow(USE_ALL_WIDTH | USE_ALL_HEIGHT);
-
-		Bitmap rgb248 = Bitmap.getBitmapResource("img/other/248back.png");
-		Background background = BackgroundFactory.createBitmapBackground(rgb248, Background.POSITION_X_LEFT,
-				Background.POSITION_Y_TOP, Background.REPEAT_BOTH);
-		outerVFM.setBackground(background);
+		mainVFM = new MainManager();
 
 		vfm = new VFMwithScrollbar(USE_ALL_WIDTH | USE_ALL_HEIGHT);
-		outerVFM.add(vfm);
+		mainVFM.addToContent(vfm);
 
-		add(outerVFM);
+		add(mainVFM);
 
 	}
 
@@ -48,6 +42,7 @@ public class FileScreen extends AnimatedMainScreen implements VFMwithScrollbarCo
 		this();
 
 		fileList = new FileListField(initialURL);
+		fileList.setManager(mainVFM);
 
 		fileList.setClipboardAllowed(true);
 		fileList.registerJournalListener();
@@ -61,6 +56,12 @@ public class FileScreen extends AnimatedMainScreen implements VFMwithScrollbarCo
 
 		fileList.setFocus();
 
+	}
+
+
+	public MainManager getFileScreenMainManager() {
+
+		return mainVFM;
 	}
 
 

@@ -94,6 +94,16 @@ public class FileListKeyCharHandler {
 
 		}
 
+		// 多选模式
+		if (KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.MULTI_SELECT_MODE)) {
+
+			if (fileList.canMultiSelect()) {
+				fileList.enterMultiSelectMode();
+				return true;
+			}
+
+		}
+
 		return false;
 
 	}

@@ -53,6 +53,17 @@ public class MyUI {
 		return MAIN_FONT.derive(MAIN_FONT.getStyle(), newFontHeight);
 
 	}
+	
+	/**
+	 * 获得适当大小的字体。
+	 * @param originSize 在基准设备（9630）上的大小。
+	 * @return
+	 */
+	public static Font deriveFont(int originSize) {
+		
+		int newFontHeight = deriveSize(originSize);
+		return MAIN_FONT.derive(MAIN_FONT.getStyle(), newFontHeight);
+	}
 
 
 	/**

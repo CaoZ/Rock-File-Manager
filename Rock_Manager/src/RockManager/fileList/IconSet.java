@@ -133,6 +133,12 @@ public class IconSet {
 
 	}
 
+
+	public int getDesiredSize() {
+
+		return desiredSize;
+	}
+
 }
 
 

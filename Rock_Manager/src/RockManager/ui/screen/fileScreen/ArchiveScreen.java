@@ -24,6 +24,7 @@ public class ArchiveScreen extends FileScreen implements QuickExitScreen {
 		super();
 
 		archiveList = new ArchiveListField(fileURL);
+		archiveList.setManager(getFileScreenMainManager());
 
 		setScrollBarTrigger(archiveList);
 		setTitleField(archiveList);

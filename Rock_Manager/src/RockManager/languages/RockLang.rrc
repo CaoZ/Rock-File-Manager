@@ -88,6 +88,7 @@ SEARCH_LABEL_KEY_VERSION#0="Press '{1}' to search";
 SEARCH_LABEL_TOUCH_VERSION#0="Search...";
 SEARCH_RESULT_EMPTY#0="Search result is empty.";
 SIZE#0="Size:";
+TEXT_N_SELECTED#0="{1} selected";
 TITLE_COMPRESSING#0="Compressing...";
 TITLE_COPYING_FILES#0="Copying Files...";
 TITLE_CREATE_ARCHIVE#0="Create Archive...";

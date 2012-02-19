@@ -15,4 +15,6 @@ public class ShortCutKeyConfig {
 
 	public static final char SHOW_PROPERTY = 'P';
 
+	public static final char MULTI_SELECT_MODE = 'M';
+
 }

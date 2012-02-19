@@ -3,6 +3,7 @@ package RockManager.fileList;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileSystemRegistry;
@@ -37,6 +38,7 @@ import RockManager.languages.LangRes;
 import RockManager.ui.ScreenHeightChangeEvent;
 import RockManager.ui.oneLineInputField.InputField;
 import RockManager.ui.screen.fileScreen.FileScreen;
+import RockManager.ui.screen.fileScreen.MainManager;
 import RockManager.util.OSVersionUtil;
 import RockManager.util.UtilCommon;
 import RockManager.util.ui.BaseObjectListField;
@@ -119,6 +121,21 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	private boolean filePickerMode = false;
 
 	private FilePicker filePicker;
+
+	/**
+	 * 在FileScreen中时的manager.
+	 */
+	private MainManager fileScreenManager;
+
+	/**
+	 * 是否处于多选模式。
+	 */
+	private boolean multiSelectMode = false;
+
+	/**
+	 * 选中的项目。
+	 */
+	private Hashtable selectedItems;
 
 
 	protected FileListField() {
@@ -751,7 +768,11 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 				break;
 
 			case FileItem.TYPE_DIR:
-				doEnterThisDir();
+				if (isMultiSelectMode()) {
+					toggleSelectStatus(thisItem);
+				} else {
+					doEnterThisDir();
+				}
 				consumed = true;
 				break;
 
@@ -761,7 +782,11 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 				break;
 
 			case FileItem.TYPE_FILE:
-				if (!filePickerMode) {
+				if (isMultiSelectMode()) {
+					toggleSelectStatus(thisItem);
+					consumed = true;
+					break;
+				} else if (!filePickerMode) {
 					doOpenThisFile();
 					consumed = true;
 					break;
@@ -777,6 +802,23 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		}
 
 		return super.navigationClick(status, time);
+
+	}
+
+
+	/**
+	 * 更改选中状态。
+	 */
+	private void toggleSelectStatus(FileItem thisItem) {
+
+		String key = thisItem.getName(true);
+		if (isSelected(thisItem)) {
+			selectedItems.remove(key);
+		} else {
+			selectedItems.put(key, "");
+		}
+		fileScreenManager.updateCount(selectedItems.size());
+		invalidate(getSelectedIndex());
 
 	}
 
@@ -1116,7 +1158,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		// 绘制背景
 		super.drawListRow(listField, g, index, y, width);
 
-		FileListDrawer.drawListRow(this, g, index, y, width, filePickerMode);
+		FileListDrawer.drawListRow(this, g, index, y, width, filePickerMode, multiSelectMode);
 
 	}
 
@@ -1507,4 +1549,66 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		}
 	}
 
+
+	public void setManager(MainManager fileScreenManager) {
+
+		this.fileScreenManager = fileScreenManager;
+	}
+
+
+	/**
+	 * 是否允许多选。
+	 */
+	public boolean canMultiSelect() {
+
+		// 只有在FileScreen下才允许多选。
+		if (fileScreenManager != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+
+	/**
+	 * 进入多选模式。
+	 */
+	public void enterMultiSelectMode() {
+
+		if (fileScreenManager != null) {
+			multiSelectMode = true;
+			fileScreenManager.showCount();
+			selectedItems = new Hashtable();
+		}
+	}
+
+
+	/**
+	 * 离开多选模式。
+	 */
+	public void leaveMultiSelectMode() {
+
+	}
+
+
+	/**
+	 * 是否是多选模式。
+	 */
+	public boolean isMultiSelectMode() {
+
+		return multiSelectMode;
+	}
+
+
+	/**
+	 * 此项是否选中了。
+	 * 
+	 * @param item
+	 * @return
+	 */
+	public boolean isSelected(FileItem item) {
+
+		String name = item.getName(true);
+		return selectedItems.containsKey(name);
+	}
 }
