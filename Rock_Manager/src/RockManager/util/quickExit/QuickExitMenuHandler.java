@@ -23,6 +23,9 @@ public class QuickExitMenuHandler {
 	}
 
 
+	/**
+	 * 添加‘退出程序’项。
+	 */
 	private static void addExitMenuItem(Menu menu) {
 
 		MenuItem closeItem = MenuItem.getPrefab(MenuItem.CLOSE);
@@ -44,6 +47,11 @@ public class QuickExitMenuHandler {
 	}
 
 
+	/**
+	 * 将系统的'Close'替换为'退出程序'.
+	 * 
+	 * @param menu
+	 */
 	private static void changeCloseToExit(Menu menu) {
 
 		MenuItem closeItem = MenuItem.getPrefab(MenuItem.CLOSE);
