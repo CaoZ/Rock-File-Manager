@@ -130,7 +130,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	/**
 	 * 是否处于多选模式。
 	 */
-	private boolean multiSelectMode = false;
+	private boolean multiSelecting = false;
 
 	/**
 	 * 选中的项目。
@@ -227,6 +227,12 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	protected void setDirPath(String newPath) {
 
+		if (isMultiSelecting()) {
+			// 若因为外部原因（如此目录的祖先目录被更改引起的目录改变[见FileJournalListener]）目录更改了，且处于多选模式，退出多元模式。
+			// 原因是太复杂了，且没有很大的意义。对于本目录自己的刷新，多选的数据会在refresh()中处理。
+			leaveMultiSelectMode();
+		}
+
 		String lastPath = folderPath;
 		folderPath = newPath;
 
@@ -317,11 +323,67 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 		logPosition(true);
 
-		String keyword = getKeyword();
-		setDirPath(folderPathTotalURL);
-		setKeyword(keyword);
+		boolean multiSelecting = isMultiSelecting();
+		Enumeration oldSelected = null;
 
+		if (multiSelecting) {
+			oldSelected = selectedItems.keys();
+		}
+
+		String keyword = getKeyword();
+
+		setDirPath(folderPathTotalURL);
+
+		if (multiSelecting) {
+			// 刷新前正在多选，恢复数据。
+			enterMultiSelectMode();
+
+			Hashtable oldSelectedNames = new Hashtable();
+
+			while (oldSelected.hasMoreElements()) {
+				FileItem fileitem = (FileItem) oldSelected.nextElement();
+				oldSelectedNames.put(fileitem.getName(true), "");
+			}
+
+			for (int i = 0; i < originData.length; i++) {
+				if (oldSelectedNames.containsKey(originData[i].getName(true))) {
+					selectedItems.put(originData[i], "");
+				}
+			}
+
+		}
+
+		setKeyword(keyword);
 		restoreInnerPosition();
+
+		// no need to updateCountLabel(), setKeyWord() will do it.
+		// if (multiSelecting) {
+		// updateCountLabel();
+		// }
+
+	}
+
+
+	/**
+	 * 更新多选统计栏的数字.
+	 */
+	private void updateCountLabel() {
+
+		int count = 0;
+
+		if (keyWordEntered) {
+			// 正在搜索, 要显示的数字是选中的项目中同时被关键字过滤出的项目的数量。
+			FileItem[] allFiles = getAllFiles();
+			for (int i = 0; i < allFiles.length; i++) {
+				if (isSelected(allFiles[i])) {
+					count++;
+				}
+			}
+		} else {
+			count = selectedItems.size();
+		}
+
+		fileScreenManager.updateCount(count);
 
 	}
 
@@ -768,7 +830,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 				break;
 
 			case FileItem.TYPE_DIR:
-				if (isMultiSelectMode()) {
+				if (isMultiSelecting()) {
 					toggleSelectStatus(thisItem);
 				} else {
 					doEnterThisDir();
@@ -782,7 +844,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 				break;
 
 			case FileItem.TYPE_FILE:
-				if (isMultiSelectMode()) {
+				if (isMultiSelecting()) {
 					toggleSelectStatus(thisItem);
 					consumed = true;
 					break;
@@ -811,13 +873,12 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	private void toggleSelectStatus(FileItem thisItem) {
 
-		String key = thisItem.getName(true);
 		if (isSelected(thisItem)) {
-			selectedItems.remove(key);
+			selectedItems.remove(thisItem);
 		} else {
-			selectedItems.put(key, "");
+			selectedItems.put(thisItem, "");
 		}
-		fileScreenManager.updateCount(selectedItems.size());
+		updateCountLabel();
 		invalidate(getSelectedIndex());
 
 	}
@@ -964,7 +1025,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 
 	/**
-	 * 选中的项项是否是真实的文件项。
+	 * 选中的项是否是真实的文件项。
 	 * 
 	 * @return
 	 */
@@ -1158,7 +1219,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		// 绘制背景
 		super.drawListRow(listField, g, index, y, width);
 
-		FileListDrawer.drawListRow(this, g, index, y, width, filePickerMode, multiSelectMode);
+		FileListDrawer.drawListRow(this, g, index, y, width, filePickerMode, multiSelecting);
 
 	}
 
@@ -1197,7 +1258,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 
 	/**
-	 * 重载此方法以完成搜索功能。
+	 * 重写此方法以完成搜索功能。
 	 */
 	public void fieldChanged(Field field, int context) {
 
@@ -1223,6 +1284,12 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 				set(originData);
 				resultData = null;
 				restoreInnerPosition();
+
+				if (isMultiSelecting()) {
+					// 退出搜索状态，更新多选标签的数字。
+					updateCountLabel();
+				}
+
 			}
 
 			if (originData.length == 0) {
@@ -1250,6 +1317,8 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 				&& keyword.startsWith(lastKeyword);
 		FileItem[] sourceData = increased ? resultData : originData;
 
+		int selectedCountWhenSearch = 0;
+
 		for (int i = 0; i < sourceData.length; i++) {
 			FileItem thisItem = sourceData[i];
 			if (thisItem.isReturn()) {
@@ -1270,12 +1339,25 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 			if (haveAllKeywords) {
 				// 此条目符合关键字匹配
 				result.addElement(thisItem);
+
+				// 正在进行多选, 需更新CountLabel.
+				if (isMultiSelecting()) {
+					boolean selected = isSelected(thisItem);
+					if (selected) {
+						selectedCountWhenSearch++;
+					}
+				}
+
 			}
 		}
 
 		resultData = new FileItem[result.size()];
 		result.copyInto(resultData);
 		set(resultData);
+
+		if (isMultiSelecting()) {
+			fileScreenManager.updateCount(selectedCountWhenSearch);
+		}
 
 		if (resultData.length == 0) {
 			// 搜索结果为空
@@ -1378,6 +1460,9 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	}
 
 
+	/**
+	 * 对菜单的处理.
+	 */
 	protected void makeContextMenu(ContextMenu contextMenu) {
 
 		// 即使是empty，也应弹出适当菜单，如：新建文件夹。
@@ -1503,7 +1588,6 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	public void activePickerMode() {
 
 		filePickerMode = true;
-
 	}
 
 
@@ -1550,6 +1634,11 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	}
 
 
+	/**
+	 * 若是在FileScreen中，关联FileScrren的manager.
+	 * 
+	 * @param fileScreenManager
+	 */
 	public void setManager(MainManager fileScreenManager) {
 
 		this.fileScreenManager = fileScreenManager;
@@ -1576,7 +1665,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	public void enterMultiSelectMode() {
 
 		if (fileScreenManager != null) {
-			multiSelectMode = true;
+			multiSelecting = true;
 			fileScreenManager.showCount();
 			selectedItems = new Hashtable();
 		}
@@ -1588,15 +1677,20 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	public void leaveMultiSelectMode() {
 
+		if (fileScreenManager != null) {
+			multiSelecting = false;
+			fileScreenManager.hideCount();
+			selectedItems = null;
+		}
 	}
 
 
 	/**
-	 * 是否是多选模式。
+	 * 是否正在进行多选。
 	 */
-	public boolean isMultiSelectMode() {
+	public boolean isMultiSelecting() {
 
-		return multiSelectMode;
+		return multiSelecting;
 	}
 
 
@@ -1608,7 +1702,6 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	public boolean isSelected(FileItem item) {
 
-		String name = item.getName(true);
-		return selectedItems.containsKey(name);
+		return selectedItems.containsKey(item);
 	}
 }

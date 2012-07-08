@@ -7,6 +7,9 @@ import RockManager.favoritesList.FavoritesData;
 import RockManager.util.KeyUtil;
 
 
+/**
+ * 处理按键操作。
+ */
 public class FileListKeyCharHandler {
 
 	public static boolean keyChar(char key, int status, int time, FileListField fileList) {
@@ -14,8 +17,24 @@ public class FileListKeyCharHandler {
 		if (key == Keypad.KEY_ESCAPE) {
 
 			if (fileList.getKeyword().length() > 0) {
-				// 清除搜索条件。
+				// 正在搜索，清除搜索条件。
+
+				if (fileList.isFocused()) {
+					// 输入框没有获得焦点，记录当前文件列表高亮项的位置。
+					fileList.getSearchBox().hideClearIcon();
+					FileItem focusedItem = fileList.getThisItem();
+					if (focusedItem != null) {
+						fileList.setItemToFocus(focusedItem.getDisplayName(), focusedItem.getType());
+					}
+				}
+
 				fileList.setKeyword("");
+				return true;
+			}
+
+			if (fileList.isMultiSelecting()) {
+				// 正在多选，退出多选模式。
+				fileList.leaveMultiSelectMode();
 				return true;
 			}
 
@@ -107,5 +126,4 @@ public class FileListKeyCharHandler {
 		return false;
 
 	}
-
 }
