@@ -16,6 +16,9 @@ import RockManager.languages.LangRes;
 import RockManager.util.UtilCommon;
 
 
+/**
+ * 处理菜单。
+ */
 public class FileListContextMenuHandler {
 
 	protected static final int PRIORITY_ONE = 90;
@@ -422,6 +425,9 @@ public class FileListContextMenuHandler {
 	}
 
 
+	/**
+	 * 刷新（尽在debug模式中出现）
+	 */
 	private static void addRefreashMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
@@ -444,6 +450,9 @@ public class FileListContextMenuHandler {
 	}
 
 
+	/**
+	 * 安装（对于cod文件）
+	 */
 	private static void addInstallCodMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
@@ -458,6 +467,9 @@ public class FileListContextMenuHandler {
 	}
 
 
+	/**
+	 * 解压到...
+	 */
 	private static void addExtractToFolderMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
@@ -488,6 +500,9 @@ public class FileListContextMenuHandler {
 	}
 
 
+	/**
+	 * 解压文件...
+	 */
 	private static void addExtractMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
@@ -537,6 +552,9 @@ public class FileListContextMenuHandler {
 	}
 
 
+	/**
+	 * 添加到压缩文件。
+	 */
 	private static void addCompressMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
@@ -561,6 +579,9 @@ public class FileListContextMenuHandler {
 	}
 
 
+	/**
+	 * '新建文件夹'项。
+	 */
 	private static void addCreateNewFolderMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
@@ -584,6 +605,9 @@ public class FileListContextMenuHandler {
 	}
 
 
+	/**
+	 * '添加到收藏夹'项。
+	 */
 	private static void addAddToFavoriteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
@@ -606,6 +630,9 @@ public class FileListContextMenuHandler {
 	}
 
 
+	/**
+	 * 选择此处
+	 */
 	private static void addSelectHereMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
@@ -621,6 +648,9 @@ public class FileListContextMenuHandler {
 	}
 
 
+	/**
+	 * 选择...(选择某个子文件夹）
+	 */
 	private static void addSelectThisSubFolderMenuItem(ContextMenu contextMenu, final FileListField fileList,
 			int ordinal, int priority) {
 
@@ -656,11 +686,14 @@ public class FileListContextMenuHandler {
 	}
 
 
+	/**
+	 * '从收藏夹移除'项。
+	 */
 	private static void addDeleteFavoriteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem deleteFromFavoriteItem = new MenuItem(LangRes.get(LangRes.MENU_DELETE_FROM_FAVORITES), ordinal,
-				priority) {
+		String del_favorites_str = LangRes.get(LangRes.MENU_DELETE_FROM_FAVORITES);
+		MenuItem deleteFromFavoriteItem = new MenuItem(del_favorites_str, ordinal, priority) {
 
 			public void run() {
 
