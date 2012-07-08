@@ -68,12 +68,14 @@ public class FileScreen extends AnimatedMainScreen implements VFMwithScrollbarCo
 	protected boolean keyChar(char key, int status, int time) {
 
 		if (getFileList().getKeywordField().isFocus()) {
+			// 焦点正在关键字输入框中。
 			boolean consumed = getFileList().getKeywordField().keyChar(key, status, time);
 			if (consumed) {
 				// 正常的文本编辑操作
 				return true;
 			}
 		}
+		// 将事件分发到FileList中处理。
 		boolean consumed = getFileList().keyChar(key, status, time);
 		if (consumed) {
 			return true;

@@ -17,6 +17,9 @@ public class MainManager extends AbsoluteFieldManager {
 	private FileCountLabel countLabel;
 
 
+	/**
+	 * 显示文件的主要区域，顶部有阴影效果，并带有多选时的计数标签。
+	 */
 	public MainManager() {
 
 		mainVFM = new VFMwithTopShadow(USE_ALL_WIDTH | USE_ALL_HEIGHT);
@@ -46,15 +49,25 @@ public class MainManager extends AbsoluteFieldManager {
 	}
 
 
+	/**
+	 * 将field添加到mainVFM中。
+	 * 
+	 * @param field
+	 */
 	public void addToContent(Field field) {
 
 		mainVFM.add(field);
 	}
 
 
+	/**
+	 * 显示多选计数标签。
+	 */
 	public void showCount() {
 
-		UiApplication.getUiApplication().invokeLater(new Runnable() {
+		// 的updateLabel()会调用updateCount()方法，所以要求此处是invokeAndWait()。
+		// 若要使用invokeLater(), 需将updateCount()方法也放在invokeLater()中。
+		UiApplication.getUiApplication().invokeAndWait(new Runnable() {
 
 			public void run() {
 
@@ -68,9 +81,14 @@ public class MainManager extends AbsoluteFieldManager {
 	}
 
 
+	/**
+	 * 隐藏多选计数标签。
+	 */
 	public void hideCount() {
 
-		UiApplication.getUiApplication().invokeLater(new Runnable() {
+		// 的updateLabel()会调用updateCount()方法，所以要求此处是invokeAndWait()。
+		// 若要使用invokeLater(), 需将updateCount()方法也放在invokeLater()中。
+		UiApplication.getUiApplication().invokeAndWait(new Runnable() {
 
 			public void run() {
 
@@ -95,6 +113,11 @@ public class MainManager extends AbsoluteFieldManager {
 	}
 
 
+	/**
+	 * 计数标签是否显示了。
+	 * 
+	 * @return
+	 */
 	public boolean isCountShown() {
 
 		if (countLabel == null) {
