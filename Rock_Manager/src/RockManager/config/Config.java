@@ -10,7 +10,7 @@ public class Config {
 
 	public static final String APP_NAME = "Rock File Manager for OS 6+";
 
-	public static final String VERSION_NUMBER = "0.9.2";
+	public static final String VERSION_NUMBER = "1.0";
 
 	static {
 
