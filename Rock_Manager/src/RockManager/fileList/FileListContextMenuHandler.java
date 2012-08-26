@@ -164,12 +164,17 @@ public class FileListContextMenuHandler {
 
 
 	/**
-	 * 添加其它项。400-499
+	 * 添加其它项。400-499 包括 cod安装, picker mode时选择位置, 新建文件夹.
 	 * 
 	 * @param contextMenu
 	 * @param fileList
 	 */
 	private static void addOtherMenus(ContextMenu contextMenu, FileListField fileList) {
+
+		if (fileList.isMultiSelecting()) {
+			// 正在进行多选, 什么都不做.
+			return;
+		}
 
 		boolean added = false;
 
@@ -233,7 +238,8 @@ public class FileListContextMenuHandler {
 	 */
 	private static void addFavoriteMenus(ContextMenu contextMenu, FileListField fileList) {
 
-		if (fileList.isRealFileItem() == false) {
+		// 若是在多选或此项不是真实的文件/文件夹, 不进行处理.
+		if (fileList.isMultiSelecting() || fileList.isRealFileItem() == false) {
 			return;
 		}
 
