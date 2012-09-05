@@ -74,8 +74,19 @@ public class FileRenamePopup extends FileOperationPopup {
 			fconn.rename(newName);
 
 			String newFileName = fconn.getName(); // 重命名后的实际名称，可能与newName不同。例如，若用户设置了媒体卡加密，重命名后可能会多了".rem"后缀。
-			getParentFileList().setItemToFocus(newFileName, itemToRename.getType());
+			String nameToFocus;
+
+			int fileType = itemToRename.getType();
+
+			if (fileType == FileItem.TYPE_DIR) {
+				nameToFocus = UtilCommon.getName(newFileName, true);
+			} else {
+				nameToFocus = newFileName;
+			}
+
+			getParentFileList().setItemToFocus(nameToFocus, fileType);
 			return true;
+
 		} catch (Exception e) {
 			UtilCommon.trace(LangRes.get(LangRes.FAILED_TO_RENAME) + UtilCommon.getErrorMessage(e));
 			return false;
