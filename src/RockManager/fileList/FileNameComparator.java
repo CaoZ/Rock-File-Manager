@@ -36,6 +36,8 @@ public class FileNameComparator implements Comparator {
 	 * @return
 	 */
 	private int compareFullFileName(String s1, String s2) {
+		
+		// TODO: 若是文件名已 . 开头, 则这种排序会忽略点. 比如  a, .b, c, .b 那项应在最前, 而现在 .b 那项在中间了. 
 
 		String[] s1Parts = UtilCommon.splitString(s1, ".");
 		String[] s2Parts = UtilCommon.splitString(s2, ".");
