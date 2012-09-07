@@ -353,13 +353,14 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 		}
 
-		setKeyword(keyword);
+		boolean keyword_applied = setKeyword(keyword);
 		restoreInnerPosition();
 
-		// no need to updateCountLabel(), setKeyWord() will do it.
-		// if (multiSelecting) {
-		// updateCountLabel();
-		// }
+		// no need to updateCountLabel() if keyword applied, because it will auto
+		// update the label if a keyword is applied.
+		if (!keyword_applied) {
+			updateCountLabel();
+		}
 
 	}
 
@@ -1042,12 +1043,16 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 * 设置要搜索的关键字。
 	 * 
 	 * @param keyword
+	 * @return 若要设置的关键字与原关键字不同, 即关键字被 applied, 返回 true, 否则返回 false.
 	 */
-	public void setKeyword(String keyword) {
+	public boolean setKeyword(String keyword) {
 
 		String originKeyword = getKeyword();
 		if (keyword.equals(originKeyword) == false) {
 			keywordField.setText(keyword);
+			return true;
+		} else {
+			return false;
 		}
 	}
 
