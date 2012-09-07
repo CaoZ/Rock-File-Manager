@@ -117,7 +117,13 @@ public class FileListKeyCharHandler {
 		if (KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.MULTI_SELECT_MODE)) {
 
 			if (fileList.canMultiSelect()) {
-				fileList.enterMultiSelectMode();
+				if (fileList.isMultiSelecting()) {
+					// 正在多选，退出多选模式。
+					fileList.leaveMultiSelectMode();
+				} else {
+					// 进入多选模式
+					fileList.enterMultiSelectMode();
+				}
 				return true;
 			}
 
