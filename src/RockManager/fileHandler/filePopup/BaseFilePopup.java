@@ -147,6 +147,21 @@ public abstract class BaseFilePopup extends BasePopupScreen implements FieldChan
 	}
 
 
+	/**
+	 * 获取已输入的文字, 作为文件夹路径的形式, 即若不以 '/' 结尾, 补上它.
+	 * 
+	 * @return
+	 */
+	protected String getInputedText_as_folder() {
+
+		String inputed = getInputedText();
+		if (!inputed.endsWith("/")) {
+			inputed += '/';
+		}
+		return inputed;
+	}
+
+
 	public void fieldChanged(Field field, int context) {
 
 		if (field == buttonOK || field == inputField && context == InputField.ENTER_PRESSED) {

@@ -62,7 +62,7 @@ public class FileExtractPopup extends FileBrowsePopup {
 		close();
 
 		final ArchiveFile archiveFile = archiveList.getArchiveFile();
-		final String targetURL = UtilCommon.toURLForm(getInputedText());
+		final String targetURL = UtilCommon.toURLForm(getInputedText_as_folder());
 
 		// invokeLater: 等待此窗口关闭再弹出新窗口。
 		UiApplication.getUiApplication().invokeLater(new Runnable() {

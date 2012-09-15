@@ -71,7 +71,7 @@ public class FileListContextMenuHandler {
 				if (!multiSelecting) {
 					// 降低复杂度, 处于多选模式时禁止粘贴.
 					// 若刚放到剪贴板上, 设'粘贴'项较高优先级, 若粘贴过一次后, 不再设置较高的优先级.
-					int priority = FileClipboard.is_pasted() ? 140 : PRIORITY_ONE;
+					int priority = FileClipboard.is_pasted() ? 140 : PRIORITY_TWO;
 					addPasteFileMenuItem(contextMenu, fileList, 140, priority); // 粘贴
 				}
 				added = true;
@@ -585,6 +585,11 @@ public class FileListContextMenuHandler {
 							return;
 						}
 
+						if (!targetPath.endsWith("/")) {
+							// 输入的不是文件夹正式形式, 尝试补全.
+							targetPath += '/';
+						}
+
 						final String targetURL = UtilCommon.toURLForm(targetPath);
 
 						UiApplication.getUiApplication().invokeLater(new Runnable() {
@@ -823,7 +828,7 @@ public class FileListContextMenuHandler {
 	private static void addDeselectAllMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		String menu_text = LangRes.get(LangRes.MENU_SELECT_ALL);
+		String menu_text = LangRes.get(LangRes.MENU_DESELECT_ALL);
 		MenuItem deleteFromFavoriteItem = new MenuItem(menu_text, ordinal, priority) {
 
 			public void run() {
