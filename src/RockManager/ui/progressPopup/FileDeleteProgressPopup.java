@@ -4,24 +4,25 @@ package RockManager.ui.progressPopup;
 import net.rim.device.api.ui.UiApplication;
 import RockManager.fileHandler.FileHandler;
 import RockManager.fileHandler.fileCounter.FileCounter;
+import RockManager.fileList.FileItem;
 import RockManager.languages.LangRes;
 import RockManager.util.UtilCommon;
 
 
 public class FileDeleteProgressPopup extends ProgressPopup {
 
-	private String folderURL;
+	private FileItem[] items_to_delete;
 
 	private int totalItemCount;
 
 	private int deletedNumber;
 
 
-	public FileDeleteProgressPopup(final String folderURL) {
+	public FileDeleteProgressPopup(final FileItem[] items) {
 
 		setTitle(LangRes.get(LangRes.TITLE_DELETING));
 
-		this.folderURL = folderURL;
+		this.items_to_delete = items;
 
 		UiApplication.getUiApplication().invokeLater(new Runnable() {
 
@@ -47,13 +48,15 @@ public class FileDeleteProgressPopup extends ProgressPopup {
 				// 删除开始，准备工作，计算总文件数量。
 				indicator.setProgressName("Calculating file number...");
 
-				totalItemCount = FileCounter.countFolder(folderURL).getTotalNumber();
+				totalItemCount = FileCounter.countFileItems(items_to_delete).getTotalNumber();
 
-				try {
-					FileHandler.deleteFile(folderURL, indicator);
-				} catch (Exception e) {
-					String message = "One or more files can't be deleted: " + UtilCommon.getErrorMessage(e);
-					UtilCommon.alert(message, true);
+				for (int i = 0; i < items_to_delete.length; i++) {
+					try {
+						FileHandler.deleteFile(items_to_delete[i].getURL(), indicator);
+					} catch (Exception e) {
+						String message = "One or more files can't be deleted: " + UtilCommon.getErrorMessage(e);
+						UtilCommon.alert(message, true);
+					}
 				}
 
 				UiApplication.getUiApplication().invokeLater(new Runnable() {

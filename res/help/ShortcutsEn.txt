@@ -9,6 +9,7 @@
 • X: cut
 • C: copy
 • V: paste
+• M: multiple select
 • R: rename
 • P: properties
 

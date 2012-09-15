@@ -31,10 +31,15 @@ public class FileClipboardPopup extends BasePopupScreen implements FieldChangeLi
 
 		setTitle(LangRes.get(LangRes.MENU_TITLE_CLIPBOARD));
 
-		FileItem thisItem = FileClipboard.get();
+		FileItem[] items = FileClipboard.get();
 
-		addFileNameArea(thisItem);
-		addFileLocationArea(thisItem);
+		if (items.length == 1) {
+			// 只有一个文件时才显示文件名称, 否则显示文件总个数.
+			addFileNameArea(items);
+		} else {
+			addFileCountArea(items);
+		}
+		addFileLocationArea(items);
 
 		// 添加一分隔线条。
 		int marginTop = MyUI.deriveSize(15);
@@ -48,9 +53,9 @@ public class FileClipboardPopup extends BasePopupScreen implements FieldChangeLi
 	}
 
 
-	private void addFileNameArea(FileItem thisItem) {
+	private void addFileNameArea(FileItem[] items) {
 
-		String fileName = thisItem.getDisplayName();
+		String fileName = items[0].getDisplayName();
 
 		LeftRightManager fileNameArea = new LeftRightManager();
 
@@ -62,9 +67,24 @@ public class FileClipboardPopup extends BasePopupScreen implements FieldChangeLi
 	}
 
 
-	private void addFileLocationArea(FileItem thisItem) {
+	private void addFileCountArea(FileItem[] items) {
 
-		String fileLocation = UtilCommon.getParentDir(thisItem.getRawPath());
+		String fileCount = Integer.toString(items.length);
+
+		LeftRightManager fileNameArea = new LeftRightManager();
+
+		fileNameArea.addToLeft(new LabelField(LangRes.get(LangRes.LABEL_COUNT)));
+		fileNameArea.addToRight(new LabelField(fileCount));
+
+		add(fileNameArea);
+
+	}
+
+
+	private void addFileLocationArea(FileItem[] items) {
+
+		FileItem first_item = items[0];
+		String fileLocation = UtilCommon.getParentDir(first_item.getRawPath());
 
 		LeftRightManager fileLocationArea = new LeftRightManager();
 

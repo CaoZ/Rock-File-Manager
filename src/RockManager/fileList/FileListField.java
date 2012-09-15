@@ -21,6 +21,7 @@ import net.rim.device.api.ui.Touchscreen;
 import net.rim.device.api.ui.UiApplication;
 import net.rim.device.api.ui.component.ListField;
 import net.rim.device.api.ui.menu.DefaultContextMenuProvider;
+import net.rim.device.api.util.Arrays;
 import net.rim.device.api.util.MathUtilities;
 import net.rim.device.api.util.SimpleSortingVector;
 import RockManager.archive.ArchiveListField;
@@ -356,9 +357,10 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 		boolean keyword_applied = setKeyword(keyword);
 		restoreInnerPosition();
 
-		// no need to updateCountLabel() if keyword applied, because it will auto
+		// no need to updateCountLabel() if keyword applied, because it will
+		// auto
 		// update the label if a keyword is applied.
-		if (!keyword_applied) {
+		if (multiSelecting && !keyword_applied) {
 			updateCountLabel();
 		}
 
@@ -370,22 +372,8 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	private void updateCountLabel() {
 
-		int count = 0;
-
-		if (keyWordEntered) {
-			// 正在搜索, 要显示的数字是选中的项目中同时被关键字过滤出的项目的数量。
-			FileItem[] allFiles = getAllFiles();
-			for (int i = 0; i < allFiles.length; i++) {
-				if (isSelected(allFiles[i])) {
-					count++;
-				}
-			}
-		} else {
-			count = selectedItems.size();
-		}
-
+		int count = getSelectedCount();
 		fileScreenManager.updateCount(count);
-
 	}
 
 
@@ -990,28 +978,30 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	public void deleteFile() {
 
-		FileHandler.deleteWithUI(getThisItem());
+		FileItem[] items_to_delete;
+		if (isMultiSelecting()) {
+			items_to_delete = getSelectedFiles();
+		} else {
+			items_to_delete = new FileItem[1];
+			items_to_delete[0] = getThisItem();
+		}
+
+		FileHandler.deleteWithUI(items_to_delete, this);
 
 	}
 
 
 	/**
-	 * 将当前高亮项复制到剪贴板。
+	 * 将当前高亮项或已选择项剪切或复制到剪贴板。
 	 */
-	void copyToClipboard() {
+	void cut_copy_to_clipboard(int method) {
 
-		FileClipboard.put(FileClipboard.METHOD_COPY, getThisItem());
-
-	}
-
-
-	/**
-	 * 将当前高亮项剪切到剪贴板。
-	 */
-	void cutToClipboard() {
-
-		FileClipboard.put(FileClipboard.METHOD_CUT, getThisItem());
-
+		if (isMultiSelecting()) {
+			FileClipboard.put(method, getSelectedFiles());
+			leaveMultiSelectMode();
+		} else {
+			FileClipboard.put(method, getThisItem());
+		}
 	}
 
 
@@ -1263,7 +1253,7 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 
 	/**
-	 * 重写此方法以完成搜索功能。
+	 * 重写了此方法以实现搜索功能, 对搜索框的 listener.
 	 */
 	public void fieldChanged(Field field, int context) {
 
@@ -1512,6 +1502,10 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	boolean shouldShowProperty() {
 
+		if (isMultiSelecting()) {
+			// 正在处于多选模式, 似乎应显示已选中的多个文件的汇总属性, 但为了降低复杂度, 不显示属性.
+			return false;
+		}
 		if (filePickerMode && OSVersionUtil.isOS5()) {
 			// 在os
 			// 5中在filePickerMode若是显示"属性窗口"后，若关闭"属性窗口"，FilePicker会不可见，需移动才可见，系统bug。
@@ -1573,17 +1567,48 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 			results = originData;
 		}
 
-		if (results.length >= 1 && results[0].isReturn()) {
-
-			FileItem[] origin = results;
-			results = new FileItem[origin.length - 1];
-
-			System.arraycopy(origin, 1, results, 0, results.length);
-
+		if (results.length > 0 && results[0].isReturn()) {
+			// 移除第一项: 返回项.
+			Arrays.removeAt(results, 0);
 		}
 
 		return results;
 
+	}
+
+
+	/**
+	 * 获取当前状态下已选择的文件的列表.
+	 * 
+	 * @return
+	 */
+	public FileItem[] getSelectedFiles() {
+
+		FileItem[] files = null;
+
+		if (keyWordEntered) {
+			// 正在搜索, 结果是选中的项目中同时被关键字过滤出的项目。
+			Vector filtered_items = new Vector();
+			FileItem[] allFiles = getAllFiles();
+			for (int i = 0; i < allFiles.length; i++) {
+				if (isSelected(allFiles[i])) {
+					filtered_items.addElement(allFiles[i]);
+				}
+			}
+			files = new FileItem[filtered_items.size()];
+			filtered_items.copyInto(files);
+		} else {
+			files = new FileItem[selectedItems.size()];
+			Enumeration selected_files = selectedItems.keys();
+			int index = 0;
+			while (selected_files.hasMoreElements()) {
+				FileItem a_file = (FileItem) selected_files.nextElement();
+				files[index] = a_file;
+				index++;
+			}
+		}
+
+		return files;
 	}
 
 
@@ -1655,12 +1680,17 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 	 */
 	public boolean canMultiSelect() {
 
-		// 只有在FileScreen下才允许多选。
-		if (fileScreenManager != null) {
+		// 只有在FileScreen下且有多于一个文件才允许多选。
+		if (fileScreenManager != null && isNormalFolder() && getSize() > 1) {
+			if (getSize() == 2) {
+				FileItem first_item = (FileItem) get(this, 0);
+				if (first_item.isReturn()) {
+					return false;
+				}
+			}
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 
@@ -1709,4 +1739,64 @@ public class FileListField extends BaseObjectListField implements ScreenHeightCh
 
 		return selectedItems.containsKey(item);
 	}
+
+
+	/**
+	 * 返回在多选模式下选中了的文件总数, 若同时有关键字过滤, 则总数是选中的项目中同时被关键字过滤出的项目的数量, 若不处于多选模式下, 返回-1.
+	 * 
+	 * @return
+	 */
+	public int getSelectedCount() {
+
+		if (!isMultiSelecting()) {
+			return -1;
+		}
+
+		int count = 0;
+
+		if (keyWordEntered) {
+			// 正在搜索, 要显示的数字是选中的项目中同时被关键字过滤出的项目的数量。
+			FileItem[] allFiles = getAllFiles();
+			for (int i = 0; i < allFiles.length; i++) {
+				if (isSelected(allFiles[i])) {
+					count++;
+				}
+			}
+		} else {
+			count = selectedItems.size();
+		}
+
+		return count;
+
+	}
+
+
+	/**
+	 * 全选
+	 */
+	public void selectAll() {
+
+		if (isMultiSelecting()) {
+			FileItem[] all_items = getAllFiles();
+			for (int i = 0; i < all_items.length; i++) {
+				selectedItems.put(all_items[i], "");
+			}
+			updateCountLabel();
+			invalidate();
+		}
+	}
+
+
+	/**
+	 * 全不选
+	 */
+	public void deselectAll() {
+
+		if (isMultiSelecting()) {
+			selectedItems.clear();
+			updateCountLabel();
+			invalidate();
+		}
+	}
+
 }

@@ -9,6 +9,7 @@ import RockManager.fileList.FileListField;
 import RockManager.languages.LangRes;
 import RockManager.ui.progressPopup.ProgressIndicator;
 import RockManager.ui.progressPopup.ProgressPopup;
+import RockManager.util.UtilCommon;
 import RockManager.util.stopableThread.StopableThread;
 
 
@@ -20,34 +21,87 @@ public class FileClipboard {
 
 	static int METHOD_NOW;
 
-	static FileItem ORIGIN_FILE;
+	/**
+	 * 剪贴板上的所有文件(FileItem).
+	 */
+	static FileItem[] BOARD_ITEMS;
 
 	/**
 	 * 所有indicator的一个列表。
 	 */
 	private static Vector INDICATOR_LIST = new Vector();
 
+	/**
+	 * 是否已经粘贴过一次了.
+	 */
+	private static boolean PASTED = false;
+
 
 	/**
-	 * 将某一文件放到剪贴板上。
+	 * 将某一文件放到剪贴板上.
 	 * 
 	 * @param method
-	 * @param fileItem
+	 * @param item
 	 */
-	public static void put(int method, FileItem fileItem) {
+	public static void put(int method, FileItem item) {
 
-		METHOD_NOW = method;
-		ORIGIN_FILE = fileItem;
-
-		invalidateIndicators();
-
+		FileItem[] all_items = new FileItem[1];
+		all_items[0] = item;
+		put(method, all_items);
 	}
 
 
-	public static FileItem get() {
+	/**
+	 * 将列表中的文件都放到剪贴板上.
+	 * 
+	 * @param method
+	 * @param items
+	 */
+	public static void put(int method, FileItem[] items) {
 
-		return ORIGIN_FILE;
+		METHOD_NOW = method;
+		BOARD_ITEMS = items;
+		PASTED = false;
+		invalidateIndicators();
+	}
 
+
+	public static FileItem[] get() {
+
+		return BOARD_ITEMS;
+	}
+
+
+	/**
+	 * 获得剪贴板上的文件的父目录位置.
+	 * 
+	 * @return
+	 */
+	public static String get_source_folder_url() {
+
+		return UtilCommon.getParentDir(BOARD_ITEMS[0].getRawURL());
+	}
+
+
+	/**
+	 * 获取在菜单中出现时的名称, 如: 粘贴 ("a.txt"), 粘贴 (共3项)
+	 * 
+	 * @return
+	 */
+	public static String get_menu_name() {
+
+		String pattern = null;
+		String item_name = null;
+
+		if (BOARD_ITEMS.length == 1) {
+			pattern = LangRes.get(LangRes.MENU_PASTE);
+			item_name = BOARD_ITEMS[0].getDisplayName();
+		} else {
+			pattern = LangRes.get(LangRes.MENU_PASTE_SELECTED);
+			item_name = Integer.toString(BOARD_ITEMS.length);
+		}
+		String menu_name = UtilCommon.replaceString(pattern, "{1}", item_name);
+		return menu_name;
 	}
 
 
@@ -59,7 +113,6 @@ public class FileClipboard {
 	public static int getMethod() {
 
 		return METHOD_NOW;
-
 	}
 
 
@@ -68,10 +121,8 @@ public class FileClipboard {
 	 */
 	public static void clear() {
 
-		ORIGIN_FILE = null;
-
+		BOARD_ITEMS = null;
 		invalidateIndicators();
-
 	}
 
 
@@ -86,7 +137,6 @@ public class FileClipboard {
 			FileClipboardIndicator thisIndicator = (FileClipboardIndicator) indicators.nextElement();
 			thisIndicator.invalidate();
 		}
-
 	}
 
 
@@ -97,8 +147,7 @@ public class FileClipboard {
 	 */
 	public static boolean isEmpty() {
 
-		return ORIGIN_FILE == null;
-
+		return BOARD_ITEMS == null;
 	}
 
 
@@ -112,7 +161,6 @@ public class FileClipboard {
 		if (INDICATOR_LIST.contains(indicator) == false) {
 			INDICATOR_LIST.addElement(indicator);
 		}
-
 	}
 
 
@@ -124,19 +172,24 @@ public class FileClipboard {
 	public static synchronized void removeFromIndicatorList(FileClipboardIndicator indicator) {
 
 		INDICATOR_LIST.removeElement(indicator);
-
 	}
 
 
 	/**
-	 * 已经粘贴过了。如果原来是复制，什么都不做，如果原来是剪切的，则应清空剪贴板。
+	 * 已经粘贴过了。设 PASTED 为 true. 如果原来是复制，什么都不做，如果原来是剪切的，则应清空剪贴板。
 	 */
 	public static void pasted() {
 
 		if (METHOD_NOW == METHOD_CUT) {
 			clear();
 		}
+		PASTED = true;
+	}
 
+
+	public static boolean is_pasted() {
+
+		return PASTED;
 	}
 
 
@@ -151,7 +204,6 @@ public class FileClipboard {
 
 		FileClipboardPopup popup = new FileClipboardPopup();
 		UiApplication.getUiApplication().pushScreen(popup);
-
 	}
 
 

@@ -72,92 +72,56 @@ public class FilePasteThread extends StopableThread {
 			return;
 		}
 
-		String targetFolderURL = targetListField.getFolderPathURL(); // 要粘贴的目标位置，父文件夹。
-		String originURL = FileClipboard.ORIGIN_FILE.getURL(); // 要粘贴的文件的地址。
+		// 要粘贴的目标位置，父文件夹。
+		String targetFolderURL = targetListField.getFolderPathURL();
+		// 要粘贴的文件的来源位置, 父文件夹.
+		String originFolderURL = FileClipboard.get_source_folder_url();
 
-		if (targetFolderURL.startsWith(originURL)) {
+		if (!targetFolderURL.equals(originFolderURL) && targetFolderURL.startsWith(originFolderURL)) {
 			// 不能复制文件夹到子文件夹。
 			throw new IOException("The destination folder is a subfolder of the source folder.");
 		}
 
-		String originFolderURL = UtilCommon.getParentDir(originURL); // 要粘贴的文件的父文件夹。
-
-		String targetFileName = null;
+		boolean same_folder_paste = false;
 
 		if (originFolderURL.equals(targetFolderURL)) {
-			// 在同一文件夹内复制、剪贴。
+
+			// 在同一文件夹内复制、剪切。
+			same_folder_paste = true;
 
 			if (FileClipboard.METHOD_NOW == FileClipboard.METHOD_CUT) {
 
-				// 使这项获得焦点。
-				targetFileName = FileClipboard.ORIGIN_FILE.getDisplayName();
-				targetListField.setItemToFocus(targetFileName, FileClipboard.ORIGIN_FILE.getType());
-
-				synchronized (UiApplication.getEventLock()) {
-					targetListField.refresh();
-				}
-
-				return;
-
-			} else if (FileClipboard.METHOD_NOW == FileClipboard.METHOD_COPY) {
-
-				// 在同一文件夹内复制，获取适当的文件名。
-				targetFileName = getCopyName(FileClipboard.ORIGIN_FILE, originFolderURL);
-				String nameToFocus = targetFileName;
-				if (FileClipboard.ORIGIN_FILE.isDir()) {
-					// 需去除最后的文件夹分割符'/'.
-					nameToFocus = UtilCommon.getName(nameToFocus, false);
-				}
-				targetListField.setItemToFocus(nameToFocus, FileClipboard.ORIGIN_FILE.getType());
+				// 不能剪切至自己原本的目录.
+				throw new IOException("Can't cut and paste file to it's own folder.");
 
 			}
 
 		}
 
-		FileConnection originFileConn = null;
+		// 要复制的文件们.
+		FileItem[] items_to_paste = FileClipboard.get();
 
 		try {
 
 			// 复制开始，准备工作，计算总文件大小。
 			progressIndicator.setProgressName("Calculating file size...");
 
-			originFileConn = (FileConnection) Connector.open(FileClipboard.ORIGIN_FILE.getURL());
-
-			if (originFileConn.exists() == false) {
-				FileClipboard.clear();
-				throw new IOException("Item on the clipboard doesn't exist anymore.");
-			}
-
-			if (targetFileName == null) {
-				// 不是在同一文件夹内复制，还未设置文件名。
-				targetFileName = originFileConn.getName();
-			}
-
-			// 复制出的新文件/文件夹路径。
-			String targetURL = targetFolderURL + UtilCommon.toURLForm(targetFileName);
-
-			long totalSize = IOUtil.getFileSize(originFileConn);
+			long totalSize = IOUtil.getFileSize(items_to_paste);
 			progressIndicator.setTotalSize(totalSize);
 
 			int bufferSize = IOUtil.getBufferSize(totalSize);
 			byte[] buffer = new byte[bufferSize];
 
-			if (originFileConn.isDirectory()) {
-				// 是文件夹。
-				copyFolder(originFileConn, targetURL, buffer, progressIndicator);
-
-			} else {
-				// 是文件。
-				copyFile(originFileConn, targetURL, buffer, progressIndicator);
-
-			}
-
-			if (FileClipboard.METHOD_NOW == FileClipboard.METHOD_CUT) {
-				// 若是剪切，删除原文件。
-				try {
-					originFileConn.delete();
-				} catch (Exception e) {
-					throw new IOException("Failed to delete origin file \"" + originFileConn.getName() + "\".");
+			for (int i = 0; i < items_to_paste.length; i++) {
+				FileItem this_item = items_to_paste[i];
+				copyFileItem(this_item, targetFolderURL, buffer, same_folder_paste, progressIndicator, targetListField);
+				if (FileClipboard.METHOD_NOW == FileClipboard.METHOD_CUT) {
+					// 若是剪切, 删除原文件
+					try {
+						FileHandler.deleteFile(this_item.getURL(), null);
+					} catch (Exception e) {
+						throw new IOException("Failed to delete origin file \"" + this_item.getDisplayName() + "\".");
+					}
 				}
 			}
 
@@ -166,8 +130,52 @@ public class FilePasteThread extends StopableThread {
 			throw e;
 		} catch (IOException e) {
 			throw e;
-		} finally {
-			IOUtil.closeConnection(originFileConn);
+		}
+
+	}
+
+
+	/**
+	 * 将一个 FileItem 复制到目标文件夹.
+	 * 
+	 * @param item
+	 * @param targetFolderURL
+	 * @param buffer
+	 * @param same_folder_paste
+	 * @param progressIndicator
+	 * @param targetListField
+	 * @throws IOException
+	 * @throws StopRequest
+	 */
+	private void copyFileItem(FileItem item, String targetFolderURL, byte[] buffer, boolean same_folder_paste,
+			ProgressIndicator progressIndicator, FileListField targetListField) throws IOException, StopRequest {
+
+		FileConnection originFileConn = (FileConnection) Connector.open(item.getURL());
+
+		if (!originFileConn.exists()) {
+			FileClipboard.clear();
+			throw new IOException("Item on the clipboard doesn't exist anymore.");
+		}
+
+		String target_file_name = null;
+
+		if (same_folder_paste) {
+			target_file_name = getCopyName(item, targetFolderURL);
+		} else {
+			target_file_name = originFileConn.getName();
+		}
+
+		boolean item_is_dir = item.isDir();
+
+		String name_to_focus = item_is_dir ? UtilCommon.getName(target_file_name, true) : target_file_name;
+		targetListField.setItemToFocus(name_to_focus, item.getType());
+
+		String target_file_url = targetFolderURL + UtilCommon.toURLForm(target_file_name);
+
+		if (item_is_dir) {
+			copyFolder(originFileConn, target_file_url, buffer, progressIndicator);
+		} else {
+			copyFile(originFileConn, target_file_url, buffer, progressIndicator);
 		}
 
 	}
@@ -276,8 +284,7 @@ public class FilePasteThread extends StopableThread {
 			throw e;
 		}
 
-		String originFolderURL = "file://"
-				+ UtilCommon.toURLForm(originFolderConn.getPath() + originFolderConn.getName());
+		String originFolderURL = originFolderConn.getURL();
 
 		try {
 
@@ -322,28 +329,28 @@ public class FilePasteThread extends StopableThread {
 
 
 	/**
-	 * 获得正确副本名称。
+	 * 如果在同一文件夹内粘贴, 获得正确副本名称, 如: A - 副本 (2).txt
 	 * 
-	 * @param originFile
-	 * @param originFolderURL
+	 * @param item
+	 * @param target_folder_url
 	 * @return
 	 */
-	private String getCopyName(FileItem originFile, String originFolderURL) {
+	private String getCopyName(FileItem item, String target_folder_url) {
 
 		// hello.mp3
 		String copySuffix = LangRes.get(LangRes.FILE_COPY_SUFFIX); // " - 副本"
-		String originFileName = originFile.getName(false); // hello
-		String originFileSuffix = originFile.getOriginSuffix(); // mp3
-		boolean haveSuffix = originFile.isFile() && originFileSuffix.length() > 0; // true
+		String originFileName = item.getName(false); // hello
+		String originFileSuffix = item.getOriginSuffix(); // mp3
+		boolean haveSuffix = item.isFile() && originFileSuffix.length() > 0; // true
 		String newFileSuffix = "";
 
-		if (originFile.isDir()) {
+		if (item.isDir()) {
 			newFileSuffix = "/";
 		} else {
 			newFileSuffix = haveSuffix ? ('.' + originFileSuffix) : "";
 		}
 
-		String parentURL = UtilCommon.getParentDir(originFile.getRawURL());
+		String parentURL = UtilCommon.getParentDir(item.getRawURL());
 		String newFileName;
 		String targetURL;
 
@@ -355,7 +362,7 @@ public class FilePasteThread extends StopableThread {
 				newFileName = originFileName + copySuffix + " (" + i + ")" + newFileSuffix;
 			}
 			targetURL = parentURL + UtilCommon.toURLForm(newFileName);
-			if (IOUtil.isExists(targetURL) == false) {
+			if (!IOUtil.isExists(targetURL)) {
 				return newFileName;
 			}
 

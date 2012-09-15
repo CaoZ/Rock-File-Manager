@@ -4,6 +4,7 @@ package RockManager.fileList;
 import net.rim.device.api.ui.Keypad;
 import RockManager.config.ShortCutKeyConfig;
 import RockManager.favoritesList.FavoritesData;
+import RockManager.fileClipboard.FileClipboard;
 import RockManager.util.KeyUtil;
 
 
@@ -59,8 +60,8 @@ public class FileListKeyCharHandler {
 		}
 
 		// 这个快捷键默认是‘r’,在某些机型上可能与搜索快捷键‘s’在一个按键上（如9105），因此不用else if而用if.
-		if (KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.RENAME) && fileList.isRealFileItem()
-				&& fileList.isNormalFolder()) {
+		if (KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.RENAME) && !fileList.isMultiSelecting()
+				&& fileList.isRealFileItem() && fileList.isNormalFolder()) {
 
 			fileList.renameFile();
 			return true;
@@ -75,12 +76,17 @@ public class FileListKeyCharHandler {
 
 		}
 
-		if ((key == Keypad.KEY_BACKSPACE || key == Keypad.KEY_DELETE) && fileList.isRealFileItem()) {
+		if ((key == Keypad.KEY_BACKSPACE || key == Keypad.KEY_DELETE)) {
+
 			if (fileList.isNormalFolder()) {
 				// 删除文件。
-				fileList.deleteFile();
-				return true;
-			} else if (fileList.isFavoriteList()) {
+				boolean multiSelecting = fileList.isMultiSelecting();
+				if ((!multiSelecting && fileList.isRealFileItem())
+						|| (multiSelecting && fileList.getSelectedCount() > 0)) {
+					fileList.deleteFile();
+					return true;
+				}
+			} else if (fileList.isFavoriteList() && fileList.isRealFileItem()) {
 				// 删除一收藏条目。
 				FavoritesData.delete(fileList.getThisItem());
 				return true;
@@ -88,25 +94,29 @@ public class FileListKeyCharHandler {
 		}
 
 		// 复制
-		if (fileList.isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.COPY)
-				&& fileList.isRealFileItem()) {
+		if (fileList.isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.COPY)) {
 
-			fileList.copyToClipboard();
-			return true;
-
+			boolean multiSelecting = fileList.isMultiSelecting();
+			if ((!multiSelecting && fileList.isRealFileItem()) || (multiSelecting && fileList.getSelectedCount() > 0)) {
+				fileList.cut_copy_to_clipboard(FileClipboard.METHOD_COPY);
+				return true;
+			}
 		}
 
 		// 剪切
 		if (fileList.isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.CUT)
 				&& fileList.isRealFileItem()) {
 
-			fileList.cutToClipboard();
-			return true;
-
+			boolean multiSelecting = fileList.isMultiSelecting();
+			if ((!multiSelecting && fileList.isRealFileItem()) || (multiSelecting && fileList.getSelectedCount() > 0)) {
+				fileList.cut_copy_to_clipboard(FileClipboard.METHOD_CUT);
+				return true;
+			}
 		}
 
 		// 粘贴
-		if (fileList.isClipboardAllowed() && KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.PASTE)) {
+		if (fileList.isClipboardAllowed() && !fileList.isMultiSelecting()
+				&& KeyUtil.isOnSameKey(key, status, ShortCutKeyConfig.PASTE)) {
 
 			fileList.pasteFromClipboard();
 			return true;

@@ -54,20 +54,26 @@ public class FileListContextMenuHandler {
 	private static void addClipboardMenus(ContextMenu contextMenu, final FileListField fileList) {
 
 		boolean added = false;
+		boolean multiSelecting = fileList.isMultiSelecting();
 
 		if (fileList.isClipboardAllowed()) {
 
-			if (fileList.isRealFileItem()) {
+			if ((!multiSelecting && fileList.isRealFileItem()) || (multiSelecting && fileList.getSelectedCount() > 0)) {
 				addCutFileMenuItem(contextMenu, fileList, 120, 120); // 剪切 120
 				addCopyFileMenuItem(contextMenu, fileList, 130, 130); // 复制 130
 				added = true;
 			}
 
-			if (FileClipboard.isEmpty() == false) {
+			if (!FileClipboard.isEmpty()) {
 				addClipboardDetailMenuItem(contextMenu, fileList, 110, 110);// 剪贴板详情
 																			// 110
 				contextMenu.addItem(MenuItem.separator(111)); // 分割线 111
-				addPasteFileMenuItem(contextMenu, fileList, 140, 140); // 粘贴 140
+				if (!multiSelecting) {
+					// 降低复杂度, 处于多选模式时禁止粘贴.
+					// 若刚放到剪贴板上, 设'粘贴'项较高优先级, 若粘贴过一次后, 不再设置较高的优先级.
+					int priority = FileClipboard.is_pasted() ? 140 : PRIORITY_ONE;
+					addPasteFileMenuItem(contextMenu, fileList, 140, priority); // 粘贴
+				}
 				added = true;
 			}
 
@@ -87,10 +93,26 @@ public class FileListContextMenuHandler {
 	private static void addFileOperationMenus(ContextMenu contextMenu, final FileListField fileList) {
 
 		boolean added = false;
+		boolean multiSelecting = fileList.isMultiSelecting();
 
-		if (fileList.isFavoriteList() && fileList.isRealFileItem()) {
+		if (!multiSelecting && fileList.isFavoriteList() && fileList.isRealFileItem()) {
 			addOpenItMenuItem(contextMenu, fileList, 210, PRIORITY_ONE);
 			added = true;
+		}
+
+		if (multiSelecting) {
+
+			contextMenu.addItem(MenuItem.separator(212)); // 分割线
+			addSelectAllMenuItem(contextMenu, fileList, 213, 213); // 全选
+			addDeselectAllMenuItem(contextMenu, fileList, 213, 213); // 全不选
+			contextMenu.addItem(MenuItem.separator(214)); // 分割线
+		}
+
+		if (!multiSelecting && fileList.canMultiSelect()) {
+
+			contextMenu.addItem(MenuItem.separator(214)); // 分割线
+			addEnterMultiSelectModeMenuItem(contextMenu, fileList, 215, 215); // 进入多选模式
+			contextMenu.addItem(MenuItem.separator(216)); // 分割线
 		}
 
 		if (fileList.shouldShowProperty()) {
@@ -99,13 +121,19 @@ public class FileListContextMenuHandler {
 			added = true;
 		}
 
-		if (fileList.isNormalFolder() && !fileList.isPickerMode() && fileList.isRealFileItem()) {
-			addRenameMenuItem(contextMenu, fileList, 230, 230); // 重命名 230
-			addDeleteMenuItem(contextMenu, fileList, 240, 240); // 删除 240
-			added = true;
+		if (fileList.isNormalFolder() && !fileList.isPickerMode()) {
+			if (!multiSelecting && fileList.isRealFileItem()) {
+				addRenameMenuItem(contextMenu, fileList, 230, 230); // 重命名 230
+				added = true;
+			}
+			if ((!multiSelecting && fileList.isRealFileItem()) || (multiSelecting && fileList.getSelectedCount() > 0)) {
+				int priority = multiSelecting ? PRIORITY_ONE : 240;
+				addDeleteMenuItem(contextMenu, fileList, 240, priority); // 删除
+				added = true;
+			}
 		}
 
-		if (Config.DEBUG_MODE && fileList.isNormalFolder()) { // 只在测试时添加此项。
+		if (!multiSelecting && Config.DEBUG_MODE && fileList.isNormalFolder()) { // 只在测试时添加此项。
 			addRefreashMenuItem(contextMenu, fileList, 250, 250); // 刷新 250
 			added = true;
 		}
@@ -119,7 +147,7 @@ public class FileListContextMenuHandler {
 
 
 	/**
-	 * 添加"安装", "压缩", "解压缩"项。Ordinal:300-399
+	 * 添加 "压缩", "解压缩"项。Ordinal:300-399
 	 */
 	private static void addArchiveMenus(ContextMenu contextMenu, FileListField fileList) {
 
@@ -134,24 +162,36 @@ public class FileListContextMenuHandler {
 
 		boolean added = false;
 
-		FileItem thisItem = fileList.getThisItem();
+		if (fileList.isNormalFolder() && !fileList.isPickerMode()) {
 
-		if (fileList.isNormalFolder() && !fileList.isPickerMode() && thisItem.isRealFile()) {
-
-			String suffix = thisItem.getSuffix();
-			boolean isArchiveFile = suffix.equals("zip") || suffix.equals("rar");
-
-			if (isArchiveFile) {
-				// 解压到 "文件夹\" 310
-				addExtractToFolderMenuItem(contextMenu, fileList, 310, PRIORITY_ONE);
-				// 解压文件... 320
-				addExtractMenuItem(contextMenu, fileList, 320, 320);
+			if (fileList.isMultiSelecting()) {
+				// 正在多选
+				if (fileList.getSelectedCount() > 0) {
+					// 添加到压缩文件... 330
+					addCompressMenuItem(contextMenu, fileList, 330, 330);
+					added = true;
+				}
 			} else {
-				// 添加到压缩文件... 330
-				addCompressMenuItem(contextMenu, fileList, 330, 330);
-			}
+				// 没在多选
+				FileItem thisItem = fileList.getThisItem();
+				if (thisItem.isRealFile()) {
 
-			added = true;
+					String suffix = thisItem.getSuffix();
+					boolean isArchiveFile = suffix.equals("zip") || suffix.equals("rar");
+
+					if (isArchiveFile) {
+						// 解压到 "文件夹\" 310
+						addExtractToFolderMenuItem(contextMenu, fileList, 310, PRIORITY_ONE);
+						// 解压文件... 320
+						addExtractMenuItem(contextMenu, fileList, 320, 320);
+					} else {
+						// 添加到压缩文件... 330
+						addCompressMenuItem(contextMenu, fileList, 330, 330);
+					}
+
+					added = true;
+				}
+			}
 
 		}
 
@@ -271,10 +311,9 @@ public class FileListContextMenuHandler {
 	private static void addPasteFileMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		String fileName = FileClipboard.get().getDisplayName();
-		String labelPaste = UtilCommon.replaceString(LangRes.get(LangRes.MENU_PASTE), "{1}", fileName);
+		String menu_name = FileClipboard.get_menu_name();
 
-		MenuItem pasteFile = new MenuItem(labelPaste, ordinal, priority) {
+		MenuItem pasteFile = new MenuItem(menu_name, ordinal, priority) {
 
 			public void run() {
 
@@ -299,11 +338,14 @@ public class FileListContextMenuHandler {
 	private static void addCopyFileMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem copyFile = new MenuItem(LangRes.get(LangRes.MENU_COPY), ordinal, priority) {
+		int menu_text_key = fileList.isMultiSelecting() ? LangRes.MENU_COPY_SELECTED : LangRes.MENU_COPY;
+		String menu_text_value = LangRes.get(menu_text_key);
+
+		MenuItem copyFile = new MenuItem(menu_text_value, ordinal, priority) {
 
 			public void run() {
 
-				fileList.copyToClipboard();
+				fileList.cut_copy_to_clipboard(FileClipboard.METHOD_COPY);
 			}
 		};
 
@@ -319,11 +361,14 @@ public class FileListContextMenuHandler {
 	private static void addCutFileMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem cutFile = new MenuItem(LangRes.get(LangRes.MENU_CUT), ordinal, priority) {
+		int menu_text_key = fileList.isMultiSelecting() ? LangRes.MENU_CUT_SELECTED : LangRes.MENU_CUT;
+		String menu_text_value = LangRes.get(menu_text_key);
+
+		MenuItem cutFile = new MenuItem(menu_text_value, ordinal, priority) {
 
 			public void run() {
 
-				fileList.cutToClipboard();
+				fileList.cut_copy_to_clipboard(FileClipboard.METHOD_CUT);
 			}
 		};
 
@@ -411,7 +456,9 @@ public class FileListContextMenuHandler {
 	private static void addDeleteMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
 			int priority) {
 
-		MenuItem deleteFile = new MenuItem(LangRes.get(LangRes.DELETE), ordinal, priority) {
+		int menu_key = fileList.isMultiSelecting() ? LangRes.DELETE_SELECTED : LangRes.DELETE;
+
+		MenuItem deleteFile = new MenuItem(LangRes.get(menu_key), ordinal, priority) {
 
 			public void run() {
 
@@ -568,8 +615,7 @@ public class FileListContextMenuHandler {
 
 			public void run() {
 
-				FileItem itemToCompress = fileList.getThisItem();
-				final CreateArchivePopup createArchivePopup = new CreateArchivePopup(itemToCompress, fileList);
+				final CreateArchivePopup createArchivePopup = new CreateArchivePopup(fileList);
 
 				UiApplication.getUiApplication().invokeLater(new Runnable() {
 
@@ -709,6 +755,84 @@ public class FileListContextMenuHandler {
 
 						FileItem thisItem = fileList.getThisItem();
 						FavoritesData.delete(thisItem);
+					}
+				});
+
+			}
+		};
+		contextMenu.addItem(deleteFromFavoriteItem);
+
+	}
+
+
+	/**
+	 * '多选模式'项.
+	 */
+	private static void addEnterMultiSelectModeMenuItem(ContextMenu contextMenu, final FileListField fileList,
+			int ordinal, int priority) {
+
+		String menu_text = LangRes.get(LangRes.MENU_MULTIPLE_SELECT);
+		MenuItem deleteFromFavoriteItem = new MenuItem(menu_text, ordinal, priority) {
+
+			public void run() {
+
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+					public void run() {
+
+						fileList.enterMultiSelectMode();
+					}
+				});
+
+			}
+		};
+		contextMenu.addItem(deleteFromFavoriteItem);
+
+	}
+
+
+	/**
+	 * '全选'项.
+	 */
+	private static void addSelectAllMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
+			int priority) {
+
+		String menu_text = LangRes.get(LangRes.MENU_SELECT_ALL);
+		MenuItem deleteFromFavoriteItem = new MenuItem(menu_text, ordinal, priority) {
+
+			public void run() {
+
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+					public void run() {
+
+						fileList.selectAll();
+					}
+				});
+
+			}
+		};
+		contextMenu.addItem(deleteFromFavoriteItem);
+
+	}
+
+
+	/**
+	 * '全不选'项.
+	 */
+	private static void addDeselectAllMenuItem(ContextMenu contextMenu, final FileListField fileList, int ordinal,
+			int priority) {
+
+		String menu_text = LangRes.get(LangRes.MENU_SELECT_ALL);
+		MenuItem deleteFromFavoriteItem = new MenuItem(menu_text, ordinal, priority) {
+
+			public void run() {
+
+				UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+					public void run() {
+
+						fileList.deselectAll();
 					}
 				});
 

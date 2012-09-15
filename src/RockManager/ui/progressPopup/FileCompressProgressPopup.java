@@ -11,7 +11,7 @@ import RockManager.util.UtilCommon;
 
 public class FileCompressProgressPopup extends ProgressPopup {
 
-	private String originFileURL;
+	private FileItem[] itemsToCompress;
 
 	private String saveURL;
 
@@ -20,10 +20,10 @@ public class FileCompressProgressPopup extends ProgressPopup {
 	private FileListField parentFileList;
 
 
-	public FileCompressProgressPopup(String originFileURL, String saveURL, int compressMethod,
+	public FileCompressProgressPopup(FileItem[] itemsToCompress, String saveURL, int compressMethod,
 			FileListField parentFileList) {
 
-		this.originFileURL = originFileURL;
+		this.itemsToCompress = itemsToCompress;
 		this.saveURL = saveURL;
 		this.compressMethod = compressMethod;
 		this.parentFileList = parentFileList;
@@ -59,7 +59,7 @@ public class FileCompressProgressPopup extends ProgressPopup {
 
 				try {
 
-					ZipUtil.compress(originFileURL, saveURL, compressMethod, compressIndicator);
+					ZipUtil.compress(itemsToCompress, saveURL, compressMethod, compressIndicator);
 
 				} catch (Exception e) {
 					String failMessage = "Failed to compress: " + UtilCommon.getErrorMessage(e);

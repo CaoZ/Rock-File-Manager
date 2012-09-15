@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import javax.microedition.io.Connector;
 import javax.microedition.io.file.FileConnection;
 import RockManager.archive.ArchiveEntry;
+import RockManager.fileList.FileItem;
 import RockManager.util.UtilCommon;
 
 
@@ -49,6 +50,25 @@ public class FileCounter {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+			}
+		}
+
+		return result;
+
+	}
+
+
+	public static FileCountResult countFileItems(FileItem[] items) {
+
+		FileCountResult result = new FileCountResult();
+
+		for (int i = 0; i < items.length; i++) {
+			FileItem a_item = items[i];
+			if (a_item.isFile()) {
+				result.plusFileNumber();
+			} else {
+				result.plusFolderNumber();
+				result.appendResult(countFolder(a_item.getURL()));
 			}
 		}
 

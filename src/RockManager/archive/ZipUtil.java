@@ -10,6 +10,7 @@ import javax.microedition.io.file.FileConnection;
 import net.sf.zipme.ZipEntry;
 import net.sf.zipme.ZipOutputStream;
 import RockManager.fileHandler.FileHandler;
+import RockManager.fileList.FileItem;
 import RockManager.ui.progressPopup.ProgressIndicator;
 import RockManager.util.IOUtil;
 import RockManager.util.UtilCommon;
@@ -20,8 +21,8 @@ public class ZipUtil {
 	/**
 	 * 压缩文件或文件夹。
 	 * 
-	 * @param originFileURL
-	 *            要压缩的文件位置。
+	 * @param items_to_compress
+	 *            要压缩的文件项。
 	 * @param saveURL
 	 *            Zip文件位置。
 	 * @param compressMethod
@@ -29,7 +30,7 @@ public class ZipUtil {
 	 * @param compressIndicator
 	 * @throws Exception
 	 */
-	public static void compress(String originFileURL, String saveURL, int compressMethod,
+	public static void compress(FileItem[] items_to_compress, String saveURL, int compressMethod,
 			ProgressIndicator compressIndicator) throws Exception {
 
 		try {
@@ -38,27 +39,31 @@ public class ZipUtil {
 			throw e;
 		}
 
-		FileConnection originFileConn = null;
-		FileConnection fconn = null;
-		ZipOutputStream zos = null;
+		FileConnection zip_conn = null;
+		ZipOutputStream zip_os = null;
 
 		try {
 
-			fconn = (FileConnection) Connector.open(saveURL);
-			OutputStream os = fconn.openOutputStream();
-			zos = new ZipOutputStream(os);
+			zip_conn = (FileConnection) Connector.open(saveURL);
+			OutputStream os = zip_conn.openOutputStream();
+			zip_os = new ZipOutputStream(os);
 			// "方式"是程序中的叫法，如"存储", "最快", "标准"等，实际上对应zip中的level.
-			zos.setLevel(compressMethod);
+			zip_os.setLevel(compressMethod);
 
-			originFileConn = (FileConnection) Connector.open(originFileURL, Connector.READ);
-
-			long totalSize = IOUtil.getFileSize(originFileConn);
+			long totalSize = IOUtil.getFileSize(items_to_compress);
 			compressIndicator.setTotalSize(totalSize);
 
 			int bufferSize = IOUtil.getBufferSize(totalSize);
 			byte[] buffer = new byte[bufferSize];
 
-			compress(originFileConn, zos, "", buffer, compressIndicator);
+			for (int i = 0; i < items_to_compress.length; i++) {
+
+				String file_url = items_to_compress[i].getURL();
+				FileConnection origin_connection = (FileConnection) Connector.open(file_url, Connector.READ);
+				compress(origin_connection, zip_os, "", buffer, compressIndicator);
+				IOUtil.closeConnection(origin_connection);
+
+			}
 
 			// 压缩成功完成。
 			if (compressIndicator != null) {
@@ -68,9 +73,8 @@ public class ZipUtil {
 		} catch (Exception e) {
 			throw e;
 		} finally {
-			IOUtil.closeConnection(originFileConn);
-			IOUtil.closeStream(zos);
-			IOUtil.closeConnection(fconn);
+			IOUtil.closeStream(zip_os);
+			IOUtil.closeConnection(zip_conn);
 		}
 
 	}

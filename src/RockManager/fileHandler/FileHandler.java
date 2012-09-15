@@ -348,26 +348,43 @@ public class FileHandler {
 	/**
 	 * 弹出删除文件窗口，准备删除。
 	 * 
-	 * @param thisItem
+	 * @param items
+	 * @param fileListField
 	 */
-	public static void deleteWithUI(FileItem thisItem) {
+	public static void deleteWithUI(final FileItem[] items, FileListField fileListField) {
 
-		String deleteConfirmAsk = LangRes.get(LangRes.DELETE_CONFIRM_ASK);
-		String message = UtilCommon.replaceString(deleteConfirmAsk, "{1}", thisItem.getDisplayName());
+		int item_count = items.length;
+
+		String deleteConfirmAsk;
+
+		if (item_count == 1) {
+			String pattern = LangRes.get(LangRes.DELETE_CONFIRM_ASK);
+			deleteConfirmAsk = UtilCommon.replaceString(pattern, "{1}", items[0].getDisplayName());
+		} else {
+			String pattern = LangRes.get(LangRes.DELETE_CONFIRM_ASK_SELECTED);
+			deleteConfirmAsk = UtilCommon.replaceString(pattern, "{1}", Integer.toString(item_count));
+		}
+
 		Bitmap bitmap = Bitmap.getPredefinedBitmap(Bitmap.QUESTION);
 
-		BaseDialog deleteConfirm = new BaseDialog(Dialog.D_YES_NO, message, Dialog.YES, bitmap, 0);
+		BaseDialog deleteConfirm = new BaseDialog(Dialog.D_YES_NO, deleteConfirmAsk, Dialog.YES, bitmap, 0);
 
 		int answer = deleteConfirm.doModal();
-		
+
 		if (answer == Dialog.YES) {
 
-			final String fileURL = thisItem.getURL();
+			if (fileListField.isMultiSelecting()) {
+				// 退出多选模式.
+				fileListField.leaveMultiSelectMode();
+			}
 
-			if (thisItem.isFile() || isEmptyFolder(fileURL)) {
+			// 容易删除, 删除较快, 无需出现进度指示.
+			boolean easy_to_delete = (item_count == 1) && (items[0].isFile() || isEmptyFolder(items[0].getURL()));
+
+			if (easy_to_delete) {
 
 				try {
-					deleteFile(fileURL, null);
+					deleteFile(items[0].getURL(), null);
 				} catch (Exception e) {
 					UtilCommon.trace("Failed to delete this file: " + UtilCommon.getErrorMessage(e));
 				}
@@ -380,7 +397,7 @@ public class FileHandler {
 					public void run() {
 
 						// 删除多个文件，弹出进度指示框。
-						FileDeleteProgressPopup deletePopup = new FileDeleteProgressPopup(fileURL);
+						FileDeleteProgressPopup deletePopup = new FileDeleteProgressPopup(items);
 						UiApplication.getUiApplication().pushScreen(deletePopup);
 					}
 				});

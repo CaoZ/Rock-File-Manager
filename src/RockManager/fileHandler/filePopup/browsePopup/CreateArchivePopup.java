@@ -19,19 +19,24 @@ public class CreateArchivePopup extends FileBrowsePopup {
 
 	private ObjectChoiceField compressMethodChoiceField;
 
-	private FileItem itemToCompress;
+	private FileItem[] itemsToCompress;
 
 	private FileListField parentFileList;
 
 
-	public CreateArchivePopup(FileItem itemToCompress, FileListField parentFileList) {
+	public CreateArchivePopup(FileListField parentFileList) {
 
-		this.itemToCompress = itemToCompress;
+		if (parentFileList.isMultiSelecting()) {
+			itemsToCompress = parentFileList.getSelectedFiles();
+		} else {
+			itemsToCompress = new FileItem[1];
+			itemsToCompress[0] = parentFileList.getThisItem();
+		}
 		this.parentFileList = parentFileList;
+
 		setTitle(LangRes.get(LangRes.TITLE_CREATE_ARCHIVE));
 
-		String itemPath = itemToCompress.getPath();
-		String parentPath = UtilCommon.getParentDir(itemPath);
+		String parentPath = parentFileList.getFolderPath();
 
 		setDestinationPath(parentPath + getPreferedArchiveName());
 		setDefaultDestinationPath(parentPath);
@@ -43,11 +48,20 @@ public class CreateArchivePopup extends FileBrowsePopup {
 
 	private String getPreferedArchiveName() {
 
-		String itemPath = itemToCompress.getPath();
-		String itemName = UtilCommon.getName(itemPath, false);
+		String archive_name;
 		String suffix = ".zip";
 
-		return itemName + suffix;
+		if (itemsToCompress.length == 1) {
+			// 只有一个文件, 以文件名组成压缩文件名.
+			String itemPath = itemsToCompress[0].getPath();
+			archive_name = UtilCommon.getName(itemPath, false);
+		} else {
+			// 两个或以上文件, 以父文件夹名组成压缩文件名.
+			String parent_path = parentFileList.getFolderPath();
+			archive_name = UtilCommon.getName(parent_path, false);
+		}
+
+		return archive_name + suffix;
 
 	}
 
@@ -105,7 +119,10 @@ public class CreateArchivePopup extends FileBrowsePopup {
 
 		close();
 
-		final String originFileURL = itemToCompress.getURL();
+		if (parentFileList.isMultiSelecting()) {
+			parentFileList.leaveMultiSelectMode();
+		}
+
 		final String saveURL = UtilCommon.toURLForm(getInputedText());
 		CompressMethod method = (CompressMethod) compressMethodChoiceField.getChoice(compressMethodChoiceField
 				.getSelectedIndex());
@@ -116,7 +133,7 @@ public class CreateArchivePopup extends FileBrowsePopup {
 			public void run() {
 
 				// popup中有一个将在invokeLater中执行的线程，故popup的构造要放在此invokeLater中。
-				FileCompressProgressPopup progressPopup = new FileCompressProgressPopup(originFileURL, saveURL,
+				FileCompressProgressPopup progressPopup = new FileCompressProgressPopup(itemsToCompress, saveURL,
 						compressMethod, parentFileList);
 				UiApplication.getUiApplication().pushScreen(progressPopup);
 
