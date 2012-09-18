@@ -156,7 +156,7 @@ public class FileHandler {
 	 * @param path
 	 * @return 成功调用浏览器则返回true, 否则返回false, 表明需后续处理。
 	 */
-	private static boolean openHTMLFile(String path) {
+	public static boolean openHTMLFile(String path) {
 
 		ServiceBook sb = ServiceBook.getSB();
 		ServiceRecord[] records = sb.findRecordsByCid("BrowserConfig");

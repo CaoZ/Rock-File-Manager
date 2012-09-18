@@ -37,6 +37,7 @@ FILE_COPY_SUFFIX#0=" - Copy";
 FILE_COUNT_RESULT#0="{1} Files, {2} Folders";
 FOLDER_IS_EMPTY#0="This folder is empty.";
 FREE_SPACE#0="Free Space:";
+GET_IT_FROM_APP_WORLD#0="Please get the official version of this app from BlackBerry App World.";
 HELP_SHORTCUTS_TXT_PATH#0="/help/ShortcutsEn.txt";
 HIDDEN#0="Hidden";
 INSTALLING#0="Installing...";

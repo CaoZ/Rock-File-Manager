@@ -2,6 +2,8 @@
 package RockManager.Start;
 
 import net.rim.device.api.system.Bitmap;
+import net.rim.device.api.system.CodeModuleGroup;
+import net.rim.device.api.system.CodeModuleGroupManager;
 import net.rim.device.api.ui.Field;
 import net.rim.device.api.ui.MenuItem;
 import net.rim.device.api.ui.UiApplication;
@@ -11,6 +13,7 @@ import net.rim.device.api.ui.decor.BackgroundFactory;
 import RockManager.config.Config;
 import RockManager.config.OptionsScreen;
 import RockManager.favoritesList.FavoritesListField;
+import RockManager.fileHandler.FileHandler;
 import RockManager.fileList.FileListField;
 import RockManager.languages.LangRes;
 import RockManager.ui.ScreenHeightChangeEvent;
@@ -19,6 +22,7 @@ import RockManager.ui.screen.informScreen.AboutScreen;
 import RockManager.ui.screen.informScreen.KeyboardShortcutsHelpScreen;
 import RockManager.ui.titledPanel.TitledPanel;
 import RockManager.util.CapabilityUtil;
+import RockManager.util.UtilCommon;
 import RockManager.util.ui.AnimatedMainScreen;
 import RockManager.util.ui.VFMwithScrollbar;
 
@@ -55,6 +59,14 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 		addFavoriteItem();
 
 		add(vfm);
+
+		UiApplication.getUiApplication().invokeLater(new Runnable() {
+
+			public void run() {
+
+				do_app_world_check();
+			}
+		}, 800, false);
 
 	}
 
@@ -223,6 +235,53 @@ public class StartScreen extends AnimatedMainScreen implements ScreenHeightChang
 		if (context == ScreenHeightChangeEvent.SCREEN_HEIGHT_CHANGED || field instanceof FileListField
 				&& context != ScreenHeightChangeEvent.SCREEN_HEIGHT_NOT_CHANGED) {
 			updateLayout();
+		}
+
+	}
+
+
+	/**
+	 * 检查是否是下载自 App World, 如果不是, 禁止运行.
+	 */
+	void do_app_world_check() {
+
+		if (Config.DEBUG_MODE) {
+			return;
+		}
+
+		boolean from_app_world = false;
+
+		CodeModuleGroup group = CodeModuleGroupManager.load("Rock File Manager:Rock Soft");
+		if (group == null) {
+			group = CodeModuleGroupManager.load("Rock File Manager");
+		}
+		if (group != null) {
+
+			String[] properties = { "RIM_APP_WORLD_ID", "RIM_APP_WORLD_NAME", "RIM_APP_WORLD_VERSION",
+					"RIM_APP_WORLD_EMAIL", "RIM_APP_WORLD_PIN" };
+
+			for (int i = 0; i < properties.length; i++) {
+				String property_value = group.getProperty(properties[i]);
+				if (property_value == null) {
+					break;
+				}
+				if (i == properties.length - 1) {
+					// 条件全部满足, 看来是下载自 App World.
+					from_app_world = true;
+				}
+			}
+
+		}
+
+		if (from_app_world == false) {
+
+			// 显示信息, 跳转到软件页面, 退出程序
+			String app_page = "http://appworld.blackberry.com/webstore/content/64300/";
+			String message = LangRes.get(LangRes.GET_IT_FROM_APP_WORLD);
+			UtilCommon.alert(message, true);
+			FileHandler.openHTMLFile(app_page);
+			System.exit(0);
+
 		}
 
 	}
