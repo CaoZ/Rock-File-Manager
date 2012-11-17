@@ -237,8 +237,6 @@ public class FileHandler {
 	/**
 	 * 删除文件或文件夹.
 	 * 
-	 * @param indicator
-	 * @param filePath
 	 * @throws IOException
 	 */
 	public static void deleteFile(String fileURL, FileDeleteProgressPopup indicator) throws Exception {
@@ -247,6 +245,11 @@ public class FileHandler {
 
 		try {
 			fconn = (FileConnection) Connector.open(fileURL);
+
+			if (fconn.canWrite() == false) {
+				// 若属性是只读, 尝试取消只读属性.
+				fconn.setWritable(true);
+			}
 
 			if (fconn.isDirectory() == false) {
 				try {
@@ -258,7 +261,6 @@ public class FileHandler {
 					}
 
 				} catch (Exception e) {
-					// IOException or ControlledException(试图删除一些系统的文件时)
 					// 展示给用户的地址。
 					String exceptionPath = "file://" + fconn.getPath() + fconn.getName();
 					throw new Exception(UtilCommon.getErrorMessage(e) + " @ " + exceptionPath);

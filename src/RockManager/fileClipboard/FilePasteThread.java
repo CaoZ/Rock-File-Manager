@@ -77,11 +77,6 @@ public class FilePasteThread extends StopableThread {
 		// 要粘贴的文件的来源位置, 父文件夹.
 		String originFolderURL = FileClipboard.get_source_folder_url();
 
-		if (!targetFolderURL.equals(originFolderURL) && targetFolderURL.startsWith(originFolderURL)) {
-			// 不能复制文件夹到子文件夹。
-			throw new IOException("The destination folder is a subfolder of the source folder.");
-		}
-
 		boolean same_folder_paste = false;
 
 		if (originFolderURL.equals(targetFolderURL)) {
@@ -113,13 +108,22 @@ public class FilePasteThread extends StopableThread {
 			byte[] buffer = new byte[bufferSize];
 
 			for (int i = 0; i < items_to_paste.length; i++) {
+
 				FileItem this_item = items_to_paste[i];
+
+				if (this_item.isDir() && targetFolderURL.startsWith(this_item.getURL())) {
+					// 不能复制自己到自己的子文件夹内。
+					throw new IOException("The destination folder is a subfolder of the source folder.");
+				}
+
 				copyFileItem(this_item, targetFolderURL, buffer, same_folder_paste, progressIndicator, targetListField);
+
 				if (FileClipboard.METHOD_NOW == FileClipboard.METHOD_CUT) {
 					// 若是剪切, 删除原文件
 					try {
 						FileHandler.deleteFile(this_item.getURL(), null);
 					} catch (Exception e) {
+						e.printStackTrace();
 						throw new IOException("Failed to delete origin file \"" + this_item.getDisplayName() + "\".");
 					}
 				}
@@ -301,7 +305,7 @@ public class FilePasteThread extends StopableThread {
 				String thisOriginFileURL = originFolderURL + thisFileNameURL;
 				String thisTargetFileURL = targetURL + thisFileNameURL;
 
-				FileConnection thisOriginFileConn = (FileConnection) Connector.open(thisOriginFileURL, Connector.READ);
+				FileConnection thisOriginFileConn = (FileConnection) Connector.open(thisOriginFileURL);
 
 				if (thisOriginFileConn.isDirectory()) {
 					copyFolder(thisOriginFileConn, thisTargetFileURL, buffer, progressIndicator);
@@ -309,10 +313,16 @@ public class FilePasteThread extends StopableThread {
 					copyFile(thisOriginFileConn, thisTargetFileURL, buffer, progressIndicator);
 				}
 
+				// 如有必要, 删除所有的子文件(夹), 本身将在上级逻辑中处理.
 				if (FileClipboard.METHOD_NOW == FileClipboard.METHOD_CUT) {
 					try {
+						if (thisOriginFileConn.canWrite() == false) {
+							// 需取消只读属性才能删除文件.
+							thisOriginFileConn.setWritable(true);
+						}
 						thisOriginFileConn.delete();
 					} catch (Exception e) {
+						e.printStackTrace();
 						throw new IOException("Failed to delete origin file \"" + thisOriginFileConn.getName() + "\".");
 					}
 				}
